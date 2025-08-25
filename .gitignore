@@ -1,0 +1,9 @@
+#pastas
+.venv/
+venv/
+env/
+__pycache__/
+
+#arquivos
+*.env
+*.pyc
