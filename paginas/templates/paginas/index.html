@@ -3,9 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
     <title>Camelô Virtual</title>
+    
+    <style>
+        .navbar {
+            height: 100px;
+            min-height: 100px;
+        }
+        .navbar .navbar-brand img {
+            height: 80px;
+            width: 80px;
+            object-fit: contain;
+        }
+        .navbar-center-title {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 2;
+            white-space: nowrap;
+        }
+        /* Menu colapsado sobreposto */
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                /* Remova o left: 0; */
+                background: #fff;
+                z-index: 10;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                width: auto; /* Deixe a largura automática */
+                min-width: 180px; /* Largura mínima opcional */
+                padding: 0.5rem 1rem; /* Espaçamento interno */
+                border-radius: 0 0 0.5rem 0.5rem; /* Bordas arredondadas embaixo, opcional */
+            }
+            .navbar-nav {
+                align-items: flex-end !important; /* Alinha os itens à direita */
+            }
+        }
+        </style>
+
 </head>
 <body>
-    oioioi
+<nav class="navbar navbar-expand-lg navbar-light bg-light position-relative">
+    <div class="container position-relative">
+        <!-- Logo à esquerda -->
+        <a class="navbar-brand d-flex align-items-center" href="#">
+            <img src="../../../static/img/insira_aqui.png" alt="Logo" class="d-inline-block align-top mr-2">
+        </a>
+        <!-- Título centralizado e fixo -->
+        <div class="navbar-center-title">
+            <span class="navbar-text h4 mb-0">Camelô Virtual</span>
+        </div>
+        <!-- Botão hamburguer à direita -->
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Menu -->
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav ms-auto d-flex flex-column flex-lg-row align-items-end align-items-lg-center">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Teste1 <span class="sr-only">(teste)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Teste2</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Teste3</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Teste4</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+    
+    
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
