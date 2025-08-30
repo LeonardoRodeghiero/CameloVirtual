@@ -8,6 +8,12 @@
     <title>Camelô Virtual</title>
     
     <style>
+        :root{
+            --branco: #f5f5f5;
+            --cinza-claro: #d3d3d3;
+            --cinza: #a9a9a9;
+            --preto: #1c1c1c;
+        }
         .navbar {
             height: 100px;
             min-height: 100px;
@@ -26,6 +32,32 @@
             z-index: 2;
             white-space: nowrap;
         }
+        .navbar-nav .nav-link:hover {
+            color: var(--preto) !important;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s;
+            font-weight: 500;
+            }
+        .branco {
+            background-color: var(--branco);
+        }
+        .cinza-claro{
+            background-color: var(--cinza-claro);
+        }
+        .cinza{
+            background-color: var(--cinza);
+        }
+        .preto{
+            background-color: var(--preto);
+        }
+
+        footer a.text-dark:hover,
+        footer a.text-dark:focus,
+        footer a[class*="text-dark"]:hover,
+        footer a[class*="text-dark"]:focus {
+            color: var(--preto) !important;
+            font-weight: 500;
+        }
         /* Menu colapsado sobreposto */
         @media (max-width: 991.98px) {
             .navbar-collapse {
@@ -33,7 +65,7 @@
                 top: 100%;
                 right: 0;
                 /* Remova o left: 0; */
-                background: #fff;
+                background: var(--branco);
                 z-index: 10;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.05);
                 width: auto; /* Deixe a largura automática */
@@ -44,12 +76,14 @@
             .navbar-nav {
                 align-items: flex-end !important; /* Alinha os itens à direita */
             }
+            
+            
         }
         </style>
 
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light position-relative">
+<nav class="navbar navbar-expand-lg navbar-light cinza-claro position-relative">
     <div class="container position-relative">
         <!-- Logo à esquerda -->
         <a class="navbar-brand d-flex align-items-center" href="#">
@@ -84,8 +118,22 @@
     </div>
 </nav>
     
-    
-    
+
+    <!-- ...existing code... -->
+    <footer class="cinza-claro text-center text-lg-start mt-5 py-3">
+        <div class="container d-flex flex-column flex-lg-row justify-content-between align-items-center">
+            <div class="mb-2 mb-lg-0">
+            <a href="#" class="text-decoration-none text-dark mx-2" >Sobre</a>
+            <a href="#" class="text-decoration-none text-dark mx-2">Contato</a>
+            <a href="#" class="text-decoration-none text-dark mx-2">Política de Privacidade</a>
+            <a href="#" class="text-decoration-none text-dark mx-2">Ajuda</a>
+            </div>
+            <div class="text-muted small">
+            &copy; 2025 Camelô Virtual
+            </div>
+        </div>
+    </footer>
+    <!-- ...existing code... -->
     
     
     
