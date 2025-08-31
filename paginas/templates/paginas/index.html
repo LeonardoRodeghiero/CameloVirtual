@@ -64,6 +64,32 @@
         .dropdown-item-text{
             font-weight: bolder;
         }
+        .navbar-toggler {
+            background-color: var(--branco);         /* fundo branco */
+            border: 1px solid #ccc;          /* borda leve opcional */
+            padding: 6px 10px;               /* ajusta o tamanho */
+            border-radius: 4px;              /* cantos arredondados */
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='black' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+        }
+        .navbar-toggler {
+        background-color: white;
+        border: 1px solid rgba(0, 0, 0, 0.055);
+        padding: 6px 10px;
+        border-radius: 4px;
+        transition: background-color 0.15s ease-in-out;
+        }
+
+        .navbar-toggler:hover,
+        .navbar-toggler:focus {
+        background-color: var(--cinza-claro);
+        }
+
+    
+
+
         /* Menu colapsado sobreposto */
         @media (max-width: 991.98px) {
             .navbar-collapse {
@@ -94,8 +120,7 @@
             }
 
             .accordion-body .dropdown-item:hover {
-                background-color: rgba(209, 209, 209, 0.137); /* ou use #a9a9a9 diretamente */
-                /*font-weight: 500;      opcional: deixa o texto mais marcante */
+                background-color: rgba(209, 209, 209, 0.137);
             }
             
 
@@ -107,6 +132,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-light cinza-claro position-relative">
     <div class="container position-relative">
+
         <!-- Logo à esquerda -->
         <a class="navbar-brand d-flex align-items-center" href="#">
             <img src="../../../static/img/insira_aqui.png" alt="Logo" class="d-inline-block align-top mr-2">
@@ -115,15 +141,56 @@
         <div class="navbar-center-title">
             <span class="navbar-text h4 mb-0">Camelô Virtual</span>
         </div>
+
+
+        <div class="d-lg-none d-flex align-items-center ms-auto">
+
+        <!-- Botão de perfil fora do menu hamburguer -->
+        <div class="d-lg-none">
+        <div class="dropdown me-2">
+            <a class="btn btn-light btn-sm dropdown-toggle d-flex align-items-center" href="#" id="mobileProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 4px 6px; height: 40px;">
+            <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileProfileDropdown">
+            <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
+            <li><a class="dropdown-item" href="#">Configurações</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Sair</a></li>
+            </ul>
+        </div>
+        </div>
+
+
         <!-- Botão hamburguer à direita -->
         <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+        </div>
+
+        
+
+
+
+        
+
         <!-- Menu -->
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
     <ul class="navbar-nav ms-auto flex-column flex-lg-row w-100 justify-content-lg-end">
-        <!-- DESKTOP: Dropdowns -->
+        <!-- Menu para desktop (telas grandes) -->
+        <li class="nav-item dropdown d-none d-lg-block"  style="margin-top: -4px;">
+        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
+            <span class="ms-2 d-none d-lg-inline">Leonardo</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+            <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
+            <li><a class="dropdown-item" href="#">Configurações</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Sair</a></li>
+        </ul>
+        </li>
+   
         <li class="nav-item dropdown d-none d-lg-block">
             <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Teste1
@@ -149,11 +216,16 @@
                 <li><a class="dropdown-item" href="#">Avaliações</a></li>
             </ul>
         </li>
-        <!-- ...repita para os outros itens... -->
+        <!-- colocar aqui os outros botões do menu -->
 
-        <!-- MOBILE: Accordions -->
+
+
+
+
+        <!-- Layout Mobile (telas pequenas) -->
         <div class="d-lg-none w-100">
     <div class="accordion" id="mobileMenuAccordion">
+        
         <!-- Teste1 -->
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingTeste1">
@@ -190,6 +262,11 @@
                 </div>
             </div>
         </div>
+
+        <!-- Colocar aqui os outros botoes para o menu hambúrguer -->
+
+
+
     </div>
 </div>
 
@@ -199,21 +276,21 @@
 </nav>
     
 
-    <!-- ...existing code... -->
+    <!-- rodapé do site -->
     <footer class="cinza-claro text-center text-lg-start mt-5 py-3">
-        <div class="container d-flex flex-column flex-lg-row justify-content-between align-items-center">
+        <div class="container d-flex flex-column align-items-center">
+
             <div class="mb-2 mb-lg-0">
             <a href="#" class="text-decoration-none text-dark mx-2" >Sobre</a>
             <a href="#" class="text-decoration-none text-dark mx-2">Contato</a>
             <a href="#" class="text-decoration-none text-dark mx-2">Política de Privacidade</a>
             <a href="#" class="text-decoration-none text-dark mx-2">Ajuda</a>
             </div>
-            <div class="text-muted small">
+            <div class="text-muted small mt-2">
             &copy; 2025 Camelô Virtual
             </div>
         </div>
     </footer>
-    <!-- ...existing code... -->
     
     
     
