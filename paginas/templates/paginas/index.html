@@ -26,15 +26,7 @@
             width: 80px;
             object-fit: contain;
         }
-        .navbar-center-title {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            z-index: 2;
-            white-space: nowrap;
-        }
+        
         .navbar-nav .nav-link:hover {
             color: var(--preto) !important;
             border-radius: 0.25rem;
@@ -85,6 +77,23 @@
         .navbar-toggler:hover,
         .navbar-toggler:focus {
         background-color: var(--cinza-claro);
+        }
+
+
+        .navbar-center-title {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 2;
+            white-space: nowrap;
+        }
+
+        @media (min-width: 991px) and (max-width: 1400px) {
+            .navbar-center-title {
+                display: none;
+            }
         }
 
     
@@ -153,7 +162,9 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileProfileDropdown">
             <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
-            <li><a class="dropdown-item" href="#">Configurações</a></li>
+            <li><a class="dropdown-item" href="#">Histórico de Pedidos</a></li>
+            <li><a class="dropdown-item" href="#">Meu Carrinho</a></li>
+
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="#">Sair</a></li>
             </ul>
@@ -185,7 +196,9 @@
         </a>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
             <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
-            <li><a class="dropdown-item" href="#">Configurações</a></li>
+            <li><a class="dropdown-item" href="#">Histórico de Pedidos</a></li>
+            <li><a class="dropdown-item" href="#">Meu Carrinho</a></li>
+
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="#">Sair</a></li>
         </ul>
@@ -193,14 +206,27 @@
    
         <li class="nav-item dropdown d-none d-lg-block">
             <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Teste1
+                Categorias
             </a>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                <li><span class="dropdown-item-text">Informação extra do Teste1</span></li>
-                <li><a class="dropdown-item" href="#">Ação 1</a></li>
-                <li><a class="dropdown-item" href="#">Ação 2</a></li>
+                <li><span class="dropdown-item-text">Filtre por categorias</span></li>
+                <!-- Colocar aqui as categorias vinculada ao banco de dados -->
+                <!-- <li><a class="dropdown-item" href="#">Ação 1</a></li> -->
             </ul>
         </li>
+
+        <li class="nav-item dropdown d-none d-lg-block">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Sobre a loja
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><span class="dropdown-item-text">Informações adicionais</span></li>
+                <li><a class="dropdown-item" href="#">Quem somos</a></li>
+                <li><a class="dropdown-item" href="#">Localização e Atendimento</a></li>
+
+            </ul>
+        </li>
+
         <li class="nav-item dropdown d-none d-lg-block">
             <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Administração
@@ -226,22 +252,37 @@
         <div class="d-lg-none w-100">
     <div class="accordion" id="mobileMenuAccordion">
         
-        <!-- Teste1 -->
+        <!-- Categorias -->
         <div class="accordion-item">
-            <h2 class="accordion-header" id="headingTeste1">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTeste1" aria-expanded="false" aria-controls="collapseTeste1">
-                    Teste1
+            <h2 class="accordion-header" id="headingCategorias">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCategorias" aria-expanded="false" aria-controls="collapseCategorias">
+                    Categorias
                 </button>
             </h2>
-            <div id="collapseTeste1" class="accordion-collapse collapse" aria-labelledby="headingTeste1" data-bs-parent="#mobileMenuAccordion">
+            <div id="collapseCategorias" class="accordion-collapse collapse" aria-labelledby="headingCategorias" data-bs-parent="#mobileMenuAccordion">
                 <div class="accordion-body">
-                    <span class="dropdown-item-text">Informação extra do Teste1</span>
-                    <a href="#" class="dropdown-item">Ação 1</a>
-                    <a href="#" class="dropdown-item">Ação 2</a>
+                    <span class="dropdown-item-text">Filtre por Categorias</span>
+                    <!-- Colocar aqui as categorias vinculada ao banco de dados -->
+                    <!-- <a href="#" class="dropdown-item">Ação 1</a> -->
                 </div>
             </div>
         </div>
+        <!-- Sobre a loja -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingSobrealoja">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSobrealoja" aria-expanded="false" aria-controls="collapseSobrealoja">
+                    Sobre a loja
+                </button>
+            </h2>
+            <div id="collapseSobrealoja" class="accordion-collapse collapse" aria-labelledby="headingSobrealoja" data-bs-parent="#mobileMenuAccordion">
+                <div class="accordion-body">
+                    <span class="dropdown-item-text">Informações Adicionais</span>
+                    <a href="#" class="dropdown-item">Quem Somos</a>
+                    <a href="#" class="dropdown-item">Localização e Atendimento</a>
 
+                </div>
+            </div>
+        </div>
         <!-- Administração -->
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingAdmin">
