@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-_jy8c0sid!1*h4lc6d6p%u3xipwn8n5plt7@cg043kwtmk(4tv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 
     'paginas.apps.PaginasConfig',
     'cadastros.apps.CadastrosConfig',
+    'usuarios.apps.UsuariosConfig',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -150,6 +151,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index'
-#Quando tiver a tela de login = descomentar
-# LOGIN_URL = 'login'
+LOGIN_URL = 'login'
 

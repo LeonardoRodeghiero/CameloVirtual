@@ -153,24 +153,45 @@
 
 
         <div class="d-lg-none d-flex align-items-center ms-auto">
+        {% if request.user.is_authenticated %}
 
-        <!-- Botão de perfil fora do menu hamburguer -->
-        <div class="d-lg-none">
-        <div class="dropdown me-2">
-            <a class="btn btn-light btn-sm dropdown-toggle d-flex align-items-center" href="#" id="mobileProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 4px 6px; height: 40px;">
-            <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileProfileDropdown">
-            <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
-            <li><a class="dropdown-item" href="#">Histórico de Pedidos</a></li>
-            <li><a class="dropdown-item" href="#">Meu Carrinho</a></li>
+            <!-- Botão de perfil fora do menu hamburguer -->
+            <div class="d-lg-none">
+            <div class="dropdown me-2">
+                <a class="btn btn-light btn-sm dropdown-toggle d-flex align-items-center" href="#" id="mobileProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 4px 6px; height: 40px;">
+                <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileProfileDropdown">
+                <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
+                <li><a class="dropdown-item" href="#">Histórico de Pedidos</a></li>
+                <li><a class="dropdown-item" href="#">Meu Carrinho</a></li>
 
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Sair</a></li>
-            </ul>
-        </div>
-        </div>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="dropdown-item" style="width: 100%; text-align: left;">Sair</button>
+                    </form>
+                </li>
+                </ul>
+            </div>
+            </div>
+        {% else %}
+            <!-- Botão de perfil fora do menu hamburguer -->
+            <div class="d-lg-none">
+            <div class="dropdown me-2">
+                <a class="btn btn-light btn-sm dropdown-toggle d-flex align-items-center" href="#" id="mobileProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 4px 6px; height: 40px;">
+                <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileProfileDropdown">
+                <li><a class="dropdown-item" href="{% url 'login' %}">Entrar</a></li>
+                <li><a class="dropdown-item" href="{% url 'registrar' %}">Crie Sua Conta</a></li>
 
+                
+                </ul>
+            </div>
+            </div>
+        {% endif %}
 
         <!-- Botão hamburguer à direita -->
         <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -189,10 +210,12 @@
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
     <ul class="navbar-nav ms-auto flex-column flex-lg-row w-100 justify-content-lg-end">
         <!-- Menu para desktop (telas grandes) -->
+        {% if request.user.is_authenticated %}
+
         <li class="nav-item dropdown d-none d-lg-block"  style="margin-top: -4px;">
         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
-            <span class="ms-2 d-none d-lg-inline">Leonardo</span>
+            <span class="ms-2 d-none d-lg-inline">{{request.user}}</span>
         </a>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
             <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
@@ -200,10 +223,31 @@
             <li><a class="dropdown-item" href="#">Meu Carrinho</a></li>
 
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Sair</a></li>
+            <li>
+                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="dropdown-item" style="width: 100%; text-align: left;">Sair</button>
+                </form>
+            </li>
+
         </ul>
         </li>
-   
+        {% else %}
+        <li class="nav-item dropdown d-none d-lg-block"  style="margin-top: -4px;">
+        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
+            <span class="ms-2 d-none d-lg-inline">Anônimo</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+            <li><a class="dropdown-item" href="{% url 'login' %}">Entrar</a></li>
+            <li><a class="dropdown-item" href="{% url 'registrar' %}">Crie Sua Conta</a></li>
+
+        
+
+        </ul>
+        </li>
+
+        {% endif %}
         <li class="nav-item dropdown d-none d-lg-block">
             <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Categorias

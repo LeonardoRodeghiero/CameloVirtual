@@ -4,5 +4,5 @@ from .views import CategoriaCreate
 
 urlpatterns = [
     
-    path('categoria', CategoriaCreate.as_view(), name="cadastrar-categoria"),
+    path('categoria/', CategoriaCreate.as_view(), name="cadastrar-categoria"),
 ]
