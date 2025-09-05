@@ -138,30 +138,86 @@
         </style>
 
 </head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-light cinza-claro position-relative">
-    <div class="container position-relative">
+<body class="d-flex flex-column min-vh-100">
+    <nav class="navbar navbar-expand-lg navbar-light cinza-claro position-relative">
+        <div class="container position-relative">
 
-        <!-- Logo à esquerda -->
-        <a class="navbar-brand d-flex align-items-center" href="#">
-            <img src="../../../static/img/insira_aqui.png" alt="Logo" class="d-inline-block align-top mr-2">
-        </a>
-        <!-- Título centralizado e fixo -->
-        <div class="navbar-center-title">
-            <span class="navbar-text h4 mb-0">Camelô Virtual</span>
-        </div>
+            <!-- Logo à esquerda -->
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="../../../static/img/insira_aqui.png" alt="Logo" class="d-inline-block align-top mr-2">
+            </a>
+            <!-- Título centralizado e fixo -->
+            <div class="navbar-center-title">
+                <span class="navbar-text h4 mb-0">Camelô Virtual</span>
+            </div>
 
 
-        <div class="d-lg-none d-flex align-items-center ms-auto">
-        {% if request.user.is_authenticated %}
+            <div class="d-lg-none d-flex align-items-center ms-auto">
+            {% if request.user.is_authenticated %}
 
-            <!-- Botão de perfil fora do menu hamburguer -->
-            <div class="d-lg-none">
-            <div class="dropdown me-2">
-                <a class="btn btn-light btn-sm dropdown-toggle d-flex align-items-center" href="#" id="mobileProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 4px 6px; height: 40px;">
+                <!-- Botão de perfil fora do menu hamburguer -->
+                <div class="d-lg-none">
+                <div class="dropdown me-2">
+                    <a class="btn btn-light btn-sm dropdown-toggle d-flex align-items-center" href="#" id="mobileProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 4px 6px; height: 40px;">
+                    <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileProfileDropdown">
+                    <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
+                    <li><a class="dropdown-item" href="#">Histórico de Pedidos</a></li>
+                    <li><a class="dropdown-item" href="#">Meu Carrinho</a></li>
+
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item" style="width: 100%; text-align: left;">Sair</button>
+                        </form>
+                    </li>
+                    </ul>
+                </div>
+                </div>
+            {% else %}
+                <!-- Botão de perfil fora do menu hamburguer -->
+                <div class="d-lg-none">
+                <div class="dropdown me-2">
+                    <a class="btn btn-light btn-sm dropdown-toggle d-flex align-items-center" href="#" id="mobileProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 4px 6px; height: 40px;">
+                    <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileProfileDropdown">
+                    <li><a class="dropdown-item" href="{% url 'login' %}">Entrar</a></li>
+                    <li><a class="dropdown-item" href="{% url 'registrar' %}">Crie Sua Conta</a></li>
+
+                    
+                    </ul>
+                </div>
+                </div>
+            {% endif %}
+
+            <!-- Botão hamburguer à direita -->
+            <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            </div>
+
+            
+
+
+
+            
+
+            <!-- Menu -->
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav ms-auto flex-column flex-lg-row w-100 justify-content-lg-end">
+            <!-- Menu para desktop (telas grandes) -->
+            {% if request.user.is_authenticated %}
+
+            <li class="nav-item dropdown d-none d-lg-block"  style="margin-top: -4px;">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileProfileDropdown">
+                <span class="ms-2 d-none d-lg-inline">{{request.user}}</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                 <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
                 <li><a class="dropdown-item" href="#">Histórico de Pedidos</a></li>
                 <li><a class="dropdown-item" href="#">Meu Carrinho</a></li>
@@ -173,214 +229,146 @@
                         <button type="submit" class="dropdown-item" style="width: 100%; text-align: left;">Sair</button>
                     </form>
                 </li>
-                </ul>
-            </div>
-            </div>
-        {% else %}
-            <!-- Botão de perfil fora do menu hamburguer -->
-            <div class="d-lg-none">
-            <div class="dropdown me-2">
-                <a class="btn btn-light btn-sm dropdown-toggle d-flex align-items-center" href="#" id="mobileProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 4px 6px; height: 40px;">
+
+            </ul>
+            </li>
+            {% else %}
+            <li class="nav-item dropdown d-none d-lg-block"  style="margin-top: -4px;">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileProfileDropdown">
+                <span class="ms-2 d-none d-lg-inline">Anônimo</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                 <li><a class="dropdown-item" href="{% url 'login' %}">Entrar</a></li>
                 <li><a class="dropdown-item" href="{% url 'registrar' %}">Crie Sua Conta</a></li>
 
-                
-                </ul>
-            </div>
-            </div>
-        {% endif %}
+            
 
-        <!-- Botão hamburguer à direita -->
-        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        </div>
-
-        
-
-
-
-        
-
-        <!-- Menu -->
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-    <ul class="navbar-nav ms-auto flex-column flex-lg-row w-100 justify-content-lg-end">
-        <!-- Menu para desktop (telas grandes) -->
-        {% if request.user.is_authenticated %}
-
-        <li class="nav-item dropdown d-none d-lg-block"  style="margin-top: -4px;">
-        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
-            <span class="ms-2 d-none d-lg-inline">{{request.user}}</span>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-            <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
-            <li><a class="dropdown-item" href="#">Histórico de Pedidos</a></li>
-            <li><a class="dropdown-item" href="#">Meu Carrinho</a></li>
-
-            <li><hr class="dropdown-divider"></li>
-            <li>
-                <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="dropdown-item" style="width: 100%; text-align: left;">Sair</button>
-                </form>
+            </ul>
             </li>
 
-        </ul>
-        </li>
-        {% else %}
-        <li class="nav-item dropdown d-none d-lg-block"  style="margin-top: -4px;">
-        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
-            <span class="ms-2 d-none d-lg-inline">Anônimo</span>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-            <li><a class="dropdown-item" href="{% url 'login' %}">Entrar</a></li>
-            <li><a class="dropdown-item" href="{% url 'registrar' %}">Crie Sua Conta</a></li>
-
-        
-
-        </ul>
-        </li>
-
-        {% endif %}
-        <li class="nav-item dropdown d-none d-lg-block">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Categorias
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                <li><span class="dropdown-item-text">Filtre por categorias</span></li>
-                <!-- Colocar aqui as categorias vinculada ao banco de dados -->
-                <!-- <li><a class="dropdown-item" href="#">Ação 1</a></li> -->
-            </ul>
-        </li>
-
-        <li class="nav-item dropdown d-none d-lg-block">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Sobre a loja
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                <li><span class="dropdown-item-text">Informações adicionais</span></li>
-                <li><a class="dropdown-item" href="#">Quem somos</a></li>
-                <li><a class="dropdown-item" href="#">Localização e Atendimento</a></li>
-
-            </ul>
-        </li>
-
-        <li class="nav-item dropdown d-none d-lg-block">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Administração
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                <li><span class="dropdown-item-text">Gerencie os dados</span></li>
-                <li><a class="dropdown-item" href="#">Usuários</a></li>
-                <li><a class="dropdown-item" href="#">Produtos</a></li>
-                <li><a class="dropdown-item" href="#">Categorias</a></li>
-                <li><a class="dropdown-item" href="#">Carrinhos</a></li>
-                <li><a class="dropdown-item" href="#">Pedidos</a></li>
-                <li><a class="dropdown-item" href="#">Endereços</a></li>
-                <li><a class="dropdown-item" href="#">Avaliações</a></li>
-            </ul>
-        </li>
-        <!-- colocar aqui os outros botões do menu -->
-
-
-
-
-
-        <!-- Layout Mobile (telas pequenas) -->
-        <div class="d-lg-none w-100">
-    <div class="accordion" id="mobileMenuAccordion">
-        
-        <!-- Categorias -->
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="headingCategorias">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCategorias" aria-expanded="false" aria-controls="collapseCategorias">
+            {% endif %}
+            <li class="nav-item dropdown d-none d-lg-block">
+                <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Categorias
-                </button>
-            </h2>
-            <div id="collapseCategorias" class="accordion-collapse collapse" aria-labelledby="headingCategorias" data-bs-parent="#mobileMenuAccordion">
-                <div class="accordion-body">
-                    <span class="dropdown-item-text">Filtre por Categorias</span>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li><span class="dropdown-item-text">Filtre por categorias</span></li>
                     <!-- Colocar aqui as categorias vinculada ao banco de dados -->
-                    <!-- <a href="#" class="dropdown-item">Ação 1</a> -->
-                </div>
-            </div>
-        </div>
-        <!-- Sobre a loja -->
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="headingSobrealoja">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSobrealoja" aria-expanded="false" aria-controls="collapseSobrealoja">
+                    <!-- <li><a class="dropdown-item" href="#">Ação 1</a></li> -->
+                </ul>
+            </li>
+
+            <li class="nav-item dropdown d-none d-lg-block">
+                <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Sobre a loja
-                </button>
-            </h2>
-            <div id="collapseSobrealoja" class="accordion-collapse collapse" aria-labelledby="headingSobrealoja" data-bs-parent="#mobileMenuAccordion">
-                <div class="accordion-body">
-                    <span class="dropdown-item-text">Informações Adicionais</span>
-                    <a href="#" class="dropdown-item">Quem Somos</a>
-                    <a href="#" class="dropdown-item">Localização e Atendimento</a>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li><span class="dropdown-item-text">Informações adicionais</span></li>
+                    <li><a class="dropdown-item" href="#">Quem somos</a></li>
+                    <li><a class="dropdown-item" href="#">Localização e Atendimento</a></li>
 
-                </div>
-            </div>
-        </div>
-        <!-- Administração -->
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="headingAdmin">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAdmin" aria-expanded="false" aria-controls="collapseAdmin">
+                </ul>
+            </li>
+
+            <li class="nav-item dropdown d-none d-lg-block">
+                <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Administração
-                </button>
-            </h2>
-            <div id="collapseAdmin" class="accordion-collapse collapse" aria-labelledby="headingAdmin" data-bs-parent="#mobileMenuAccordion">
-                <div class="accordion-body">
-                    <span class="dropdown-item-text">Gerencie os dados</span>
-                    <a href="#" class="dropdown-item">Usuários</a>
-                    <a href="#" class="dropdown-item">Produtos</a>
-                    <a href="#" class="dropdown-item">Categorias</a>
-                    <a href="#" class="dropdown-item">Carrinhos</a>
-                    <a href="#" class="dropdown-item">Pedidos</a>
-                    <a href="#" class="dropdown-item">Endereços</a>
-                    <a href="#" class="dropdown-item">Avaliações</a>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                    <li><span class="dropdown-item-text">Gerencie os dados</span></li>
+                    <li><a class="dropdown-item" href="#">Usuários</a></li>
+                    <li><a class="dropdown-item" href="#">Produtos</a></li>
+                    <li><a class="dropdown-item" href="#">Categorias</a></li>
+                    <li><a class="dropdown-item" href="#">Carrinhos</a></li>
+                    <li><a class="dropdown-item" href="#">Pedidos</a></li>
+                    <li><a class="dropdown-item" href="#">Endereços</a></li>
+                    <li><a class="dropdown-item" href="#">Avaliações</a></li>
+                </ul>
+            </li>
+            <!-- colocar aqui os outros botões do menu -->
+
+
+
+
+
+            <!-- Layout Mobile (telas pequenas) -->
+            <div class="d-lg-none w-100">
+        <div class="accordion" id="mobileMenuAccordion">
+            
+            <!-- Categorias -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingCategorias">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCategorias" aria-expanded="false" aria-controls="collapseCategorias">
+                        Categorias
+                    </button>
+                </h2>
+                <div id="collapseCategorias" class="accordion-collapse collapse" aria-labelledby="headingCategorias" data-bs-parent="#mobileMenuAccordion">
+                    <div class="accordion-body">
+                        <span class="dropdown-item-text">Filtre por Categorias</span>
+                        <!-- Colocar aqui as categorias vinculada ao banco de dados -->
+                        <!-- <a href="#" class="dropdown-item">Ação 1</a> -->
+                    </div>
                 </div>
             </div>
+            <!-- Sobre a loja -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingSobrealoja">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSobrealoja" aria-expanded="false" aria-controls="collapseSobrealoja">
+                        Sobre a loja
+                    </button>
+                </h2>
+                <div id="collapseSobrealoja" class="accordion-collapse collapse" aria-labelledby="headingSobrealoja" data-bs-parent="#mobileMenuAccordion">
+                    <div class="accordion-body">
+                        <span class="dropdown-item-text">Informações Adicionais</span>
+                        <a href="#" class="dropdown-item">Quem Somos</a>
+                        <a href="#" class="dropdown-item">Localização e Atendimento</a>
+
+                    </div>
+                </div>
+            </div>
+            <!-- Administração -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingAdmin">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAdmin" aria-expanded="false" aria-controls="collapseAdmin">
+                        Administração
+                    </button>
+                </h2>
+                <div id="collapseAdmin" class="accordion-collapse collapse" aria-labelledby="headingAdmin" data-bs-parent="#mobileMenuAccordion">
+                    <div class="accordion-body">
+                        <span class="dropdown-item-text">Gerencie os dados</span>
+                        <a href="#" class="dropdown-item">Usuários</a>
+                        <a href="#" class="dropdown-item">Produtos</a>
+                        <a href="#" class="dropdown-item">Categorias</a>
+                        <a href="#" class="dropdown-item">Carrinhos</a>
+                        <a href="#" class="dropdown-item">Pedidos</a>
+                        <a href="#" class="dropdown-item">Endereços</a>
+                        <a href="#" class="dropdown-item">Avaliações</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Colocar aqui os outros botoes para o menu hambúrguer -->
+
+
+
         </div>
-
-        <!-- Colocar aqui os outros botoes para o menu hambúrguer -->
-
-
-
     </div>
-</div>
 
-    </ul>
-</div>
+        </ul>
     </div>
-</nav>
+        </div>
+    </nav>
+<main class="flex-grow-1">
+
+    <div class="container pt-4">
+        {% block conteudo %}
+
+        {% endblock %}
+    </div>
     
-
-{% block conteudo %}
-
-
-
-
-{% endblock %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+</main>
+    
 
     <!-- rodapé do site -->
     <footer class="cinza-claro text-center text-lg-start mt-5 py-3">

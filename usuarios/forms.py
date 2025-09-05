@@ -8,6 +8,7 @@ class UsuarioForm(UserCreationForm):
     nome_completo = forms.CharField(max_length=80)
     cpf = forms.CharField(max_length=14)
     telefone = forms.CharField(max_length=16)
+    estado = forms.CharField(max_length=2)
     cidade = forms.CharField(max_length=70)
 
     class Meta():

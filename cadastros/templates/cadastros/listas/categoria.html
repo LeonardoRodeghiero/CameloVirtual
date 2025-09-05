@@ -1,0 +1,20 @@
+{% extends 'cadastros/listas/template.html' %}
+
+{% block titulo %}
+Categorias
+{% endblock %}
+
+
+{% block cabecalho %}
+    <th>id</th>
+    <th>nome</th>
+    <th>descrição</th>
+{% endblock%}
+
+
+
+{% block conteudo_tabela %}
+    <td>{{object.pk}}</td>
+    <td>{{object.nome}}</td>
+    <td>{{object.descricao}}</td>
+{% endblock %}
