@@ -10,21 +10,22 @@ from .models import Perfil
 class UsuarioCreate(CreateView):
     template_name = 'cadastros/form.html'
     form_class = UsuarioForm
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('login')
 
     def form_valid(self, form):
         user = form.save(commit=False)
         user.username = form.cleaned_data['nome_completo']  # ou gerar com base no nome
+        user.email = form.cleaned_data['email']
         user.save()
 
 
         
         grupo = get_object_or_404(Group, name='cliente')
-
+        user.groups.add(grupo)
         url = super().form_valid(form)
 
-        self.object.groups.add(grupo)
-        self.object.save()
+        # self.object.groups.add(grupo)
+        # self.object.save()
 
         Perfil.objects.create(
             usuario=user,
