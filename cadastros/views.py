@@ -3,6 +3,9 @@ from django.views.generic.list import ListView
 
 from .models import Categoria
 
+from usuarios.models import Perfil
+
+
 from django.urls import reverse_lazy
 
 # Create your views here.
@@ -25,3 +28,7 @@ class CategoriaCreate(CreateView):
 class CategoriaList(ListView):
     model = Categoria
     template_name = 'cadastros/listas/categoria.html'
+
+class PerfilList(ListView):
+    model = Perfil
+    template_name = 'cadastros/listas/perfil.html'

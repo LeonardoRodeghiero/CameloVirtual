@@ -256,6 +256,10 @@
                     <li><span class="dropdown-item-text">Filtre por categorias</span></li>
                     <!-- Colocar aqui as categorias vinculada ao banco de dados -->
                     <!-- <li><a class="dropdown-item" href="#">Ação 1</a></li> -->
+                     {% for categoria in categorias_navbar %}
+                        <li><a class="dropdown-item" href="#">{{ categoria.nome }}</a></li>
+                    {% endfor %}
+
                 </ul>
             </li>
 

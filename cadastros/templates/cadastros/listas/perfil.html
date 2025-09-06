@@ -1,0 +1,45 @@
+{% extends 'cadastros/listas/template.html' %}
+
+{% block titulo %}
+Usuários
+{% endblock %}
+
+
+{% block cabecalho %}
+    <th>id</th>
+    <th>nome</th>
+    <th>tipo</th>
+    <th style="min-width: 130px;">CPF</th>
+
+    <th>e-mail</th>
+    <th style="min-width: 130px;">telefone</th>
+
+    <th>cep</th>
+    <th>estado</th>
+    <th>cidade</th>
+    <th>bairro</th>
+    <th>logradouro</th>
+    <th>número</th>
+    <th>complemento</th>
+{% endblock %}
+
+
+
+{% block conteudo_tabela %}
+    <td>{{object.pk}}</td>
+    <td>{{object.nome_completo}}</td>
+    <td>{{object.tipo}}</td>
+    <td>{{object.cpf}}</td>
+
+    <td>{{object.usuario.email}}</td>
+    <td>{{object.telefone}}</td>
+
+    <!-- <td>{{object.cep}}</td> -->
+    <td class="{% if not object.bairro %}text-muted{% endif %}" style="min-width: 95px;">{{object.cep|default:"&ndash;"|safe}}</td>
+    <td>{{object.estado}}</td>
+    <td>{{object.cidade}}</td>
+    <td class="{% if not object.bairro %}text-muted{% endif %}">{{object.bairro|default:"&ndash;"|safe}}</td>
+    <td class="{% if not object.bairro %}text-muted{% endif %}">{{object.logradouro|default:"&ndash;"|safe}}</td>
+    <td class="{% if not object.bairro %}text-muted{% endif %}">{{object.numero|default:"&ndash;"|safe}}</td>
+    <td class="{% if not object.bairro %}text-muted{% endif %}">{{object.complemento|default:"&ndash;"|safe}}</td>
+{% endblock %}

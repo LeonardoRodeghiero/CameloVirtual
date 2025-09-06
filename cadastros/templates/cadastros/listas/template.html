@@ -3,21 +3,29 @@
 {% block conteudo %}
 <div class="d-flex justify-content-center">
     
-    <div class="col-6">
+    <div class="col-12">
         <h2 class="pt-2">
                 {% block titulo %}
 
                 {% endblock %}
         </h2>
         <hr class="p-1">
-        <div class="table-responsive-sm">
+        <div class="overflow-auto">
             
             <table class="table table-hover table-bordered align-middle text-center">
                 <tr>
                     {% block cabecalho %}
                     
                     {% endblock %}
-                    <th>Opções</th>
+                    <th style=" position: sticky;
+                                right: 0;
+                                background-color: #d3d3d3; /* evita sobreposição visual */
+                                z-index: 2; /* garante que fique acima das outras células */
+                                min-width: 120px; /* largura mínima para os botões */
+                                text-align: center;
+                                border-left: none; /* remove a borda que causa o efeito fixo */
+                                box-shadow: -1px 0 0 #dee2e6; /* simula a borda esquerda */">
+                                Opções</th>
                 </tr>
 
                 {% for object in object_list %}
@@ -25,7 +33,15 @@
                     {% block conteudo_tabela %}
                     
                     {% endblock%}
-                    <td>Editar Excluir</td>
+                    <td style="position: sticky;
+                                right: 0;
+                                background-color: #f8f9fa;
+                                z-index: 2;
+                                min-width: 120px;
+                                text-align: center;
+                                border-left: none; /* remove a borda que causa o efeito fixo */
+                                box-shadow: -1px 0 0 #dee2e6; /* simula a borda esquerda */">
+                                Editar Excluir</td>
                 </tr>
                 {% empty %}
                     <tr>

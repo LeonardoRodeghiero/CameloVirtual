@@ -32,7 +32,8 @@ class UsuarioCreate(CreateView):
             nome_completo=form.cleaned_data['nome_completo'],
             cpf=form.cleaned_data['cpf'],
             telefone=form.cleaned_data['telefone'],
-            cidade=form.cleaned_data['cidade']
+            estado=form.cleaned_data['estado'],
+            cidade=form.cleaned_data['cidade'],
         )
         
 
