@@ -5,3 +5,7 @@ from django.views.generic import TemplateView
 
 class IndexView(TemplateView):
     template_name = "paginas/index.html"
+
+
+class AcessoNegadoView(TemplateView):
+    template_name = 'paginas/acesso_negado.html'

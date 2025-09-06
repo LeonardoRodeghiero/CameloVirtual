@@ -16,5 +16,5 @@ Categorias
 {% block conteudo_tabela %}
     <td>{{object.pk}}</td>
     <td>{{object.nome}}</td>
-    <td>{{object.descricao}}</td>
+    <td class="{% if not object.descricao %}text-muted{% endif %}">{{object.descricao|default:"&ndash;"|safe}}</td>
 {% endblock %}
