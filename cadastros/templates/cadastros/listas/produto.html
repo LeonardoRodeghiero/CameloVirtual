@@ -1,0 +1,39 @@
+{% extends 'cadastros/listas/template.html' %}
+
+{% block titulo %}
+Produtos
+{% endblock %}
+
+
+{% block cabecalho %}
+    <th>id</th>
+    <th>imagem</th>
+    <th>nome</th>
+    <th>marca</th>
+    <th>categoria</th>
+    <th>descrição</th>
+    <th>preço</th>
+    <th>quantidade</th>
+    <th>quantidade vendido</th>
+    <th>avaliação geral</th>
+{% endblock%}
+
+
+
+{% block conteudo_tabela %}
+    <td>{{object.pk}}</td>
+    <td><img src="{{ object.imagem.url }}" alt="" style="width: 100px;"></td>
+
+    <td>{{object.nome}}</td>
+    <!-- <td class="{% if not object.descricao %}text-muted{% endif %}">{{object.descricao|default:"&ndash;"|safe}}</td> -->
+    <td>{{object.marca}}</td>
+    <td>{{object.categoria}}</td>
+    <td>{{object.descricao}}</td>
+    <td>R${{object.preco}}</td>
+    <td>{{object.quantidade}}</td>
+    <td>{{object.quantidade_vendido}}</td>
+    <td>{{object.avaliacao_geral}}</td>
+    
+
+
+{% endblock %}

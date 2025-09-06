@@ -1,7 +1,7 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 
-from .models import Categoria
+from .models import Categoria, Produto
 
 from usuarios.models import Perfil
 
@@ -27,13 +27,30 @@ class CategoriaCreate(GroupRequiredMixin, LoginRequiredMixin, CreateView):
     model = Categoria
     fields = ['nome', 'descricao']
     template_name = 'cadastros/form.html'
-    success_url = reverse_lazy('cadastrar-categoria')
+    success_url = reverse_lazy('listar-categorias')
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
-            return redirect('login')  # ou sua URL personalizada de login
+            return redirect('login')
         if not request.user.groups.filter(name='administrador').exists():
-            return redirect('acesso-negado')  # ou 'acesso-negado'
+            return redirect('acesso-negado')
+        return super().dispatch(request, *args, **kwargs)
+
+
+class ProdutoCreate(GroupRequiredMixin, LoginRequiredMixin, CreateView):
+
+    group_required = u"administrador"
+
+    model = Produto
+    fields = ['nome', 'marca', 'descricao', 'preco', 'quantidade', 'imagem', 'categoria']
+    template_name = 'cadastros/form.html'
+    success_url = reverse_lazy('listar-produtos')
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        if not request.user.groups.filter(name='administrador').exists():
+            return redirect('acesso-negado')
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -80,6 +97,20 @@ class PerfilList(GroupRequiredMixin, LoginRequiredMixin, ListView):
 
     model = Perfil
     template_name = 'cadastros/listas/perfil.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')  # ou sua URL personalizada de login
+        if not request.user.groups.filter(name='administrador').exists():
+            return redirect('acesso-negado')  # ou 'acesso-negado'
+        return super().dispatch(request, *args, **kwargs)
+
+class ProdutoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
+
+    group_required = u"administrador"
+
+    model = Produto
+    template_name = 'cadastros/listas/produto.html'
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
