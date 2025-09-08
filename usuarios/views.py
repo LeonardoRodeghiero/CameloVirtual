@@ -1,7 +1,7 @@
 from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.models import Group, User
 from django.urls import reverse_lazy
-from .forms import UsuarioForm
+from .forms import UsuarioForm, PerfilForm
 from django.shortcuts import get_object_or_404
 
 from .models import Perfil
@@ -42,6 +42,6 @@ class UsuarioCreate(CreateView):
 
 class PerfilUpdate(UpdateView):
     template_name = 'cadastros/form.html'
+    form_class = PerfilForm
     model = Perfil
-    fields = ['nome_completo', 'cpf', 'telefone']
     success_url = reverse_lazy('index')

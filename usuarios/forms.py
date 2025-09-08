@@ -22,3 +22,37 @@ class UsuarioForm(UserCreationForm):
             raise ValidationError(f'O email {e} já está em uso')
         
         return e
+
+
+from .models import Perfil
+
+class PerfilForm(forms.ModelForm):
+    email = forms.EmailField(label='Email')
+
+    class Meta:
+        model = Perfil
+        fields = [
+            'nome_completo', 'tipo', 'cpf', 'telefone', 'cep', 'estado',
+            'cidade', 'bairro', 'logradouro', 'numero', 'complemento'
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Preenche o campo de e-mail com o valor atual do usuário
+        if self.instance and self.instance.usuario:
+            self.fields['email'].initial = self.instance.usuario.email
+        
+        ordem = [
+            'nome_completo', 'tipo', 'cpf', 'email', 'telefone', 'cep', 'estado',
+            'cidade', 'bairro', 'logradouro', 'numero', 'complemento'
+        ]
+        self.order_fields(ordem)
+
+    def save(self, commit=True):
+        perfil = super().save(commit=False)
+        # Atualiza o e-mail do usuário vinculado
+        perfil.usuario.email = self.cleaned_data['email']
+        if commit:
+            perfil.usuario.save()
+            perfil.save()
+        return perfil

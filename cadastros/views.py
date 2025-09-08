@@ -73,6 +73,25 @@ class CategoriaUpdate(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
         return super().dispatch(request, *args, **kwargs)
 
 
+class ProdutoUpdate(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
+
+    group_required = u"administrador"
+
+    model = Produto
+    fields = ['nome', 'marca', 'descricao', 'preco', 'quantidade', 'imagem', 'categoria']
+    template_name = 'cadastros/form.html'
+    success_url = reverse_lazy('listar-produtos')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')  # ou sua URL personalizada de login
+        if not request.user.groups.filter(name='administrador').exists():
+            return redirect('acesso-negado')  # ou 'acesso-negado'
+        return super().dispatch(request, *args, **kwargs)
+
+
+
+
 
 
 # List

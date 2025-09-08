@@ -1,5 +1,7 @@
 {% extends 'paginas/index.html' %}
 
+{% load rotas %}
+
 {% block conteudo %}
 <div class="d-flex justify-content-center">
     
@@ -41,7 +43,7 @@
                                 text-align: center;
                                 border-left: none; /* remove a borda que causa o efeito fixo */
                                 box-shadow: -1px 0 0 #dee2e6; /* simula a borda esquerda */">
-                                <a href="" class="btn btn-warning">Editar</a> 
+                                <a href="{% rota_objeto 'atualizar' object %}" class="btn btn-warning">Editar</a> 
                                 <a href="" class="btn btn-danger">Excluir</a>
                             </td>
                 </tr>

@@ -164,7 +164,7 @@
                     <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileProfileDropdown">
-                    <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
+                    <li><a class="dropdown-item" href="{% url 'atualizar-perfil' request.user.perfil.pk %}">Meu Perfil</a></li>
                     <li><a class="dropdown-item" href="#">Histórico de Pedidos</a></li>
                     <li><a class="dropdown-item" href="#">Meu Carrinho</a></li>
 
@@ -220,7 +220,7 @@
                 <span class="ms-2 d-none d-lg-inline">{{request.user}}</span>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
+                <li><a class="dropdown-item" href="{% url 'atualizar-perfil' request.user.perfil.pk %}">Meu Perfil</a></li>
                 <li><a class="dropdown-item" href="#">Histórico de Pedidos</a></li>
                 <li><a class="dropdown-item" href="#">Meu Carrinho</a></li>
 

@@ -7,5 +7,5 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name="logout"),
 
     path('registrar/', UsuarioCreate.as_view(), name="registrar"),
-    path('atualizar-dados/', PerfilUpdate.as_view(), name="atualizar-dados"),
+    path('atualizar/perfil/<int:pk>/', PerfilUpdate.as_view(), name="atualizar-perfil"),
 ]
