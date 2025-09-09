@@ -45,3 +45,29 @@ class PerfilUpdate(UpdateView):
     form_class = PerfilForm
     model = Perfil
     success_url = reverse_lazy('index')
+
+    def get_form_kwargs(self):  
+        kwargs = super().get_form_kwargs()
+        kwargs['usuario_logado'] = self.request.user       
+        return kwargs
+
+    def form_valid(self, form):
+        perfil = form.save(commit=False)
+        
+        # Atualiza os dados do usuário
+        user = perfil.usuario  # supondo que Perfil tem um campo OneToOne com User
+        user.username = form.cleaned_data['nome_completo']
+        user.email = form.cleaned_data['email']
+        user.save()
+
+        user.groups.clear()
+
+        if perfil.tipo == 'administrador':
+            grupo = Group.objects.get(name='administrador')
+        else:
+            grupo = Group.objects.get(name='cliente')
+
+        user.groups.add(grupo)
+
+        perfil.save()
+        return super().form_valid(form)
