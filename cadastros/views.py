@@ -90,8 +90,41 @@ class ProdutoUpdate(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
         return super().dispatch(request, *args, **kwargs)
 
 
+# Delete
+
+class CategoriaDelete(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
+
+    login_url = reverse_lazy('login')
+
+    group_required = u"administrador"
+
+    model = Categoria
+    success_url = reverse_lazy('listar-categorias')
 
 
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')  # ou sua URL personalizada de login
+        if not request.user.groups.filter(name='administrador').exists():
+            return redirect('acesso-negado')  # ou 'acesso-negado'
+        return super().dispatch(request, *args, **kwargs)
+
+class ProdutoDelete(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
+
+    login_url = reverse_lazy('login')
+
+    group_required = u"administrador"
+
+    model = Produto
+    success_url = reverse_lazy('listar-produtos')
+
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')  # ou sua URL personalizada de login
+        if not request.user.groups.filter(name='administrador').exists():
+            return redirect('acesso-negado')  # ou 'acesso-negado'
+        return super().dispatch(request, *args, **kwargs)
 
 
 # List

@@ -1,4 +1,4 @@
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.models import Group, User
 from django.urls import reverse_lazy
 from .forms import UsuarioForm, PerfilForm
@@ -71,3 +71,7 @@ class PerfilUpdate(UpdateView):
 
         perfil.save()
         return super().form_valid(form)
+
+class PerfilDelete(DeleteView):
+    model = Perfil
+    success_url = reverse_lazy('index')

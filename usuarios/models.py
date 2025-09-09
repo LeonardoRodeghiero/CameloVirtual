@@ -19,3 +19,7 @@ class Perfil(models.Model):
 
     usuario = models.OneToOneField(User, on_delete=models.PROTECT)
 
+
+    def __str__(self):
+        return f'{self.nome_completo}'
+

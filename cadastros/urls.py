@@ -4,6 +4,8 @@ from .views import CategoriaCreate, ProdutoCreate
 
 from .views import CategoriaUpdate, ProdutoUpdate
 
+from .views import CategoriaDelete, ProdutoDelete
+
 from .views import CategoriaList, PerfilList, ProdutoList
 
 urlpatterns = [
@@ -14,6 +16,9 @@ urlpatterns = [
 
     path('atualizar/categoria/<int:pk>', CategoriaUpdate.as_view(), name="atualizar-categoria"),
     path('atualizar/produto/<int:pk>/', ProdutoUpdate.as_view(), name="atualizar-produto"),
+
+    path('excluir/categoria/<int:pk>/', CategoriaDelete.as_view(), name="excluir-categoria"),
+    path('excluir/produto/<int:pk>/', ProdutoDelete.as_view(), name="excluir-produto"),
 
 
     path('listar/categorias/', CategoriaList.as_view(), name="listar-categorias"),

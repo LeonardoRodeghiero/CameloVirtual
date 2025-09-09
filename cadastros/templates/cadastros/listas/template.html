@@ -44,8 +44,30 @@
                                 border-left: none; /* remove a borda que causa o efeito fixo */
                                 box-shadow: -1px 0 0 #dee2e6; /* simula a borda esquerda */">
                                 <a href="{% rota_objeto 'atualizar' object %}" class="btn btn-warning">Editar</a> 
-                                <a href="" class="btn btn-danger">Excluir</a>
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal{{ object.pk }}">Excluir</button>
+                                
+                                   
                             </td>
+                            <div class="modal fade" id="confirmModal{{ object.pk }}" tabindex="-1" aria-labelledby="confirmModalLabel{{ object.pk }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                        <form method="post" action="{% rota_objeto 'excluir' object %}">
+                                            {% csrf_token %}
+                                            <div class="modal-header">
+                                            <h5 class="modal-title" id="confirmModalLabel{{ object.pk }}">Confirmar exclusão</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                            Tem certeza que deseja excluir <strong>{{ object }}</strong>?
+                                            </div>
+                                            <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-danger">Excluir</button>
+                                            </div>
+                                        </form>
+                                        </div>
+                                    </div>
+                                </div>
                 </tr>
                 {% empty %}
                     <tr>

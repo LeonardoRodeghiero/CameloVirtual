@@ -298,7 +298,7 @@
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
                         <li><span class="dropdown-item-text">Gerencie os dados</span></li>
                         <li><a class="dropdown-item" href="{% url 'listar-usuarios' %}">Usuários</a></li>
-                        <li><a class="dropdown-item" href="#">Produtos</a></li>
+                        <li><a class="dropdown-item" href="{% url 'listar-produtos' %}">Produtos</a></li>
                         <li><a class="dropdown-item" href="{% url 'listar-categorias' %}">Categorias</a></li>
                         <li><a class="dropdown-item" href="#">Carrinhos</a></li>
                         <li><a class="dropdown-item" href="#">Pedidos</a></li>
@@ -362,7 +362,7 @@
                         <div class="accordion-body">
                             <span class="dropdown-item-text">Gerencie os dados</span>
                             <a href="{% url 'listar-usuarios' %}" class="dropdown-item">Usuários</a>
-                            <a href="#" class="dropdown-item">Produtos</a>
+                            <a href="{% url 'listar-produtos' %}" class="dropdown-item">Produtos</a>
                             <a href="{% url 'listar-categorias' %}" class="dropdown-item">Categorias</a>
                             <a href="#" class="dropdown-item">Carrinhos</a>
                             <a href="#" class="dropdown-item">Pedidos</a>

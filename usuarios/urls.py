@@ -1,6 +1,6 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
-from .views import UsuarioCreate, PerfilUpdate
+from .views import UsuarioCreate, PerfilUpdate, PerfilDelete
 
 urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='usuarios/login.html'), name='login'),
@@ -8,4 +8,5 @@ urlpatterns = [
 
     path('registrar/', UsuarioCreate.as_view(), name="registrar"),
     path('atualizar/perfil/<int:pk>/', PerfilUpdate.as_view(), name="atualizar-perfil"),
+    path('excluir/perfil/<int:pk>/', PerfilDelete.as_view(), name="excluir-perfil"),
 ]
