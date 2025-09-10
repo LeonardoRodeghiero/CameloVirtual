@@ -36,6 +36,11 @@ class CategoriaCreate(GroupRequiredMixin, LoginRequiredMixin, CreateView):
             return redirect('acesso-negado')
         return super().dispatch(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['titulo_form'] = "Cadastre a Categoria"
+        return context
 
 class ProdutoCreate(GroupRequiredMixin, LoginRequiredMixin, CreateView):
 
@@ -53,6 +58,11 @@ class ProdutoCreate(GroupRequiredMixin, LoginRequiredMixin, CreateView):
             return redirect('acesso-negado')
         return super().dispatch(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['titulo_form'] = "Cadastre o Produto"
+        return context
 
 # Update
 class CategoriaUpdate(GroupRequiredMixin, LoginRequiredMixin, UpdateView):

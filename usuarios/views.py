@@ -12,6 +12,12 @@ class UsuarioCreate(CreateView):
     form_class = UsuarioForm
     success_url = reverse_lazy('login')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['titulo_form'] = "Crie Sua Conta"
+        return context
+
     def form_valid(self, form):
         user = form.save(commit=False)
         user.username = form.cleaned_data['nome_completo']  # ou gerar com base no nome
