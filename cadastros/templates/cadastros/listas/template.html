@@ -2,7 +2,13 @@
 
 {% load rotas %}
 
+{% load static %}
+
 {% block conteudo %}
+
+
+
+
 <div class="d-flex justify-content-center">
     
     <div class="col-12">
@@ -14,14 +20,25 @@
 
         </h2>
         <hr class="p-1">
-        <div class="overflow-auto">
-            
-            <table class="table table-hover table-bordered align-middle text-center">
-                <tr>
-                    {% block cabecalho %}
+
+        <form action="?" method="get">
+
+            <input type="text" name="nome" id="" value="{{ request.GET.nome }}" autocomplete="off">
+            <button type="submit">Buscar</button>
+            <a href="{% url 'listar-categorias' %}">Limpar</a>
+
+        </form>
+
+        <div class="overflow-auto pt-2">
+            <!-- <input type="text" id="buscaGlobal" class="form-control mb-3 shadow-sm" placeholder="Buscar na tabela..."> -->
+            <table class="table table-hover table-bordered align-middle text-center" id="tabela">
+                <thead>
+                    <tr>
                     
-                    {% endblock %}
-                    <th style=" position: sticky;
+                        {% block cabecalho %}
+                        
+                        {% endblock %}
+                        <th style=" position: sticky;
                                 right: 0;
                                 background-color: #d3d3d3; /* evita sobreposição visual */
                                 z-index: 2; /* garante que fique acima das outras células */
@@ -30,14 +47,18 @@
                                 border-left: none; /* remove a borda que causa o efeito fixo */
                                 box-shadow: -1px 0 0 #dee2e6; /* simula a borda esquerda */">
                                 Opções</th>
-                </tr>
+                    </tr>
+                </thead>
+                    
 
                 {% for object in object_list %}
-                <tr>
-                    {% block conteudo_tabela %}
+                <tbody>
+                    <tr>
+                    
+                        {% block conteudo_tabela %}
                         
-                    {% endblock%}
-                    <td style="position: sticky;
+                        {% endblock%}
+                        <td style="position: sticky;
                                 right: 0;
                                 background-color: #f8f9fa;
                                 z-index: 2;
@@ -49,7 +70,8 @@
                                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal{{ object.pk }}">Excluir</button>
                                 
                                    
-                            </td>
+                        </td>
+                    </tr>
                             <div class="modal fade" id="confirmModal{{ object.pk }}" tabindex="-1" aria-labelledby="confirmModalLabel{{ object.pk }}" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
@@ -70,17 +92,78 @@
                                         </div>
                                     </div>
                                 </div>
-                </tr>
+                </tbody>
                 {% empty %}
                     <tr>
-                        <td colspan="3">Nenhum campo registrado</td>
+                        <td>Nenhum campo registrado</td>
+                         <!-- colspan="3" -->
                     </tr>
                 {% endfor %}
 
             </table>
+            
+
+
         </div>
+        <div class="d-flex justify-content-center mt-4">
+                <ul class="pagination justify-content-center">
+
+                    {% if request.GET.nome %}
+
+                    {% else %}
+
+                    {% endif %}
+
+
+
+                    {% if page_obj.has_previous %}
+
+                        {% if request.GET.nome %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}&nome={{ request.GET.nome }}">Anterior</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+                            </li>
+                        {% endif %}
+
+                        
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_obj.number }}</span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+
+                        {% if request.GET.nome %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}&nome={{ request.GET.nome }}">Próxima</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Próxima</a>
+                            </li>
+                        {% endif %}
+
+
+                        
+                    {% endif %}
+                </ul>
+            </div>
     </div>
 </div>
+
+
+{% block scripts %}
+    <script>
+    $(document).ready(function () {
+        
+    });
+    </script>
+
+{% endblock %}
 
 
 {% endblock %}

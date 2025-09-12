@@ -29,6 +29,7 @@ class CategoriaCreate(GroupRequiredMixin, LoginRequiredMixin, CreateView):
     template_name = 'cadastros/form.html'
     success_url = reverse_lazy('listar-categorias')
 
+
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect('login')
@@ -145,12 +146,28 @@ class CategoriaList(GroupRequiredMixin, LoginRequiredMixin, ListView):
     model = Categoria
     template_name = 'cadastros/listas/categoria.html'
 
+    paginate_by = 10
+
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect('login')  # ou sua URL personalizada de login
         if not request.user.groups.filter(name='administrador').exists():
             return redirect('acesso-negado')  # ou 'acesso-negado'
         return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        
+        txt_nome = self.request.GET.get('nome')
+
+        if txt_nome is None:
+            categorias = Categoria.objects.all()
+        else:
+            categorias = Categoria.objects.filter(nome__icontains=txt_nome)
+
+        return categorias
+
+
+
 
 
 class PerfilList(GroupRequiredMixin, LoginRequiredMixin, ListView):
@@ -159,6 +176,7 @@ class PerfilList(GroupRequiredMixin, LoginRequiredMixin, ListView):
 
     model = Perfil
     template_name = 'cadastros/listas/perfil.html'
+    paginate_by = 10
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -166,6 +184,17 @@ class PerfilList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         if not request.user.groups.filter(name='administrador').exists():
             return redirect('acesso-negado')  # ou 'acesso-negado'
         return super().dispatch(request, *args, **kwargs)
+    
+    def get_queryset(self):
+        
+        txt_nome = self.request.GET.get('nome')
+
+        if txt_nome is None:
+            perfis = Perfil.objects.all()
+        else:
+            perfis = Perfil.objects.filter(nome_completo__icontains=txt_nome)
+
+        return perfis
 
 class ProdutoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
 
@@ -173,6 +202,7 @@ class ProdutoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
 
     model = Produto
     template_name = 'cadastros/listas/produto.html'
+    paginate_by = 10
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
