@@ -25,23 +25,34 @@
 
         
 
-        <form method="get">
-            <label for="campo">Atributo escolhido:</label>
-            <select name="campo" id="campo" onchange="atualizarCampo()">
-                {% for campo in campos %}
-                    <option value="{{ campo }}">{{ campo }}</option>
-                {% endfor %}
-            </select>
-            <br>
-            <input type="text" id="valor" name="{{ campo_escolhido }}" value="{{ request.GET|dict_get:campo_escolhido }}" autocomplete="off">
+        <form method="get" class="p-3 border rounded bg-light shadow-sm">
+            <div class="d-flex align-items-center mb-3 gap-4">
+                <label for="campo" class="form-label">Atributo escolhido:</label>
+                <select name="campo" id="campo" class="form-select" style="width: 200px;" onchange="atualizarCampo()">
+                    {% for campo in campos %}
+                        {% if campo != 'usuario' %}
+                            <option value="{{ campo }}" {% if campo == campo_escolhido %}selected{% endif %}>{{ campo }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                
+                <input type="text" id="valor" name="{{ campo_escolhido }}" value="{{ request.GET|dict_get:campo_escolhido }}" class="form-control" autocomplete="off" placeholder="Pesquise por...">
+                
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Buscar <i class="bi bi-search"></i></button>
+                <a href="{% rota_objeto_listas nome_modelo_lista %}" class="btn btn-outline-secondary">Limpar <i class="bi bi-arrow-clockwise"></i></a>
+            </div>
             
-            <button type="submit">Buscar{{valor}}</button>
-            <a href="{% rota_objeto_listas nome_modelo_lista %}">Limpar</a>
         </form>
 
         <div class="overflow-auto pt-2">
             <!-- <input type="text" id="buscaGlobal" class="form-control mb-3 shadow-sm" placeholder="Buscar na tabela..."> -->
-            <table class="table table-hover table-bordered align-middle text-center" id="tabela">
+            <table class="table table-hover table-bordered align-middle text-center shadow-sm" id="tabela">
                 <thead>
                     <tr>
                     
@@ -76,8 +87,8 @@
                                 text-align: center;
                                 border-left: none; /* remove a borda que causa o efeito fixo */
                                 box-shadow: -1px 0 0 #dee2e6; /* simula a borda esquerda */">
-                                <a href="{% rota_objeto 'atualizar' object %}" class="btn btn-warning">Editar</a> 
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal{{ object.pk }}">Excluir</button>
+                                <a href="{% rota_objeto 'atualizar' object %}" class="btn btn-warning" title="Editar"><i class="bi bi-pencil-square"></i></a> 
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal{{ object.pk }}" title="Excluir"><i class="bi bi-trash"></i></button>
                                 
                                    
                         </td>
@@ -104,10 +115,14 @@
                                 </div>
                 </tbody>
                 {% empty %}
-                    <tr>
-                        <td>Nenhum campo registrado</td>
-                         <!-- colspan="3" -->
-                    </tr>
+                    </tbody>
+                    </table>
+                    <div class="text-center text-muted mt-4">
+                        <i class="bi bi-info-circle" style="font-size: 1.5rem;"></i>
+                        <p class="mt-2 fs-5">Nenhum campo encontrado</p>
+                    </div>
+                    
+                    
                 {% endfor %}
 
             </table>
