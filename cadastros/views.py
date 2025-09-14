@@ -16,7 +16,7 @@ from django.shortcuts import get_object_or_404
 
 from django.shortcuts import redirect
 
-
+from django.db.models import CharField, TextField
 # Create your views here.
 
 # Create
@@ -156,17 +156,33 @@ class CategoriaList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        
-        txt_nome = self.request.GET.get('nome')
+        campo_escolhido = self.request.GET.get('campo')
+        valor = self.request.GET.get(campo_escolhido)  # valor digitado no input
 
-        if txt_nome is None:
+        if valor is None:
             categorias = Categoria.objects.all()
         else:
-            categorias = Categoria.objects.filter(nome__icontains=txt_nome)
+            filtro = {f"{campo_escolhido}__icontains": valor}
+            categorias = Categoria.objects.filter(**filtro)
 
+        
         return categorias
 
 
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+
+        campos = [field.name for field in self.model._meta.fields]
+
+        campo_escolhido = self.request.GET.get('campo')
+        
+        context['campo_escolhido'] = campo_escolhido
+        context['campos'] = campos
+        context['nome_modelo_lista'] = 'categorias'
+        return context
 
 
 
@@ -186,15 +202,30 @@ class PerfilList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         return super().dispatch(request, *args, **kwargs)
     
     def get_queryset(self):
-        
-        txt_nome = self.request.GET.get('nome')
+        campo_escolhido = self.request.GET.get('campo')
+        valor = self.request.GET.get(campo_escolhido)  # valor digitado no input
 
-        if txt_nome is None:
+        if valor is None:
             perfis = Perfil.objects.all()
         else:
-            perfis = Perfil.objects.filter(nome_completo__icontains=txt_nome)
+            filtro = {f"{campo_escolhido}__icontains": valor}
+            perfis = Perfil.objects.filter(**filtro)
 
+        
         return perfis
+    
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+        campos = [field.name for field in self.model._meta.fields]
+
+
+        campo_escolhido = self.request.GET.get('campo')
+        
+        context['campo_escolhido'] = campo_escolhido
+        context['campos'] = campos
+        context['nome_modelo_lista'] = 'usuarios'
+        return context
 
 class ProdutoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
 
@@ -210,3 +241,30 @@ class ProdutoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         if not request.user.groups.filter(name='administrador').exists():
             return redirect('acesso-negado')  # ou 'acesso-negado'
         return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        campo_escolhido = self.request.GET.get('campo')
+        valor = self.request.GET.get(campo_escolhido)  # valor digitado no input
+
+        if valor is None:
+            produtos = Produto.objects.all()
+        else:
+            filtro = {f"{campo_escolhido}__icontains": valor}
+            produtos = Produto.objects.filter(**filtro)
+
+        
+        return produtos
+    
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+        campos = [field.name for field in self.model._meta.fields]
+        
+        campo_escolhido = self.request.GET.get('campo')
+        
+
+        context['campo_escolhido'] = campo_escolhido
+        context['campos'] = campos
+        context['nome_modelo_lista'] = 'produtos'
+        return context

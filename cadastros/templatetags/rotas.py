@@ -12,8 +12,7 @@ def rota_objeto(acao, objeto):
     return reverse(nome_rota, args=[objeto.pk])
 
 @register.simple_tag
-def rota_objeto_listas(acao, objeto):
+def rota_objeto_listas(nome_modelo):
     
-    nome_modelo = objeto.__class__.__name__.lower()
-    nome_rota = f"{acao}-{nome_modelo}s"
+    nome_rota = f"listar-{nome_modelo}"
     return reverse(nome_rota)
