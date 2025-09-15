@@ -30,17 +30,32 @@
 
 {% block scripts %}
     <script src="{% static 'js/jquery.mask.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const precoInput = document.getElementById('id_preco');
+            if (precoInput) {
+                precoInput.setAttribute('type', 'text');
+            }
+        });
         $(document).ready(function(){
             $('#id_cpf').mask("000.000.000-00");
             $('#id_telefone').mask("(00) 00000-0000");
             $('#id_cep').mask("00000-000");
-
-
-
         });
-        
+
+        var cleave = new Cleave('#id_preco', {
+            numeral: true,
+            numeralThousandsGroupStyle: 'thousand',
+            numeralDecimalMark: ',',
+            delimiter: '.',
+            numeralDecimalScale: 2
+        });
+        $('form').on('submit', function() {
+            let preco = $('#id_preco').val().replace(/\./g, '').replace(',', '.');
+            $('#id_preco').val(preco);
+        });
     </script>
     
 

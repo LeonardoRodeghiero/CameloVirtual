@@ -82,7 +82,12 @@ class CategoriaUpdate(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
         if not request.user.groups.filter(name='administrador').exists():
             return redirect('acesso-negado')  # ou 'acesso-negado'
         return super().dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
+        context['titulo_form'] = "Edite a Categoria"
+        return context
 
 class ProdutoUpdate(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
 
@@ -100,7 +105,11 @@ class ProdutoUpdate(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
             return redirect('acesso-negado')  # ou 'acesso-negado'
         return super().dispatch(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
+        context['titulo_form'] = "Edite o Produto"
+        return context
 # Delete
 
 class CategoriaDelete(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
