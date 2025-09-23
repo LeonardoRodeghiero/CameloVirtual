@@ -9,7 +9,9 @@
 {% block conteudo %}
 
 <div class="col-4 mx-auto">
-    <h1>{{ titulo_form }}</h1>
+    {% block titulo %}
+        <h1>{{ titulo_form }}</h1>
+    {% endblock %}
 
     <hr>
     <form action="" method="post" enctype="multipart/form-data">
