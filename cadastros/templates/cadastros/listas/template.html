@@ -1,228 +1,150 @@
 {% extends 'paginas/index.html' %}
-
 {% load rotas %}
-
 {% load custom_filters %}
-
 {% load static %}
 
 {% block conteudo %}
-
-
-
-
-<div class="d-flex justify-content-center">
-    
+<div class="container">
+  <div class="row justify-content-center">
     <div class="col-12">
-        <h2 class="pt-2">
-            
-            {% block titulo_botao %}
 
-            {% endblock %}
+      <h2 class="pt-2">
+        {% block titulo_botao %}{% endblock %}
+      </h2>
+      <hr class="p-1">
 
-        </h2>
-        <hr class="p-1">
-
-        
-
-        <form method="get" class="p-3 border rounded bg-light shadow-sm">
-            <div class="d-flex align-items-center mb-3 gap-4">
-                <label for="campo" class="form-label">Atributo escolhido:</label>
-                <select name="campo" id="campo" class="form-select" style="width: 200px;" onchange="atualizarCampo()">
-                    {% for campo in campos %}
-                        {% if campo != 'usuario' %}
-                            <option value="{{ campo }}" {% if campo == campo_escolhido %}selected{% endif %}>{{ campo }}</option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="mb-3">
-                
-                <input type="text" id="valor" name="{{ campo_escolhido }}" value="{{ request.GET|dict_get:campo_escolhido }}" class="form-control" autocomplete="off" placeholder="Pesquise por...">
-                
-            </div>
-
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary">Buscar <i class="bi bi-search"></i></button>
-                <a href="{% rota_objeto_listas nome_modelo_lista %}" class="btn btn-outline-secondary">Limpar <i class="bi bi-arrow-clockwise"></i></a>
-            </div>
-            
-        </form>
-
-        <div class="overflow-auto pt-2">
-            <!-- <input type="text" id="buscaGlobal" class="form-control mb-3 shadow-sm" placeholder="Buscar na tabela..."> -->
-            <table class="table table-hover table-bordered align-middle text-center shadow-sm" id="tabela">
-                <thead>
-                    <tr>
-                    
-                        {% block cabecalho %}
-                        
-                        {% endblock %}
-                        <th style=" position: sticky;
-                                right: 0;
-                                background-color: #d3d3d3; /* evita sobreposição visual */
-                                z-index: 2; /* garante que fique acima das outras células */
-                                min-width: 120px; /* largura mínima para os botões */
-                                text-align: center;
-                                border-left: none; /* remove a borda que causa o efeito fixo */
-                                box-shadow: -1px 0 0 #dee2e6; /* simula a borda esquerda */">
-                                Opções</th>
-                    </tr>
-                </thead>
-                    
-
-                {% for object in object_list %}
-                <tbody>
-                    <tr>
-                    
-                        {% block conteudo_tabela %}
-                        
-                        {% endblock%}
-                        <td style="position: sticky;
-                                right: 0;
-                                background-color: #f8f9fa;
-                                z-index: 2;
-                                min-width: 120px;
-                                text-align: center;
-                                border-left: none; /* remove a borda que causa o efeito fixo */
-                                box-shadow: -1px 0 0 #dee2e6; /* simula a borda esquerda */">
-                                <a href="{% rota_objeto 'atualizar' object %}" class="btn btn-warning" title="Editar"><i class="bi bi-pencil-square"></i></a> 
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal{{ object.pk }}" title="Excluir"><i class="bi bi-trash"></i></button>
-                                
-                                   
-                        </td>
-                    </tr>
-                            <div class="modal fade" id="confirmModal{{ object.pk }}" tabindex="-1" aria-labelledby="confirmModalLabel{{ object.pk }}" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                        <form method="post" action="{% rota_objeto 'excluir' object %}">
-                                            {% csrf_token %}
-                                            <div class="modal-header">
-                                            <h5 class="modal-title" id="confirmModalLabel{{ object.pk }}">Confirmar exclusão</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                            Tem certeza que deseja excluir <strong>{{ object }}</strong>?
-                                            </div>
-                                            <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                            <button type="submit" class="btn btn-danger">Excluir</button>
-                                            </div>
-                                        </form>
-                                        </div>
-                                    </div>
-                                </div>
-                </tbody>
-                {% empty %}
-                    </tbody>
-                    </table>
-                    <div class="text-center text-muted mt-4">
-                        <p class="mt-2 fs-5">Nenhum campo encontrado</p>
-                    </div>
-                    
-                    
-                {% endfor %}
-
-            </table>
-            
-
-
+      <!-- Formulário de busca -->
+      <form method="get" class="p-3 border rounded bg-light shadow-sm">
+        <div class="d-flex align-items-center mb-3 gap-4">
+          <label for="campo" class="form-label">Atributo escolhido:</label>
+          <select name="campo" id="campo" class="form-select" style="width: 200px;" onchange="atualizarCampo()">
+            {% for campo in campos %}
+              {% if campo != 'usuario' %}
+                <option value="{{ campo }}" {% if campo == campo_escolhido %}selected{% endif %}>{{ campo }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
         </div>
-        <div class="d-flex justify-content-center mt-4">
-                <ul class="pagination justify-content-center">
 
-                    
+        <div class="mb-3">
+          <input type="text" id="valor" name="{{ campo_escolhido }}" value="{{ request.GET|dict_get:campo_escolhido }}" class="form-control" autocomplete="off" placeholder="Pesquise por...">
+        </div>
 
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">Buscar <i class="bi bi-search"></i></button>
+          <a href="{% rota_objeto_listas nome_modelo_lista %}" class="btn btn-outline-secondary">Limpar <i class="bi bi-arrow-clockwise"></i></a>
+        </div>
+      </form>
 
+      <!-- Tabela responsiva -->
+      <div class="table-responsive pt-2">
+        <table class="table table-hover table-bordered align-middle text-center shadow-sm" id="tabela">
+          <thead>
+            <tr>
+              {% block cabecalho %}{% endblock %}
+              <th style="position: sticky; right: 0; background-color: #d3d3d3; z-index: 2; min-width: 120px; text-align: center; border-left: none; box-shadow: -1px 0 0 #dee2e6;">
+                Opções
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for object in object_list %}
+              <tr>
+                {% block conteudo_tabela %}{% endblock %}
+                <td style="position: sticky; right: 0; background-color: #f8f9fa; z-index: 2; min-width: 120px; text-align: center; border-left: none; box-shadow: -1px 0 0 #dee2e6;">
+                  <a href="{% rota_objeto 'atualizar' object %}" class="btn btn-warning" title="Editar"><i class="bi bi-pencil-square"></i></a>
+                  <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal{{ object.pk }}" title="Excluir"><i class="bi bi-trash"></i></button>
+                </td>
+              </tr>
 
-                    {% if page_obj.has_previous %}
+              <!-- Modal de confirmação -->
+              <div class="modal fade" id="confirmModal{{ object.pk }}" tabindex="-1" aria-labelledby="confirmModalLabel{{ object.pk }}" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <form method="post" action="{% rota_objeto 'excluir' object %}">
+                      {% csrf_token %}
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="confirmModalLabel{{ object.pk }}">Confirmar exclusão</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                      </div>
+                      <div class="modal-body">
+                        Tem certeza que deseja excluir <strong>{{ object }}</strong>?
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Excluir</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            {% empty %}
+              <tr>
+                <td colspan="100%" class="text-center text-muted fs-5 py-4">Nenhum campo encontrado</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
 
-                        {% if request.GET|dict_get:campo_escolhido %}
-                            <li class="page-item">
-                                <a class="page-link" href="{% querystring request page=page_obj.previous_page_number %}">Anterior</a>
-                            </li>
-                        {% else %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
-                            </li>
-                        {% endif %}
+      <!-- Paginação -->
+      <div class="d-flex justify-content-center mt-4">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="{% querystring request page=page_obj.previous_page_number %}">Anterior</a>
+            </li>
+          {% endif %}
+          <li class="page-item active">
+            <span class="page-link">{{ page_obj.number }}</span>
+          </li>
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="{% querystring request page=page_obj.next_page_number %}">Próxima</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
 
-                        
-                    {% endif %}
-
-                    <li class="page-item active">
-                        <span class="page-link">{{ page_obj.number }}</span>
-                    </li>
-
-                    {% if page_obj.has_next %}
-
-                        {% if request.GET|dict_get:campo_escolhido %}
-                            <li class="page-item">
-                                <a class="page-link" href="{% querystring request page=page_obj.next_page_number %}">Próxima</a>
-                            </li>
-                        {% else %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Próxima</a>
-                            </li>
-                        {% endif %}
-
-
-                        
-                    {% endif %}
-                </ul>
-            </div>
     </div>
+  </div>
 </div>
-
-
-{% block scripts %}
-    <script src="{% static 'js/jquery.mask.min.js' %}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
-
-
-    <script>
-        function atualizarCampo() {
-        var select = document.getElementById('campo');
-        var input = document.getElementById('valor');
-        var valorSelecionado = select.value;
-
-        input.name = valorSelecionado;
-
-        $('#valor').unmask();
-
-        switch (valorSelecionado) {
-        case 'cpf':
-            $('#valor').mask('000.000.000-00');
-            break;
-        case 'telefone':
-            $('#valor').mask('(00) 00000-0000');
-            break;
-        case 'cep':
-            $('#valor').mask('00000-000');
-            break;
-        default:
-            break;
-        }
-
-        if(valorSelecionado == 'preco'){
-            $('form').on('submit', function() {
-                let preco = $('#valor').val().replace(/\./g, '').replace(',', '.');
-                $('#valor').val(preco);
-            });
-            
-        }
-    }
-    
-
-    $(document).ready(function(){
-        atualizarCampo(); 
-    });
-
-
-    </script>
-
 {% endblock %}
 
+{% block scripts %}
+<script src="{% static 'js/jquery.mask.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
+<script>
+  function atualizarCampo() {
+    var select = document.getElementById('campo');
+    var input = document.getElementById('valor');
+    var valorSelecionado = select.value;
 
+    input.name = valorSelecionado;
+    $('#valor').unmask();
+
+    switch (valorSelecionado) {
+      case 'cpf':
+        $('#valor').mask('000.000.000-00');
+        break;
+      case 'telefone':
+        $('#valor').mask('(00) 00000-0000');
+        break;
+      case 'cep':
+        $('#valor').mask('00000-000');
+        break;
+    }
+
+    if (valorSelecionado == 'preco') {
+      $('form').on('submit', function () {
+        let preco = $('#valor').val().replace(/\./g, '').replace(',', '.');
+        $('#valor').val(preco);
+      });
+    }
+  }
+
+  $(document).ready(function () {
+    atualizarCampo();
+  });
+</script>
 {% endblock %}

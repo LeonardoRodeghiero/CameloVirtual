@@ -3,5 +3,5 @@ from .views import IndexView, AcessoNegadoView, ClienteProdutoList
 urlpatterns = [
     path('', IndexView.as_view(), name="index"),
     path('sem-permissao/', AcessoNegadoView.as_view(), name="acesso-negado"),
-    path('produto/', ClienteProdutoList.as_view(), name="produtos"),
+    path('produtos/', ClienteProdutoList.as_view(), name="produtos"),
 ]
