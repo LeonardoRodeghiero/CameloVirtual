@@ -2,6 +2,7 @@ from django.views.generic import TemplateView
 
 from cadastros.views import Produto
 from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 
 # Create your views here.
 
@@ -34,5 +35,8 @@ class ClienteProdutoList(ListView):
 
         return self.object_list
     
+class ProdutoEspecifico(DetailView):
+    model = Produto
+    template_name = 'paginas/produto.html'
 
     

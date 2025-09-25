@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import IndexView, AcessoNegadoView, ClienteProdutoList
+from .views import IndexView, AcessoNegadoView, ClienteProdutoList, ProdutoEspecifico
 urlpatterns = [
     path('', IndexView.as_view(), name="index"),
     path('sem-permissao/', AcessoNegadoView.as_view(), name="acesso-negado"),
     path('produtos/', ClienteProdutoList.as_view(), name="produtos"),
+    path('produto/<int:pk>/', ProdutoEspecifico.as_view(), name="produto"),
 ]

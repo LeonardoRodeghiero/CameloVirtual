@@ -1,37 +1,53 @@
 {% extends 'paginas/index.html' %}
 
 {% block conteudo %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+        <form class="mb-4" action="{% url 'produtos' %}" method="get">
+            <div class="input-group">
+            <input type="text" name="nome" id="nome" class="form-control" placeholder="Procure por um produto..." value="{{ request.GET.nome }}" autocomplete="off">
+            <button class="btn" type="submit" style="background-color: var(--preto); color: white;">
+                <i class="bi bi-search"></i> Buscar
+            </button>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
 <div class="container mt-4">
   {% for object in object_list %}
-  <div class="row justify-content-center">
-    <div class="col-md-8">
-      <div class="card mb-3 shadow-sm">
-        <div class="row g-0">
-          {% if object.imagem %}
-          <div class="col-md-4">
-            <img src="{{ object.imagem.url }}" class="img-fluid rounded-start" alt="{{ object.nome }}">
-          </div>
-          {% endif %}
-          <div class="col-md-8">
-            <div class="card-body">
-              <h5 class="card-title">{{ object.nome }} {{ object.marca }}</h5>
-              <p class="card-text">{{ object.descricao|truncatewords:25 }}</p>
-              <p class="card-text">R$ {{ object.preco }}</p>
-                {% for i in "12345" %}
-                    {% if forloop.counter <= object.avaliacao|floatformat:0 %}
-                        <i class="bi bi-star-fill text-warning"></i>
-                    {% elif forloop.counter == object.avaliacao|floatformat:0|add:"1" and object.avaliacao|floatformat:1|slice:"-1" == "5" %}
-                        <i class="bi bi-star-half text-warning"></i>
-                    {% else %}
-                        <i class="bi bi-star text-warning"></i>
-                    {% endif %}
-                {% endfor %}
+    <a href="{% url 'produto' object.pk %}" style="text-decoration: none;">
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="card mb-3 shadow-sm">
+            <div class="row g-0">
+              {% if object.imagem %}
+              <div class="col-md-4">
+                <img src="{{ object.imagem.url }}" class="img-fluid rounded-start" alt="{{ object.nome }}">
+              </div>
+              {% endif %}
+              <div class="col-md-8">
+                <div class="card-body">
+                  <h5 class="card-title">{{ object.nome }} {{ object.marca }}</h5>
+                  <p class="card-text">{{ object.descricao|truncatewords:25 }}</p>
+                  <p class="card-text">R$ {{ object.preco }}</p>
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= object.avaliacao|floatformat:0 %}
+                            <i class="bi bi-star-fill text-warning"></i>
+                        {% elif forloop.counter == object.avaliacao|floatformat:0|add:"1" and object.avaliacao|floatformat:1|slice:"-1" == "5" %}
+                            <i class="bi bi-star-half text-warning"></i>
+                        {% else %}
+                            <i class="bi bi-star text-warning"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </a>
   {% endfor %}
 </div>
 
