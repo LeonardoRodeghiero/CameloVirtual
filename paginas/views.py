@@ -39,4 +39,6 @@ class ProdutoEspecifico(DetailView):
     model = Produto
     template_name = 'paginas/produto.html'
 
-    
+
+class VerCarrinho(TemplateView):
+    template_name = 'paginas/ver_carrinho.html'

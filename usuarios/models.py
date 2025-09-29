@@ -17,7 +17,7 @@ class Perfil(models.Model):
     cep = models.CharField(max_length=9, null=True, blank=True)
 
 
-    usuario = models.OneToOneField(User, on_delete=models.PROTECT)
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE)
 
 
     def __str__(self):

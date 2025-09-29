@@ -1,7 +1,8 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
+from django.views import View
 
-from .models import Categoria, Produto
+from .models import Categoria, Produto, Carrinho, Carrinho_Produto
 
 from usuarios.models import Perfil
 
@@ -64,6 +65,31 @@ class ProdutoCreate(GroupRequiredMixin, LoginRequiredMixin, CreateView):
 
         context['titulo_form'] = "Cadastre o Produto"
         return context
+
+class CarrinhoCreate(View):
+    def get(self, request, *args, **kwargs):
+        # Cria o carrinho se não existir
+        Carrinho.objects.get_or_create(usuario=request.user)
+
+        produto_id = kwargs['produto_id']
+        return redirect('adicionar-produto-carrinho', produto_id=produto_id)
+    
+class CarrinhoProdutoCreate(View):
+    def get(self, request, *args, **kwargs):
+        produto = get_object_or_404(Produto, id=kwargs['produto_id'])
+        carrinho = Carrinho.objects.get(usuario=request.user)
+
+        item, criado = Carrinho_Produto.objects.get_or_create(
+            carrinho=carrinho,
+            produto=produto,
+            defaults={'quantidade': 1}
+        )
+
+        if not criado:
+            item.quantidade += 1
+            item.save()
+        
+        return redirect('ver-carrinho')
 
 # Update
 class CategoriaUpdate(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
