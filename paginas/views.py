@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView
 
-from cadastros.views import Produto
+from cadastros.views import Produto, Carrinho_Produto, Carrinho
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
@@ -40,5 +40,17 @@ class ProdutoEspecifico(DetailView):
     template_name = 'paginas/produto.html'
 
 
-class VerCarrinho(TemplateView):
+class VerCarrinho(ListView):
+    model = Carrinho_Produto
     template_name = 'paginas/ver_carrinho.html'
+    context_object_name = 'itens'
+
+    def get_queryset(self):
+        carrinho = Carrinho.objects.get(usuario=self.request.user)
+        return Carrinho_Produto.objects.filter(carrinho=carrinho)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) 
+        total = sum(item.produto.preco * item.quantidade for item in context['itens'])
+        context['total'] = total
+        return context

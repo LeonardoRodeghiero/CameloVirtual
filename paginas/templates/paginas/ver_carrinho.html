@@ -1,5 +1,33 @@
 {% extends 'paginas/index.html' %}
 
 {% block conteudo %}
-aaaaa
+    <div class="container mt-4">
+        {% for object in object_list %}
+            <a href="{% url 'produto' object.produto.pk %}" style="text-decoration: none;">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card mb-3 shadow-sm">
+                            <div class="row g-0">
+                            {% if object.produto.imagem %}
+                            <div class="col-md-4">
+                                <img src="{{ object.produto.imagem.url }}" class="img-fluid rounded-start" alt="{{ object.produto.nome }}">
+                            </div>
+                            {% endif %}
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                <h5 class="card-title">{{ object.produto.nome }} {{ object.produto.marca }}</h5>
+                                <p class="card-text">{{ object.produto.descricao|truncatewords:25 }}</p>
+                                <p class="card-text">R$ {{ object.produto.preco }}</p> 
+                                <p class="card-text">Quantidade: {{ object.quantidade }}</p> 
+
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+    Valor total: R$ {{ total }}
 {% endblock %}

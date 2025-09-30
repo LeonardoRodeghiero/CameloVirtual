@@ -66,7 +66,7 @@ class ProdutoCreate(GroupRequiredMixin, LoginRequiredMixin, CreateView):
         context['titulo_form'] = "Cadastre o Produto"
         return context
 
-class CarrinhoCreate(View):
+class CarrinhoCreate(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         # Cria o carrinho se não existir
         Carrinho.objects.get_or_create(usuario=request.user)
@@ -74,7 +74,7 @@ class CarrinhoCreate(View):
         produto_id = kwargs['produto_id']
         return redirect('adicionar-produto-carrinho', produto_id=produto_id)
     
-class CarrinhoProdutoCreate(View):
+class CarrinhoProdutoCreate(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         produto = get_object_or_404(Produto, id=kwargs['produto_id'])
         carrinho = Carrinho.objects.get(usuario=request.user)
@@ -90,6 +90,7 @@ class CarrinhoProdutoCreate(View):
             item.save()
         
         return redirect('ver-carrinho')
+
 
 # Update
 class CategoriaUpdate(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
