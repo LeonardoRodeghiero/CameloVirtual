@@ -27,7 +27,20 @@
                     </div>
                 </div>
             </a>
+        {% empty %}
+        <div class="alert alert-info d-flex align-items-center justify-content-between" role="alert">
+            <div>
+            <i class="bi bi-cart-x-fill me-2" style="font-size: 1.5rem;"></i>
+            <strong>Você ainda não possui um carrinho ativo.</strong> Adicione produtos para começar!
+            </div>
+        </div>
+            <div class="text-center">
+                <a href="{% url 'index' %}" class="btn btn-primary">Procure Por Produtos Na Tela Inicial!</a>
+            </div>
+
         {% endfor %}
     </div>
-    Valor total: R$ {{ total }}
+    {% if object_list %}
+        Valor total: R$ {{ total }}
+    {% endif %}
 {% endblock %}

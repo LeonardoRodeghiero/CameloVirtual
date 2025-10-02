@@ -46,9 +46,14 @@ class VerCarrinho(ListView):
     context_object_name = 'itens'
 
     def get_queryset(self):
-        carrinho = Carrinho.objects.get(usuario=self.request.user)
-        return Carrinho_Produto.objects.filter(carrinho=carrinho)
-    
+        carrinho = Carrinho.objects.filter(usuario=self.request.user)
+
+        if carrinho.exists():
+            carrinho = Carrinho.objects.get(usuario=self.request.user)
+            return Carrinho_Produto.objects.filter(carrinho=carrinho)
+        else:
+            return Carrinho_Produto.objects.none()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs) 
         total = sum(item.produto.preco * item.quantidade for item in context['itens'])

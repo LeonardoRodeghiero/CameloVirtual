@@ -4,9 +4,9 @@ from .views import CategoriaCreate, ProdutoCreate, CarrinhoCreate, CarrinhoProdu
 
 from .views import CategoriaUpdate, ProdutoUpdate
 
-from .views import CategoriaDelete, ProdutoDelete
+from .views import CategoriaDelete, ProdutoDelete, CarrinhoDelete
 
-from .views import CategoriaList, PerfilList, ProdutoList
+from .views import CategoriaList, PerfilList, ProdutoList, CarrinhoList
 
 urlpatterns = [
     
@@ -20,9 +20,11 @@ urlpatterns = [
 
     path('excluir/categoria/<int:pk>/', CategoriaDelete.as_view(), name="excluir-categoria"),
     path('excluir/produto/<int:pk>/', ProdutoDelete.as_view(), name="excluir-produto"),
+    path('excluir/carrinho/<int:pk>/', CarrinhoDelete.as_view(), name="excluir-carrinho"),
 
 
     path('listar/categorias/', CategoriaList.as_view(), name="listar-categorias"),
     path('listar/usuarios/', PerfilList.as_view(), name="listar-usuarios"),
     path('listar/produtos/', ProdutoList.as_view(), name="listar-produtos"),
+    path('listar/carrinhos/', CarrinhoList.as_view(), name="listar-carrinhos"),
 ]

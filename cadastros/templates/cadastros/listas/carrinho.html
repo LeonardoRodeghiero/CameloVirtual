@@ -1,0 +1,41 @@
+{% extends 'cadastros/listas/template.html' %}
+
+{% block titulo_botao %}
+    
+<div class="d-flex">
+  <div>Carrinhos</div>
+</div>
+
+{% endblock %}
+
+
+{% block cabecalho %}
+    <th>id</th>
+    <th>usuário</th>
+    <th>Criado em:</th>
+    <th>Atualizado em:</th>
+    <th>Produtos</th>
+{% endblock%}
+
+
+{% block editar_proibido %}
+
+{% endblock %}
+
+
+{% block conteudo_tabela %}
+    <td>{{object.pk}}</td>
+    <td>{{object.usuario}}</td>
+    <td>{{object.criado_em}}</td>
+    <td>{{object.atualizado_em}}</td>
+    <td>
+        <ul>
+            {% for item in object.produtos.all %}
+                <li class="pb-2">{{ item.produto.nome }} {{ item.produto.marca }} (R${{ item.produto.preco}})</li>
+                
+            {% empty %}
+                <li>Nenhum produto</li>
+            {% endfor %}
+        </ul>
+    </td>
+{% endblock %}

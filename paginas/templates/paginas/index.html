@@ -177,7 +177,7 @@
                     {% else %}
                         <li><a class="dropdown-item" href="{% url 'atualizar-perfil' request.user.perfil.pk %}">Meu Perfil</a></li>
                         <li><a class="dropdown-item" href="#">Histórico de Pedidos</a></li>
-                        <li><a class="dropdown-item" href="#">Meu Carrinho</a></li>
+                        <li><a class="dropdown-item" href="{% url 'ver-carrinho' %}">Meu Carrinho</a></li>
                     {% endif %}
 
                     <li><hr class="dropdown-divider"></li>
@@ -239,7 +239,7 @@
                 {% else %}
                     <li><a class="dropdown-item" href="{% url 'atualizar-perfil' request.user.perfil.pk %}">Meu Perfil</a></li>
                     <li><a class="dropdown-item" href="#">Histórico de Pedidos</a></li>
-                    <li><a class="dropdown-item" href="#">Meu Carrinho</a></li>
+                    <li><a class="dropdown-item" href="{% url 'ver-carrinho' %}">Meu Carrinho</a></li>
                 {% endif %}
 
                 <li><hr class="dropdown-divider"></li>

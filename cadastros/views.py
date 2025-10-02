@@ -173,6 +173,22 @@ class ProdutoDelete(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
             return redirect('acesso-negado')  # ou 'acesso-negado'
         return super().dispatch(request, *args, **kwargs)
 
+class CarrinhoDelete(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
+
+    login_url = reverse_lazy('login')
+
+    group_required = u"administrador"
+
+    model = Carrinho
+    success_url = reverse_lazy('listar-carrinhos')
+
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')  # ou sua URL personalizada de login
+        if not request.user.groups.filter(name='administrador').exists():
+            return redirect('acesso-negado')  # ou 'acesso-negado'
+        return super().dispatch(request, *args, **kwargs)
 
 # List
 class CategoriaList(GroupRequiredMixin, LoginRequiredMixin, ListView):
@@ -303,4 +319,47 @@ class ProdutoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         context['campo_escolhido'] = campo_escolhido
         context['campos'] = campos
         context['nome_modelo_lista'] = 'produtos'
+        return context
+
+class CarrinhoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
+
+    group_required = u"administrador"
+
+    model = Carrinho
+    template_name = 'cadastros/listas/carrinho.html'
+
+    paginate_by = 10
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')  # ou sua URL personalizada de login
+        if not request.user.groups.filter(name='administrador').exists():
+            return redirect('acesso-negado')  # ou 'acesso-negado'
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        campo_escolhido = self.request.GET.get('campo')
+        valor = self.request.GET.get(campo_escolhido)  # valor digitado no input
+
+        if valor is None:
+            carrinhos = Carrinho.objects.all()
+        else:
+            filtro = {f"{campo_escolhido}__icontains": valor}
+            carrinhos = Carrinho.objects.filter(**filtro)
+
+        
+        return carrinhos
+    
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+
+        campos = [field.name for field in self.model._meta.fields]
+
+        campo_escolhido = self.request.GET.get('campo')
+        
+        context['campo_escolhido'] = campo_escolhido
+        context['campos'] = campos
+        context['nome_modelo_lista'] = 'categorias'
         return context

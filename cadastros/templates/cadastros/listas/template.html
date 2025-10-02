@@ -50,11 +50,17 @@
           <tbody>
             {% for object in object_list %}
               <tr>
-                {% block conteudo_tabela %}{% endblock %}
+                {% block conteudo_tabela %}
+                
+                {% endblock %}
+                
                 <td style="position: sticky; right: 0; background-color: #f8f9fa; z-index: 2; min-width: 120px; text-align: center; border-left: none; box-shadow: -1px 0 0 #dee2e6;">
-                  <a href="{% rota_objeto 'atualizar' object %}" class="btn btn-warning" title="Editar"><i class="bi bi-pencil-square"></i></a>
+                  {% block editar_proibido %}
+                    <a href="{% rota_objeto 'atualizar' object %}" class="btn btn-warning" title="Editar"><i class="bi bi-pencil-square"></i></a>
+                  {% endblock %}
                   <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal{{ object.pk }}" title="Excluir"><i class="bi bi-trash"></i></button>
                 </td>
+                
               </tr>
 
               <!-- Modal de confirmação -->
