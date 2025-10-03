@@ -2,6 +2,10 @@
 
 {% block conteudo %}
     <div class="container mt-4">
+        {% if object_list %}
+        <h1>Seu Carrinho <i class="bi bi-cart-fill me-2" style="font-size: 1.5rem;"></i></h1>
+        <hr>
+        {% endif %}
         {% for object in object_list %}
             <a href="{% url 'produto' object.produto.pk %}" style="text-decoration: none;">
                 <div class="row justify-content-center">
@@ -18,9 +22,45 @@
                                 <h5 class="card-title">{{ object.produto.nome }} {{ object.produto.marca }}</h5>
                                 <p class="card-text">{{ object.produto.descricao|truncatewords:25 }}</p>
                                 <p class="card-text">R$ {{ object.produto.preco }}</p> 
-                                <p class="card-text">Quantidade: {{ object.quantidade }}</p> 
+                                <!-- <div class="d-flex align-items-center">
+                                    <p class="card-text mb-0 me-2 fw-semibold">Quantidade:</p>
 
+                                    <div class="d-inline-flex align-items-center border rounded-pill shadow-sm bg-white px-2 py-1" style="min-width: 130px;">
+                                        <form action="{% url 'alterar-quantidade' object.id 'diminuir' %}" method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-secondary btn-sm rounded-circle me-2" style="width: 32px; height: 32px; padding: 0;">
+                                                <i class="bi bi-dash"></i>
+                                            </button>
+                                        </form>
+
+                                        <div class="fw-bold text-dark mx-2" style="min-width: 30px; text-align: center;">
+                                            {{ object.quantidade }}
+                                        </div>
+
+                                        <form action="{% url 'alterar-quantidade' object.id 'incrementar' %}" method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-secondary btn-sm rounded-circle ms-2" style="width: 32px; height: 32px; padding: 0;">
+                                                <i class="bi bi-plus"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div> -->
+                            <div class="d-inline-flex align-items-center border rounded-pill shadow-sm bg-white px-2 py-1" style="min-width: 130px;">
+                                <button type="button" class="btn btn-outline-secondary btn-sm rounded-circle me-2 alterar-quantidade" data-id="{{ object.pk }}" data-acao="diminuir" style="width: 32px; height: 32px; padding: 0;">
+                                    <i class="bi bi-dash" style="font-size: 1.4rem; line-height: 32px;"></i>
+                                </button>
+
+                                <div class="fw-bold text-dark mx-2 quantidade-display" style="min-width: 30px; text-align: center;">
+                                    {{ object.quantidade }}
                                 </div>
+
+                                <button type="button" class="btn btn-outline-secondary btn-sm rounded-circle ms-2 alterar-quantidade" data-id="{{ object.pk }}" data-acao="incrementar" style="width: 32px; height: 32px; padding: 0;">
+                                    <i class="bi bi-plus" style="font-size: 1.4rem; line-height: 32px;"></i>
+                                </button>
+                            </div>
+
+                                
+                            </div>
                             </div>
                             </div>
                         </div>
@@ -43,4 +83,36 @@
     {% if object_list %}
         Valor total: R$ {{ total }}
     {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.querySelectorAll('.alterar-quantidade').forEach(botao => {
+    botao.addEventListener('click', function (event) {
+        event.preventDefault();      // impede comportamento padrão
+        event.stopPropagation();     // impede que o clique suba para o <a>
+
+        const produtoId = this.dataset.id;
+        const acao = this.dataset.acao;
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch(`/carrinho/alterar/${produtoId}/${acao}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const display = this.parentElement.querySelector('.quantidade-display');
+            display.textContent = data.quantidade;
+        })
+        .catch(error => console.error('Erro ao atualizar quantidade:', error));
+    });
+});
+
+</script>
+
+
 {% endblock %}

@@ -75,6 +75,24 @@ class CarrinhoCreate(LoginRequiredMixin, View):
         return redirect('adicionar-produto-carrinho', produto_id=produto_id)
     
 class CarrinhoProdutoCreate(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        produto = get_object_or_404(Produto, id=kwargs['produto_id'])
+        carrinho, _ = Carrinho.objects.get_or_create(usuario=request.user)
+
+        quantidade = int(request.POST.get('quantidade', 1))
+
+        item, criado = Carrinho_Produto.objects.get_or_create(
+            carrinho=carrinho,
+            produto=produto,
+            defaults={'quantidade': quantidade}
+        )
+
+        if not criado:
+            item.quantidade += quantidade
+            item.save()
+
+        return redirect('ver-carrinho')
+
     def get(self, request, *args, **kwargs):
         produto = get_object_or_404(Produto, id=kwargs['produto_id'])
         carrinho = Carrinho.objects.get(usuario=request.user)

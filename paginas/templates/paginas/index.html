@@ -97,6 +97,19 @@
             white-space: nowrap;
         }
 
+        /* Remove setinhas no Chrome, Safari, Edge */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Remove setinhas no Firefox */
+        input[type=number] {
+            -moz-appearance: textfield; /* stylelint-disable-line property-no-unknown */
+        }
+        
+
         @media (min-width: 991px) and (max-width: 1400px) {
             .navbar-center-title {
                 display: none;

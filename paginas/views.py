@@ -3,7 +3,11 @@ from django.views.generic import TemplateView
 from cadastros.views import Produto, Carrinho_Produto, Carrinho
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
+from django.views import View
 
+from django.shortcuts import get_object_or_404, redirect
+
+from django.http import JsonResponse
 # Create your views here.
 
 
@@ -59,3 +63,26 @@ class VerCarrinho(ListView):
         total = sum(item.produto.preco * item.quantidade for item in context['itens'])
         context['total'] = total
         return context
+    
+# class AlterarQuantidadeView(View):
+#     def post(self, request, item_id, acao):
+#         item = get_object_or_404(Carrinho_Produto, id=item_id, carrinho__usuario=request.user)
+
+#         if acao == 'incrementar':
+#             item.quantidade += 1
+#         elif acao == 'diminuir':
+#             item.quantidade = max(1, item.quantidade - 1)  # evita quantidade zero
+#         item.save()
+
+#         return JsonResponse({'quantidade': item.quantidade})   
+     
+def alterar_quantidade(request, item_id, acao):
+    item = get_object_or_404(Carrinho_Produto, id=item_id)
+
+    if acao == 'incrementar':
+        item.quantidade += 1
+    elif acao == 'diminuir' and item.quantidade > 1:
+        item.quantidade -= 1
+
+    item.save()
+    return JsonResponse({'quantidade': item.quantidade})
