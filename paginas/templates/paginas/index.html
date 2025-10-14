@@ -318,7 +318,7 @@
                         <li><a class="dropdown-item" href="{% url 'listar-usuarios' %}">Usuários</a></li>
                         <li><a class="dropdown-item" href="{% url 'listar-produtos' %}">Produtos</a></li>
                         <li><a class="dropdown-item" href="{% url 'listar-categorias' %}">Categorias</a></li>
-                        <li><a class="dropdown-item" href="#">Carrinhos</a></li>
+                        <li><a class="dropdown-item" href="{% url 'listar-carrinhos' %}">Carrinhos</a></li>
                         <li><a class="dropdown-item" href="#">Pedidos</a></li>
                         <li><a class="dropdown-item" href="#">Avaliações</a></li>
                     </ul>
@@ -382,7 +382,7 @@
                             <a href="{% url 'listar-usuarios' %}" class="dropdown-item">Usuários</a>
                             <a href="{% url 'listar-produtos' %}" class="dropdown-item">Produtos</a>
                             <a href="{% url 'listar-categorias' %}" class="dropdown-item">Categorias</a>
-                            <a href="#" class="dropdown-item">Carrinhos</a>
+                            <a href="{% url 'listar-carrinhos' %}" class="dropdown-item">Carrinhos</a>
                             <a href="#" class="dropdown-item">Pedidos</a>
                             <a href="#" class="dropdown-item">Avaliações</a>
                         </div>
