@@ -3,7 +3,11 @@
 {% block conteudo %}
     <div class="container mt-4">
         {% if object_list %}
-        <h1>Seu Carrinho <i class="bi bi-cart-fill me-2" style="font-size: 1.5rem;"></i></h1>
+        <div class="container d-flex align-items-center">
+            <h1>Seu Carrinho <i class="bi bi-cart-fill me-2" style="font-size: 1.5rem;"></i></h1>
+            <h2 class="ms-auto">R$ {{ total }}</h1>
+        </div>
+
         <hr>
         {% endif %}
         {% for object in object_list %}
@@ -80,9 +84,7 @@
 
         {% endfor %}
     </div>
-    {% if object_list %}
-        Valor total: R$ {{ total }}
-    {% endif %}
+    
 {% endblock %}
 
 {% block scripts %}

@@ -305,6 +305,10 @@ class ProdutoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
     template_name = 'cadastros/listas/produto.html'
     paginate_by = 10
 
+    foreign_key_map = {
+            'categoria': 'nome',
+        }
+
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect('login')  # ou sua URL personalizada de login
@@ -317,13 +321,19 @@ class ProdutoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         valor = self.request.GET.get(campo_escolhido)  # valor digitado no input
 
         if valor is None:
-            produtos = Produto.objects.all()
+            return Produto.objects.all()
+
+
+        field = Produto._meta.get_field(campo_escolhido)
+        if field.get_internal_type() == "ForeignKey":
+            filtro = {f"{campo_escolhido}__nome__icontains": valor}
+
         else:
             filtro = {f"{campo_escolhido}__icontains": valor}
-            produtos = Produto.objects.filter(**filtro)
 
         
-        return produtos
+        return Produto.objects.filter(**filtro)
+
     
 
     def get_context_data(self, **kwargs):

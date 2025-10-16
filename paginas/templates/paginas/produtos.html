@@ -48,6 +48,16 @@
         </div>
       </div>
     </a>
+    {% empty %}
+
+    <div class="container my-5">
+      <div class="alert alert-warning text-center" role="alert">
+        <i class="bi bi-box-seam" style="font-size: 2rem;"></i><br>
+        <strong>Nenhum produto encontrado.</strong><br>
+        Tente ajustar os filtros ou realizar uma nova busca.
+      </div>
+    </div>
+
   {% endfor %}
 </div>
 
