@@ -15,6 +15,7 @@
     <th>Criado em:</th>
     <th>Atualizado em:</th>
     <th>Produtos</th>
+    <th>Valor Total</th>
 {% endblock%}
 
 
@@ -31,11 +32,12 @@
     <td>
         <ul>
             {% for item in object.produtos.all %}
-                <li class="pb-2">{{ item.produto.nome }} {{ item.produto.marca }} (R${{ item.produto.preco}})</li>
+                <li class="pb-2">{{item.quantidade}}X {{ item.produto.nome }} {{ item.produto.marca }} (R${{ item.produto.preco}})</li>
                 
             {% empty %}
                 <li>Nenhum produto</li>
             {% endfor %}
         </ul>
     </td>
+    <td>R$ {{object.total_valor|floatformat:2}}</td>
 {% endblock %}

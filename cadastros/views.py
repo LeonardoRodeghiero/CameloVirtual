@@ -389,5 +389,5 @@ class CarrinhoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         
         context['campo_escolhido'] = campo_escolhido
         context['campos'] = campos
-        context['nome_modelo_lista'] = 'categorias'
+        context['nome_modelo_lista'] = 'carrinhos'
         return context
