@@ -85,4 +85,11 @@ def alterar_quantidade(request, item_id, acao):
         item.quantidade -= 1
 
     item.save()
-    return JsonResponse({'quantidade': item.quantidade})
+
+    carrinho = item.carrinho
+    total = sum(prod.produto.preco * prod.quantidade for prod in Carrinho_Produto.objects.filter(carrinho=item.carrinho))
+
+
+    return JsonResponse({'quantidade': item.quantidade,
+                        'total': f'{total:.2f}'.replace('.', ',')
+                    })

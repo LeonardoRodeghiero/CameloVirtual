@@ -1,5 +1,12 @@
 {% extends 'paginas/index.html' %}
 
 {% block conteudo%}
-    <h3>Acesso Negado</h3>
+
+<div class="alert alert-danger d-flex align-items-center" role="alert">
+    <i class="bi bi-shield-lock-fill me-2" style="font-size: 1.5rem;"></i>
+    <div>
+        <strong>Acesso Negado.</strong>
+        Você não tem permissão para visualizar essa página.
+    </div>
+</div>
 {% endblock %}
