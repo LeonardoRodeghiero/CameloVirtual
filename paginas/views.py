@@ -8,6 +8,8 @@ from django.views import View
 from django.shortcuts import get_object_or_404, redirect
 
 from django.http import JsonResponse
+
+from django.utils import timezone
 # Create your views here.
 
 
@@ -85,6 +87,8 @@ def alterar_quantidade(request, item_id, acao):
         item.quantidade -= 1
 
     item.save()
+
+    Carrinho.objects.filter(pk=item.carrinho.pk).update(atualizado_em=timezone.now())
 
     carrinho = item.carrinho
     total = sum(prod.produto.preco * prod.quantidade for prod in Carrinho_Produto.objects.filter(carrinho=item.carrinho))

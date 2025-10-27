@@ -18,6 +18,9 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 
 from django.db.models import CharField, TextField
+
+from django.utils import timezone
+
 # Create your views here.
 
 # Create
@@ -91,6 +94,7 @@ class CarrinhoProdutoCreate(LoginRequiredMixin, View):
             item.quantidade += quantidade
             item.save()
 
+        Carrinho.objects.filter(id=carrinho.id).update(atualizado_em=timezone.now())
         return redirect('ver-carrinho')
 
     def get(self, request, *args, **kwargs):
@@ -107,6 +111,8 @@ class CarrinhoProdutoCreate(LoginRequiredMixin, View):
             item.quantidade += 1
             item.save()
         
+
+        Carrinho.objects.filter(id=carrinho.id).update(atualizado_em=timezone.now())
         return redirect('ver-carrinho')
 
 
@@ -155,6 +161,8 @@ class ProdutoUpdate(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
 
         context['titulo_form'] = "Edite o Produto"
         return context
+
+
 # Delete
 
 class CategoriaDelete(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
