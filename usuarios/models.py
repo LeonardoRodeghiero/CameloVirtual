@@ -14,7 +14,7 @@ class Perfil(models.Model):
     logradouro = models.CharField(max_length=100, null=True, blank=True)
     numero = models.IntegerField(null=True, blank=True)
     complemento = models.CharField(max_length=150, null=True, blank=True)
-    cep = models.CharField(max_length=9, null=True, blank=True)
+    cep = models.CharField(max_length=9, null=True, blank=True, verbose_name="CEP")
 
 
     usuario = models.OneToOneField(User, on_delete=models.CASCADE)

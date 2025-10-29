@@ -253,7 +253,12 @@ class CategoriaList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
 
 
-        campos = [field.name for field in self.model._meta.fields]
+        campos = [
+            (field.name, field.verbose_name.title() if field.verbose_name else field.name.title())
+            for field in self.model._meta.fields
+            if field.name != 'usuario'
+        ]
+
 
         campo_escolhido = self.request.GET.get('campo')
         
@@ -295,8 +300,13 @@ class PerfilList(GroupRequiredMixin, LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
 
         context = super().get_context_data(**kwargs)
-        campos = [field.name for field in self.model._meta.fields]
+        campos = [
+            (field.name, field.verbose_name.title() if field.verbose_name else field.name.title())
+            for field in self.model._meta.fields
+            if field.name != 'usuario'
+        ]
 
+        campos.append(('usuario__email', 'Email do Usuário'))
 
         campo_escolhido = self.request.GET.get('campo')
         
@@ -347,8 +357,11 @@ class ProdutoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
 
         context = super().get_context_data(**kwargs)
-        campos = [field.name for field in self.model._meta.fields]
-        
+        campos = [
+            (field.name, field.verbose_name.title() if field.verbose_name else field.name.title())
+            for field in self.model._meta.fields
+            if field.name != 'usuario'
+        ]
         campo_escolhido = self.request.GET.get('campo')
         
 
@@ -391,8 +404,11 @@ class CarrinhoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
 
 
-        campos = [field.name for field in self.model._meta.fields]
-
+        campos = [
+            (field.name, field.verbose_name.title() if field.verbose_name else field.name.title())
+            for field in self.model._meta.fields
+            if field.name != 'usuario'
+        ]
         campo_escolhido = self.request.GET.get('campo')
         
         context['campo_escolhido'] = campo_escolhido
