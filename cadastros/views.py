@@ -256,7 +256,6 @@ class CategoriaList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         campos = [
             (field.name, field.verbose_name.title() if field.verbose_name else field.name.title())
             for field in self.model._meta.fields
-            if field.name != 'usuario'
         ]
 
 
@@ -360,7 +359,7 @@ class ProdutoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         campos = [
             (field.name, field.verbose_name.title() if field.verbose_name else field.name.title())
             for field in self.model._meta.fields
-            if field.name != 'usuario'
+            if field.name != 'imagem'
         ]
         campo_escolhido = self.request.GET.get('campo')
         
@@ -407,7 +406,6 @@ class CarrinhoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         campos = [
             (field.name, field.verbose_name.title() if field.verbose_name else field.name.title())
             for field in self.model._meta.fields
-            if field.name != 'usuario'
         ]
         campo_escolhido = self.request.GET.get('campo')
         
