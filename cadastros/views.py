@@ -45,8 +45,11 @@ class CategoriaCreate(GroupRequiredMixin, LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
 
         context['titulo_form'] = "Cadastre a Categoria"
+        context['titulo_botao'] = "Cadastrar"
         return context
 
+
+    
 class ProdutoCreate(GroupRequiredMixin, LoginRequiredMixin, CreateView):
 
     group_required = u"administrador"
@@ -67,6 +70,8 @@ class ProdutoCreate(GroupRequiredMixin, LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
 
         context['titulo_form'] = "Cadastre o Produto"
+        context['titulo_botao'] = "Cadastrar"
+
         return context
 
 class CarrinhoCreate(LoginRequiredMixin, View):
@@ -138,6 +143,8 @@ class CategoriaUpdate(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
 
         context['titulo_form'] = "Edite a Categoria"
+        context['titulo_botao'] = "Atualizar"
+
         return context
 
 class ProdutoUpdate(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
@@ -160,6 +167,8 @@ class ProdutoUpdate(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
 
         context['titulo_form'] = "Edite o Produto"
+        context['titulo_botao'] = "Atualizar"
+
         return context
 
 

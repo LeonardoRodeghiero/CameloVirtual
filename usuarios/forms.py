@@ -3,6 +3,19 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 
+class BootstrapFormMixin:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            widget = field.widget
+            if not widget.attrs.get('class'):
+                widget.attrs['class'] = 'form-control'
+            else:
+                widget.attrs['class'] += ' form-control'
+
+
+
+
 class UsuarioForm(UserCreationForm):
     ESTADO_CHOICES = [
         ('AC', 'ACRE'),
@@ -139,3 +152,10 @@ class PerfilForm(forms.ModelForm):
             perfil.usuario.save()
             perfil.save()
         return perfil
+
+
+class EmailLoginForm(forms.Form):
+    email = forms.EmailField(label='Email')
+    password = forms.CharField(widget=forms.PasswordInput, label='Senha')
+
+
