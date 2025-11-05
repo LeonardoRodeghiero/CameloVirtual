@@ -23,6 +23,25 @@
         <button type="submit" class="btn btn-primary w-100 mt-2">{{ titulo_botao }}</button>
 
     </form>
+
+
+    {% if request.resolver_match.view_name == 'login' %}
+
+        <p class="text-primary mt-4" style="text-align: center;">OU</p>
+
+
+        <div class="d-flex justify-content-center">
+            <a href="{% url 'registrar' %}" class="link-primary text-decoration-none" style="font-size: 1.2em;">Crie Sua Conta</a>
+        </div>
+    {% endif %}
+    {% if request.resolver_match.view_name == 'registrar' %}
+
+        <p class="text-primary mt-4" style="text-align: center;">OU</p>
+
+        <div class="d-flex justify-content-center">
+             <a href="{% url 'login' %}" class="link-primary text-decoration-none" style="font-size: 1.2em;">Entre Na Sua Conta</a>
+        </div>
+    {% endif %}
 </div>
 
 
