@@ -225,6 +225,15 @@ class CarrinhoDelete(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
             return redirect('acesso-negado')  # ou 'acesso-negado'
         return super().dispatch(request, *args, **kwargs)
 
+class CarrinhoDeleteUser(LoginRequiredMixin, DeleteView):
+
+    login_url = reverse_lazy('login')
+
+    model = Carrinho
+    success_url = reverse_lazy('index')
+
+
+
 # List
 class CategoriaList(GroupRequiredMixin, LoginRequiredMixin, ListView):
 

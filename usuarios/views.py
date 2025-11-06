@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from .forms import EmailLoginForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 from .models import Perfil
@@ -93,8 +94,9 @@ class PerfilUpdate(UpdateView):
         perfil.save()
         return super().form_valid(form)
 
-class PerfilDelete(DeleteView):
-    model = Perfil
+class UsuarioDelete(LoginRequiredMixin, DeleteView):
+    model = User
+    login_url = reverse_lazy('login')
     success_url = reverse_lazy('index')
 
 

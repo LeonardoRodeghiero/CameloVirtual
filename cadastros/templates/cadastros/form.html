@@ -24,6 +24,36 @@
 
     </form>
 
+    {% if request.resolver_match.view_name == 'atualizar-perfil' %}
+        <div class="d-flex justify-content-center mt-2">
+            <a hre="#" class="link-danger mt-2" data-bs-toggle="modal" data-bs-target="#confirmModal{{ request.user.pk }}" title="Excluir" style="text-decoration: none; font-weight: bold;">Excluir Conta</a>
+
+            <!-- Modal de confirmação -->
+              <div class="modal fade" id="confirmModal{{ request.user.pk }}" tabindex="-1" aria-labelledby="confirmModalLabel{{ request.user.pk }}" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <form method="post" action="{% url 'excluir-perfil' request.user.pk %}">
+                      {% csrf_token %}
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="confirmModalLabel{{ request.user.pk }}">Confirmar exclusão</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                      </div>
+                      <div class="modal-body">
+                        Tem certeza que deseja excluir <strong>Sua Conta</strong>?
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Excluir</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+        </div>
+
+
+    {% endif %}
+
 
     {% if request.resolver_match.view_name == 'login' %}
 

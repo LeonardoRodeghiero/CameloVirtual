@@ -37,7 +37,7 @@ class Carrinho(models.Model):
 
 class Carrinho_Produto(models.Model):
     carrinho = models.ForeignKey(Carrinho, related_name="produtos", on_delete=models.CASCADE)
-    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
+    produto = models.ForeignKey(Produto, on_delete=models.DO_NOTHING)
     quantidade = models.IntegerField(default=1)
 
     def __str__(self):
