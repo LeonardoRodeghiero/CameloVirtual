@@ -73,6 +73,20 @@ STORAGES = {
     },
 }
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "ERROR",
+    },
+}
+
 
 
 # MEDIA_URL = "/media/"  # Django ainda usa este prefixo nas URLs; os arquivos são servidos pelo Cloudinary
