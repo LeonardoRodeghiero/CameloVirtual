@@ -21,6 +21,9 @@ from django.db.models import CharField, TextField
 
 from django.utils import timezone
 
+from datetime import datetime
+
+
 # Create your views here.
 
 # Create
@@ -387,6 +390,7 @@ class ProdutoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         context['nome_modelo_lista'] = 'produtos'
         return context
 
+
 class CarrinhoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
 
     group_required = u"administrador"
@@ -394,6 +398,9 @@ class CarrinhoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
     model = Carrinho
     template_name = 'cadastros/listas/carrinho.html'
 
+    foreign_key_map = {
+            'usuario': 'username',
+        }
     paginate_by = 10
 
     def dispatch(self, request, *args, **kwargs):
@@ -408,13 +415,39 @@ class CarrinhoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         valor = self.request.GET.get(campo_escolhido)  # valor digitado no input
 
         if valor is None:
-            carrinhos = Carrinho.objects.all()
+            return Carrinho.objects.all()
+
+
+        field = Carrinho._meta.get_field(campo_escolhido)
+        if field.get_internal_type() == "ForeignKey":
+            filtro = {f"{campo_escolhido}__username__icontains": valor}
+        
+        elif field.get_internal_type() in ["DateTimeField", "DateField"]:
+            try:
+                # tenta DD/MM/AAAA
+                data = datetime.strptime(valor, "%d/%m/%Y").date()
+                if field.get_internal_type() == "DateTimeField":
+                    inicio = datetime.combine(data, datetime.min.time())
+                    fim = datetime.combine(data, datetime.max.time())
+                    filtro = {f"{campo_escolhido}__range": (inicio, fim)}
+                else:
+                    filtro = {campo_escolhido: data}
+
+            except ValueError:
+                try:
+                    # tenta DD/MM (sem ano)
+                    data = datetime.strptime(valor, "%d/%m")
+                    filtro = {
+                        f"{campo_escolhido}__day": data.day,
+                        f"{campo_escolhido}__month": data.month,
+                    }
+                except ValueError:
+                    return Carrinho.objects.all()
         else:
             filtro = {f"{campo_escolhido}__icontains": valor}
-            carrinhos = Carrinho.objects.filter(**filtro)
 
         
-        return carrinhos
+        return Carrinho.objects.filter(**filtro)
     
     def get_context_data(self, **kwargs):
 
