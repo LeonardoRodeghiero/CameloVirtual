@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from .forms import EmailLoginForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.contrib.auth import login
 
 from .models import Perfil
 # Create your views here.
@@ -16,7 +16,7 @@ from .models import Perfil
 class UsuarioCreate(CreateView):
     template_name = 'cadastros/form.html'
     form_class = UsuarioForm
-    success_url = reverse_lazy('login')
+    success_url = reverse_lazy('index')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -36,7 +36,8 @@ class UsuarioCreate(CreateView):
         
         grupo = get_object_or_404(Group, name='cliente')
         user.groups.add(grupo)
-        url = super().form_valid(form)
+        # url = super().form_valid(form)
+        url = redirect(self.success_url)
 
         # self.object.groups.add(grupo)
         # self.object.save()
@@ -50,6 +51,7 @@ class UsuarioCreate(CreateView):
             cidade=form.cleaned_data['cidade'],
         )
         
+        login(self.request, user)
 
         return url
 
