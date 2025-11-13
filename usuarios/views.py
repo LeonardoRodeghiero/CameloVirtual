@@ -11,6 +11,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login
 
 from .models import Perfil
+from django import forms
+
+from django.contrib import messages
+from django.db import IntegrityError
+from django.core.exceptions import ValidationError
+
 # Create your views here.
 
 class UsuarioCreate(CreateView):
@@ -25,22 +31,18 @@ class UsuarioCreate(CreateView):
         context['titulo_botao'] = "Criar"
 
         return context
+    
+    
+
 
     def form_valid(self, form):
         user = form.save(commit=False)
-        user.username = form.cleaned_data['nome_completo']  # ou gerar com base no nome
+        user.username = form.cleaned_data['nome_completo']
         user.email = form.cleaned_data['email']
         user.save()
 
-
-        
         grupo = get_object_or_404(Group, name='cliente')
         user.groups.add(grupo)
-        # url = super().form_valid(form)
-        url = redirect(self.success_url)
-
-        # self.object.groups.add(grupo)
-        # self.object.save()
 
         Perfil.objects.create(
             usuario=user,
@@ -50,10 +52,13 @@ class UsuarioCreate(CreateView):
             estado=form.cleaned_data['estado'],
             cidade=form.cleaned_data['cidade'],
         )
-        
+
         login(self.request, user)
 
-        return url
+        self.object = user
+
+        return redirect(self.success_url)
+
 
 
 class PerfilUpdate(UpdateView):
@@ -74,6 +79,10 @@ class PerfilUpdate(UpdateView):
         context['titulo_botao'] = "Atualizar"
 
         return context
+
+
+
+
 
     def form_valid(self, form):
         perfil = form.save(commit=False)

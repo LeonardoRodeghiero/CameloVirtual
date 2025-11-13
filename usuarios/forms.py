@@ -65,6 +65,24 @@ class UsuarioForm(UserCreationForm):
             raise ValidationError(f'O email {e} já está em uso')
         
         return e
+    
+    def clean_nome_completo(self):
+        nome = self.cleaned_data['nome_completo']
+        if Perfil.objects.filter(nome_completo=nome).exists():
+            raise forms.ValidationError("Este nome já está cadastrado.")
+        return nome
+
+    def clean_cpf(self):
+        cpf = self.cleaned_data['cpf']
+        if Perfil.objects.filter(cpf=cpf).exists():
+            raise forms.ValidationError("Este CPF já está cadastrado.")
+        return cpf
+
+    def clean_telefone(self):
+        telefone = self.cleaned_data['telefone']
+        if Perfil.objects.filter(telefone=telefone).exists():
+            raise forms.ValidationError("Este telefone já está cadastrado.")
+        return telefone
 
 
 from .models import Perfil
@@ -119,7 +137,42 @@ class PerfilForm(forms.ModelForm):
             'cidade', 'bairro', 'logradouro', 'numero', 'complemento'
         ]
 
-    
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        qs = User.objects.filter(email=email)
+        if self.instance and self.instance.usuario_id:
+            qs = qs.exclude(pk=self.instance.usuario.pk)  # ignora o próprio usuário
+        if qs.exists():
+            raise forms.ValidationError("Este email já está cadastrado.")
+        return email
+
+
+    def clean_nome_completo(self):
+        nome = self.cleaned_data['nome_completo']
+        qs = Perfil.objects.filter(nome_completo=nome)
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("Este nome já está cadastrado.")
+        return nome
+
+    def clean_cpf(self):
+        cpf = self.cleaned_data['cpf']
+        qs = Perfil.objects.filter(cpf=cpf)
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("Este CPF já está cadastrado.")
+        return cpf
+
+    def clean_telefone(self):
+        telefone = self.cleaned_data['telefone']
+        qs = Perfil.objects.filter(telefone=telefone)
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("Este telefone já está cadastrado.")
+        return telefone
 
 
     def __init__(self, *args, **kwargs):
