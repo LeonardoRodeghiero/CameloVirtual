@@ -23,7 +23,7 @@ from django.utils import timezone
 
 from datetime import datetime
 
-
+from django.db.models import Sum, F, ExpressionWrapper, DecimalField
 # Create your views here.
 
 # Create
@@ -414,9 +414,23 @@ class CarrinhoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         campo_escolhido = self.request.GET.get('campo')
         valor = self.request.GET.get(campo_escolhido)  # valor digitado no input
 
+        qs = Carrinho.objects.all()
+
+        if campo_escolhido == "valorTotal" and valor:
+            qs = qs.annotate(
+                valor_total=Sum(
+                    F("produtos__quantidade") * F("produtos__produto__preco"),
+                    output_field=DecimalField()
+                )
+            ).filter(valor_total__icontains=valor)
+            return qs
+
         if valor is None:
             return Carrinho.objects.all()
-
+        
+        if campo_escolhido.startswith("produtos__"):
+            filtro = {f"{campo_escolhido}__icontains": valor}
+            return Carrinho.objects.filter(**filtro).distinct()
 
         field = Carrinho._meta.get_field(campo_escolhido)
         if field.get_internal_type() == "ForeignKey":
@@ -454,13 +468,24 @@ class CarrinhoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
 
 
-        campos = [
+        campos_carrinho = [
             (field.name, field.verbose_name.title() if field.verbose_name else field.name.title())
             for field in self.model._meta.fields
         ]
+
+        campos_produto = [
+            ("produtos__produto__nome", "Nome do Produto"),
+            ("produtos__quantidade", "Quantidade"),
+        ]
+
+        campos_extra = [
+            ("valorTotal", "Valor Total"),
+        ]
+
+
         campo_escolhido = self.request.GET.get('campo')
         
         context['campo_escolhido'] = campo_escolhido
-        context['campos'] = campos
+        context['campos'] = campos_carrinho + campos_produto + campos_extra
         context['nome_modelo_lista'] = 'carrinhos'
         return context
