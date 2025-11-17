@@ -98,9 +98,9 @@
 
         var cleave = new Cleave('#id_preco', {
             numeral: true,
-            numeralThousandsGroupStyle: 'thousand',
-            numeralDecimalMark: ',',
-            delimiter: '.',
+            numeralThousandsGroupStyle: 'none',
+            numeralDecimalMark: '.',
+            delimiter: '',
             numeralDecimalScale: 2
         });
         $('form').on('submit', function() {
