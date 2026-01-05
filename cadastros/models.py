@@ -6,9 +6,9 @@ from django.contrib.auth.models import User
 class Camelo(models.Model):
     nome_fantasia = models.CharField(max_length=50)
     cnpj = models.CharField(max_length=18)
-    email = models.EmailField(max_length=254, unique=True, blank=False, null=False,help_text="E-mail inválido")    
+    email = models.EmailField(max_length=254, unique=True, blank=False, null=False,help_text="Insira E-mail para contato")    
     
-    telefone = models.CharField(max_length=14)
+    telefone = models.CharField(max_length=16)
     data_cadastro = models.DateTimeField(auto_now=True, verbose_name='cadastrado em')
     status = models.CharField(max_length=50, default="ativo")
     descricao_loja = models.CharField(max_length=100)
@@ -16,8 +16,17 @@ class Camelo(models.Model):
     endereco = models.CharField(max_length=150)
 
 
+    usuarios = models.ManyToManyField( 
+        User,
+        through="Camelo_Usuario", 
+        related_name="camelos" 
+        )
+
+    def __str__(self): 
+        return self.nome_fantasia
+
 class Camelo_Usuario(models.Model):
-    camelo = models.ForeignKey(Camelo, related_name="usuarios", on_delete=models.CASCADE)
+    camelo = models.ForeignKey(Camelo, related_name="relacoes_usuarios", on_delete=models.CASCADE)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):

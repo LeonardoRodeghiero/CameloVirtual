@@ -1,0 +1,51 @@
+{% extends 'cadastros/listas/template.html' %}
+
+{% block titulo_botao %}
+    
+<div class="d-flex">
+  <div>Camelôs</div>
+</div>
+
+{% endblock %}
+
+
+
+{% block cabecalho %}
+    <th>id</th>
+    <th>nome fantasia</th>
+    <th>cnpj</th>
+    <th>email</th>
+    <th>telefone</th>
+    <th>data de cadastro</th>
+    <th>status</th>
+    <th>descrição da loja</th>
+    <th>Imagem Logo</th>
+    <th>endereço</th>
+    <th>usuários Administradores</th>
+{% endblock%}
+
+{% block editar_proibido %}
+
+{% endblock %}
+
+{% block conteudo_tabela %}
+    <td>{{object.pk}}</td>
+    <td>{{object.nome_fantasia}}</td>
+    <td>{{object.cnpj}}</td>
+    <td>{{object.email}}</td>
+    <td>{{object.telefone}}</td>
+    <td>{{object.data_cadastro}}</td>
+    <td>{{object.status}}</td>
+    <td>{{object.descricao_loja}}</td>
+    <td>{{object.imagem_logo}}</td>
+    <td>{{object.endereco}}</td>
+    <td> 
+        <ul> 
+            {% for usuario in object.usuarios.all %} 
+                <li class="pb-2">{{ usuario.get_full_name|default:usuario.username }} ({{ usuario.perfil.cpf }})</li> 
+            {% empty %} 
+                <li>Nenhum usuário</li> 
+            {% endfor %} 
+        </ul> 
+    </td>
+{% endblock %}

@@ -2,7 +2,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views import View
 
-from .models import Categoria, Produto, Carrinho, Carrinho_Produto
+from .models import Categoria, Produto, Carrinho, Carrinho_Produto, Camelo, Camelo_Usuario
 
 from usuarios.models import Perfil
 
@@ -123,6 +123,37 @@ class CarrinhoProdutoCreate(LoginRequiredMixin, View):
         Carrinho.objects.filter(id=carrinho.id).update(atualizado_em=timezone.now())
         return redirect('ver-carrinho')
 
+class CameloCreate(LoginRequiredMixin, CreateView):
+
+
+    model = Camelo
+    fields = ['nome_fantasia', 'cnpj', 'email', 'telefone', 'descricao_loja', 'imagem_logo', 'endereco']
+    template_name = 'cadastros/form.html'
+    success_url = reverse_lazy('index')
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['titulo_form'] = "Cadastre Seu Camelô"
+        context['titulo_botao'] = "Cadastrar"
+
+        return context
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        # adiciona o usuário logado como administrador
+        Camelo_Usuario.objects.create(
+            camelo=self.object,
+            usuario=self.request.user
+        )
+        return response
+
+
 
 # Update
 class CategoriaUpdate(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
@@ -227,6 +258,24 @@ class CarrinhoDelete(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
         if not request.user.groups.filter(name='administrador').exists():
             return redirect('acesso-negado')  # ou 'acesso-negado'
         return super().dispatch(request, *args, **kwargs)
+
+class CameloDelete(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
+
+    login_url = reverse_lazy('login')
+
+    group_required = u"administrador"
+
+    model = Camelo
+    success_url = reverse_lazy('listar-camelos')
+
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')  # ou sua URL personalizada de login
+        if not request.user.groups.filter(name='administrador').exists():
+            return redirect('acesso-negado')  # ou 'acesso-negado'
+        return super().dispatch(request, *args, **kwargs)
+
 
 class CarrinhoDeleteUser(LoginRequiredMixin, DeleteView):
 
@@ -488,4 +537,94 @@ class CarrinhoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         context['campo_escolhido'] = campo_escolhido
         context['campos'] = campos_carrinho + campos_produto + campos_extra
         context['nome_modelo_lista'] = 'carrinhos'
+        return context
+
+
+
+class CameloList(GroupRequiredMixin, LoginRequiredMixin, ListView):
+
+    group_required = u"administrador"
+
+    model = Camelo
+    template_name = 'cadastros/listas/camelo.html'
+
+    foreign_key_map = {
+            'usuario': 'username',
+        }
+    paginate_by = 10
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')  # ou sua URL personalizada de login
+        if not request.user.groups.filter(name='administrador').exists():
+            return redirect('acesso-negado')  # ou 'acesso-negado'
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        campo_escolhido = self.request.GET.get('campo')
+        valor = self.request.GET.get(campo_escolhido)  # valor digitado no input
+
+
+        if valor is None:
+            return Camelo.objects.all()
+        
+        if campo_escolhido and campo_escolhido.startswith("usuarios__"):
+            filtro = {f"{campo_escolhido}__icontains": valor}
+            return Camelo.objects.filter(**filtro).distinct()
+
+        field = Camelo._meta.get_field(campo_escolhido)
+        if field.get_internal_type() == "ForeignKey":
+            filtro = {f"{campo_escolhido}__username__icontains": valor}
+        
+        elif field.get_internal_type() in ["DateTimeField", "DateField"]:
+            try:
+                # tenta DD/MM/AAAA
+                data = datetime.strptime(valor, "%d/%m/%Y").date()
+                if field.get_internal_type() == "DateTimeField":
+                    inicio = datetime.combine(data, datetime.min.time())
+                    fim = datetime.combine(data, datetime.max.time())
+                    filtro = {f"{campo_escolhido}__range": (inicio, fim)}
+                else:
+                    filtro = {campo_escolhido: data}
+
+            except ValueError:
+                try:
+                    # tenta DD/MM (sem ano)
+                    data = datetime.strptime(valor, "%d/%m")
+                    filtro = {
+                        f"{campo_escolhido}__day": data.day,
+                        f"{campo_escolhido}__month": data.month,
+                    }
+                except ValueError:
+                    return Camelo.objects.all()
+        else:
+            filtro = {f"{campo_escolhido}__icontains": valor}
+
+        
+        return Camelo.objects.filter(**filtro)
+    
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+
+        campos_camelo = [
+            (field.name, field.verbose_name.title() if field.verbose_name else field.name.title())
+            for field in self.model._meta.fields
+        ]
+
+        campos_usuario = [
+            ("usuarios__username", "Nome Completo do Usuário"),
+            ("usuarios_cpf", "CPF do Usuário"),
+        ]
+
+
+        
+
+
+        campo_escolhido = self.request.GET.get('campo')
+        
+        context['campo_escolhido'] = campo_escolhido
+        context['campos'] = campos_camelo + campos_usuario
+        context['nome_modelo_lista'] = 'camelos'
         return context
