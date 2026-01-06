@@ -1,6 +1,8 @@
 from django.views.generic import TemplateView
 
-from cadastros.views import Produto, Carrinho_Produto, Carrinho
+
+
+from cadastros.views import Produto, Carrinho_Produto, Carrinho, Camelo
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views import View
@@ -15,6 +17,18 @@ from django.utils import timezone
 
 class IndexView(TemplateView):
     template_name = "paginas/index.html"
+
+
+class CameloView(TemplateView):
+    template_name = "paginas/camelo_padrao.html"
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        camelo_id = self.kwargs.get("pk")
+        camelo = get_object_or_404(Camelo, pk=camelo_id)
+        context["camelo"] = camelo
+        return context
 
 
 class AcessoNegadoView(TemplateView):
