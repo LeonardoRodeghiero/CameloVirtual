@@ -336,6 +336,57 @@ class CategoriaList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         context['nome_modelo_lista'] = 'categorias'
         return context
 
+class CategoriaCameloList(LoginRequiredMixin, ListView):
+
+    model = Categoria
+    template_name = 'cadastros/listas/camelos/categoria-camelo.html'
+
+    paginate_by = 10
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')  # ou sua URL personalizada de login
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        camelo_id = self.kwargs.get("pk") # pega o id do camelô da URL
+        campo_escolhido = self.request.GET.get('campo')
+        valor = self.request.GET.get(campo_escolhido)  # valor digitado no input
+
+        if valor is None:
+            categorias = Categoria.objects.filter(camelo_id=camelo_id)
+        else:
+            filtro = {f"{campo_escolhido}__icontains": valor, "camelo_id": camelo_id}
+            categorias = Categoria.objects.filter(**filtro)
+
+        
+        return categorias
+
+
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+
+        campos = [
+            (field.name, field.verbose_name.title() if field.verbose_name else field.name.title())
+            for field in self.model._meta.fields
+        ]
+
+        camelo_id = self.kwargs.get("pk") 
+        camelo = get_object_or_404(Camelo, pk=camelo_id) 
+        context["camelo"] = camelo
+
+        campo_escolhido = self.request.GET.get('campo')
+        
+        context['campo_escolhido'] = campo_escolhido
+        context['campos'] = campos
+        context['nome_modelo_lista'] = 'categorias'
+        return context
+
+
+
 
 
 class PerfilList(GroupRequiredMixin, LoginRequiredMixin, ListView):
@@ -438,6 +489,67 @@ class ProdutoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         context['campos'] = campos
         context['nome_modelo_lista'] = 'produtos'
         return context
+
+
+class ProdutoCameloList(LoginRequiredMixin, ListView):
+
+
+    model = Produto
+    template_name = 'cadastros/listas/camelos/produto-camelo.html'
+    paginate_by = 10
+
+    foreign_key_map = {
+            'categoria': 'nome',
+        }
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')  # ou sua URL personalizada de login
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        camelo_id = self.kwargs.get("pk") # pega o id do camelô da URL
+        campo_escolhido = self.request.GET.get('campo')
+        valor = self.request.GET.get(campo_escolhido)  # valor digitado no input
+
+        if valor is None:
+            return Produto.objects.filter(camelo_id=camelo_id)
+
+
+        field = Produto._meta.get_field(campo_escolhido)
+        if field.get_internal_type() == "ForeignKey":
+            filtro = {f"{campo_escolhido}__nome__icontains": valor, "camelo_id": camelo_id}
+
+        else:
+            filtro = {f"{campo_escolhido}__icontains": valor}
+
+        
+        return Produto.objects.filter(**filtro)
+
+    
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+        campos = [
+            (field.name, field.verbose_name.title() if field.verbose_name else field.name.title())
+            for field in self.model._meta.fields
+            if field.name != 'imagem'
+        ]
+        camelo_id = self.kwargs.get("pk") 
+        camelo = get_object_or_404(Camelo, pk=camelo_id) 
+        context["camelo"] = camelo
+
+
+        campo_escolhido = self.request.GET.get('campo')
+        
+
+        context['campo_escolhido'] = campo_escolhido
+        context['campos'] = campos
+        context['nome_modelo_lista'] = 'produtos'
+        return context
+
+
 
 
 class CarrinhoList(GroupRequiredMixin, LoginRequiredMixin, ListView):

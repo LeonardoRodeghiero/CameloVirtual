@@ -6,7 +6,7 @@ from .views import CategoriaUpdate, ProdutoUpdate
 
 from .views import CategoriaDelete, ProdutoDelete, CarrinhoDelete, CarrinhoDeleteUser, CameloDelete
 
-from .views import CategoriaList, PerfilList, ProdutoList, CarrinhoList, CameloList
+from .views import CategoriaList, PerfilList, ProdutoList, CarrinhoList, CameloList, CategoriaCameloList, ProdutoCameloList
 
 urlpatterns = [
     
@@ -26,8 +26,12 @@ urlpatterns = [
     path('excluir/camelo/<int:pk>/', CameloDelete.as_view(), name="excluir-camelo"),
 
     path('listar/categorias/', CategoriaList.as_view(), name="listar-categorias"),
+    path('<int:pk>/listar/categorias/', CategoriaCameloList.as_view(), name="listar-categorias-camelo"),
+
     path('listar/usuarios/', PerfilList.as_view(), name="listar-usuarios"),
     path('listar/produtos/', ProdutoList.as_view(), name="listar-produtos"),
+    path('<int:pk>/listar/produtos/', ProdutoCameloList.as_view(), name="listar-produtos-camelo"),
+
     path('listar/carrinhos/', CarrinhoList.as_view(), name="listar-carrinhos"),
     path('listar/camelos/', CameloList.as_view(), name="listar-camelos"),
 

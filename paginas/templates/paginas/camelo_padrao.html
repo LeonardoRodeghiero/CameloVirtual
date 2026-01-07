@@ -317,8 +317,8 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
                         <li><span class="dropdown-item-text">Gerencie os dados</span></li>
-                        <li><a class="dropdown-item" href="{% url 'listar-produtos' %}">Produtos</a></li>
-                        <li><a class="dropdown-item" href="{% url 'listar-categorias' %}">Categorias</a></li>
+                        <li><a class="dropdown-item" href="{% url 'listar-produtos-camelo' camelo.pk %}">Produtos</a></li>
+                        <li><a class="dropdown-item" href="{% url 'listar-categorias-camelo' camelo.pk %}">Categorias</a></li>
                     </ul>
                 </li>
             {% endif %}
@@ -379,8 +379,8 @@
                     <div id="collapseAdmin" class="accordion-collapse collapse" aria-labelledby="headingAdmin" data-bs-parent="#mobileMenuAccordion">
                         <div class="accordion-body">
                             <span class="dropdown-item-text">Gerencie os dados</span>
-                            <a href="{% url 'listar-produtos' %}" class="dropdown-item">Produtos</a>
-                            <a href="{% url 'listar-categorias' %}" class="dropdown-item">Categorias</a>
+                            <a href="{% url 'listar-produtos-camelo' camelo.pk %}" class="dropdown-item">Produtos</a>
+                            <a href="{% url 'listar-categorias-camelo' camelo.pk %}" class="dropdown-item">Categorias</a>
                         </div>
                     </div>
                 </div>
