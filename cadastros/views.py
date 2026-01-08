@@ -7,7 +7,7 @@ from .models import Categoria, Produto, Carrinho, Carrinho_Produto, Camelo, Came
 from usuarios.models import Perfil
 
 
-from django.urls import reverse_lazy
+from django.urls import resolve, Resolver404, reverse_lazy
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -27,55 +27,90 @@ from django.db.models import Sum, F, ExpressionWrapper, DecimalField
 # Create your views here.
 
 # Create
-class CategoriaCreate(GroupRequiredMixin, LoginRequiredMixin, CreateView):
-
-    group_required = u"administrador"
+class CategoriaCreate(LoginRequiredMixin, CreateView):
 
     model = Categoria
     fields = ['nome', 'descricao']
     template_name = 'cadastros/form.html'
-    success_url = reverse_lazy('listar-categorias')
+
+    def get_success_url(self):
+        return reverse_lazy('listar-categorias-camelo', kwargs={'pk': self.kwargs.get("pk")})
+
 
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect('login')
-        if not request.user.groups.filter(name='administrador').exists():
-            return redirect('acesso-negado')
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        camelo_id = self.kwargs.get("pk") 
+        if camelo_id: 
+            context["base_template"] = "paginas/camelo_padrao.html" 
+        else: 
+            context["base_template"] = "paginas/index.html"
+
+        camelo_id = self.kwargs.get("pk") 
+        camelo = get_object_or_404(Camelo, pk=camelo_id) 
+        context["camelo"] = camelo
 
         context['titulo_form'] = "Cadastre a Categoria"
         context['titulo_botao'] = "Cadastrar"
         return context
 
+    def form_valid(self, form): 
+        camelo_id = self.kwargs.get("pk") # pega o id da URL 
+        form.instance.camelo_id = camelo_id # vincula ao modelo 
+        return super().form_valid(form)
+
 
     
-class ProdutoCreate(GroupRequiredMixin, LoginRequiredMixin, CreateView):
+class ProdutoCreate(LoginRequiredMixin, CreateView):
 
-    group_required = u"administrador"
 
     model = Produto
     fields = ['nome', 'marca', 'descricao', 'preco', 'quantidade', 'imagem', 'categoria']
     template_name = 'cadastros/form.html'
-    success_url = reverse_lazy('listar-produtos')
     
+    def get_success_url(self):
+        return reverse_lazy('listar-produtos-camelo', kwargs={'pk': self.kwargs.get("pk")})
+
+    def get_form(self, form_class=None): 
+        form = super().get_form(form_class) 
+        camelo_id = self.kwargs.get("pk") # id do camelô vindo da URL 
+        if camelo_id: 
+            form.fields['categoria'].queryset = Categoria.objects.filter(camelo_id=camelo_id) 
+        return form
+
+
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect('login')
-        if not request.user.groups.filter(name='administrador').exists():
-            return redirect('acesso-negado')
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        camelo_id = self.kwargs.get("pk") 
+        if camelo_id: 
+            context["base_template"] = "paginas/camelo_padrao.html" 
+        else: 
+            context["base_template"] = "paginas/index.html"
+
+        camelo_id = self.kwargs.get("pk") 
+        camelo = get_object_or_404(Camelo, pk=camelo_id) 
+        context["camelo"] = camelo
+
 
         context['titulo_form'] = "Cadastre o Produto"
         context['titulo_botao'] = "Cadastrar"
 
         return context
+
+    def form_valid(self, form): 
+        camelo_id = self.kwargs.get("pk") # pega o id da URL 
+        form.instance.camelo_id = camelo_id # vincula ao modelo 
+        return super().form_valid(form)
 
 class CarrinhoCreate(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
@@ -163,8 +198,20 @@ class CategoriaUpdate(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
     model = Categoria
     fields = ['nome', 'descricao']
     template_name = 'cadastros/form.html'
-    success_url = reverse_lazy('listar-categorias')
 
+    def get_success_url(self):
+        next_url = self.request.GET.get("next") or self.request.POST.get("next")
+        if next_url:
+            try:
+                match = resolve(next_url)
+                if match.url_name == "listar-categorias":
+                    return reverse_lazy("listar-categorias")
+                if match.url_name == "listar-categorias-camelo":
+                    return reverse_lazy("listar-categorias-camelo", kwargs={"pk": match.kwargs.get("pk")})
+            except Resolver404:
+                pass
+        # fallback global
+        return reverse_lazy("listar-categorias")
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -172,14 +219,30 @@ class CategoriaUpdate(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
         if not request.user.groups.filter(name='administrador').exists():
             return redirect('acesso-negado')  # ou 'acesso-negado'
         return super().dispatch(request, *args, **kwargs)
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        next_url = self.request.GET.get("next") or self.request.POST.get("next")
+
+        categoria = self.object # objeto que está sendo editado 
+        camelo = getattr(categoria, "camelo", None)
+
+        if next_url and next_url.strip("/").split("/")[0].isdigit():
+            context["base_template"] = "paginas/camelo_padrao.html"
+            context["camelo"] = camelo
+        else:
+            context["base_template"] = "paginas/index.html"
 
         context['titulo_form'] = "Edite a Categoria"
         context['titulo_botao'] = "Atualizar"
-
         return context
+
+
+
+
+
+
+
 
 class ProdutoUpdate(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
 
@@ -188,7 +251,27 @@ class ProdutoUpdate(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
     model = Produto
     fields = ['nome', 'marca', 'descricao', 'preco', 'quantidade', 'imagem', 'categoria']
     template_name = 'cadastros/form.html'
-    success_url = reverse_lazy('listar-produtos')
+
+    def get_success_url(self):
+        next_url = self.request.GET.get("next") or self.request.POST.get("next")
+        if next_url:
+            try:
+                match = resolve(next_url)
+                if match.url_name == "listar-produtos":
+                    return reverse_lazy("listar-produtos")
+                if match.url_name == "listar-produtos-camelo":
+                    return reverse_lazy("listar-produtos-camelo", kwargs={"pk": match.kwargs.get("pk")})
+            except Resolver404:
+                pass
+        # fallback global
+        return reverse_lazy("listar-produtos")
+
+    def get_form(self, form_class=None): 
+        form = super().get_form(form_class) 
+        camelo = self.object.camelo # pega o camelô do produto 
+        form.fields['categoria'].queryset = Categoria.objects.filter(camelo=camelo) 
+        return form
+
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -199,11 +282,21 @@ class ProdutoUpdate(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        next_url = self.request.GET.get("next") or self.request.POST.get("next")
+
+        produto = self.object # objeto que está sendo editado 
+        camelo = getattr(produto, "camelo", None)
+
+        if next_url and next_url.strip("/").split("/")[0].isdigit():
+            context["base_template"] = "paginas/camelo_padrao.html"
+            context["camelo"] = camelo
+        else:
+            context["base_template"] = "paginas/index.html"
 
         context['titulo_form'] = "Edite o Produto"
         context['titulo_botao'] = "Atualizar"
-
         return context
+
 
 
 # Delete
@@ -215,7 +308,12 @@ class CategoriaDelete(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
     group_required = u"administrador"
 
     model = Categoria
-    success_url = reverse_lazy('listar-categorias')
+
+    def get_success_url(self):
+        next_url = self.request.GET.get("next") or self.request.POST.get("next")
+        if next_url:
+            return next_url
+        return reverse_lazy("listar-categorias")  # fallback global
 
 
     def dispatch(self, request, *args, **kwargs):
@@ -232,7 +330,12 @@ class ProdutoDelete(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
     group_required = u"administrador"
 
     model = Produto
-    success_url = reverse_lazy('listar-produtos')
+
+    def get_success_url(self):
+        next_url = self.request.GET.get("next") or self.request.POST.get("next")
+        if next_url:
+            return next_url
+        return reverse_lazy("listar-categorias")  # fallback global
 
 
     def dispatch(self, request, *args, **kwargs):

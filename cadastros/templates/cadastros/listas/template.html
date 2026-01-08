@@ -58,7 +58,7 @@
                 
                 <td style="position: sticky; right: 0; background-color: #f8f9fa; z-index: 2; min-width: 120px; text-align: center; border-left: none; box-shadow: -1px 0 0 #dee2e6;">
                   {% block editar_proibido %}
-                    <a href="{% rota_objeto 'atualizar' object %}" class="btn btn-warning" title="Editar"><i class="bi bi-pencil-square"></i></a>
+                    <a href="{% rota_objeto 'atualizar' object %}?next={{ request.path }}" class="btn btn-warning" title="Editar"><i class="bi bi-pencil-square"></i></a>
                   {% endblock %}
                   <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal{{ object.pk }}" title="Excluir"><i class="bi bi-trash"></i></button>
                 </td>
@@ -69,7 +69,7 @@
               <div class="modal fade" id="confirmModal{{ object.pk }}" tabindex="-1" aria-labelledby="confirmModalLabel{{ object.pk }}" aria-hidden="true">
                 <div class="modal-dialog">
                   <div class="modal-content">
-                    <form method="post" action="{% rota_objeto 'excluir' object %}">
+                    <form method="post" action="{% rota_objeto 'excluir' object %}?next={{ request.path }}">
                       {% csrf_token %}
                       <div class="modal-header">
                         <h5 class="modal-title" id="confirmModalLabel{{ object.pk }}">Confirmar exclusão</h5>

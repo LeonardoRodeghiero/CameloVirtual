@@ -23,7 +23,7 @@ class Camelo(models.Model):
         )
 
     def __str__(self): 
-        return self.nome_fantasia
+        return f"{self.nome_fantasia} ({self.cnpj})"
 
 class Camelo_Usuario(models.Model):
     camelo = models.ForeignKey(Camelo, related_name="relacoes_usuarios", on_delete=models.CASCADE)

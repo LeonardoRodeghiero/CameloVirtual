@@ -4,9 +4,6 @@
     
 <div class="d-flex">
   <div>Categorias</div>
-  <div class="ms-auto">
-        <a href="{% url 'cadastrar-categoria' %}" class="btn btn-primary">Adicionar Categoria</a>
-  </div>
 </div>
 
 {% endblock %}
@@ -16,6 +13,7 @@
     <th>id</th>
     <th>nome</th>
     <th>descrição</th>
+    <th>Camelô</th>
 {% endblock%}
 
 
@@ -24,4 +22,5 @@
     <td>{{object.pk}}</td>
     <td>{{object.nome}}</td>
     <td class="{% if not object.descricao %}text-muted{% endif %}">{{object.descricao|default:"&ndash;"|safe}}</td>
+    <td>{{object.camelo}}</td>
 {% endblock %}

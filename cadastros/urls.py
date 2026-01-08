@@ -10,8 +10,9 @@ from .views import CategoriaList, PerfilList, ProdutoList, CarrinhoList, CameloL
 
 urlpatterns = [
     
-    path('cadastrar/categoria/', CategoriaCreate.as_view(), name="cadastrar-categoria"),
-    path('cadastrar/produto/', ProdutoCreate.as_view(), name="cadastrar-produto"),
+    path('<int:pk>/cadastrar/categoria/', CategoriaCreate.as_view(), name="cadastrar-categoria"),
+
+    path('<int:pk>/cadastrar/produto/', ProdutoCreate.as_view(), name="cadastrar-produto"),
     path('cadastrar/camelo/', CameloCreate.as_view(), name="cadastrar-camelo"),
     path('carrinho/<int:produto_id>/', CarrinhoCreate.as_view(), name="adicionar-ao-carrinho"),
     path('carrinho/adicionar/<int:produto_id>/', CarrinhoProdutoCreate.as_view(), name="adicionar-produto-carrinho"),

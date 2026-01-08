@@ -4,9 +4,6 @@
 
 <div class="d-flex">
   <div>Produtos</div>
-  <div class="ms-auto">
-        <a href="{% url 'cadastrar-produto' %}" class="btn btn-primary">Adicionar Produto</a>
-  </div>
 </div>
 
 {% endblock %}
@@ -23,6 +20,7 @@
     <th>quantidade</th>
     <th>quantidade vendido</th>
     <th>avaliação geral</th>
+    <th>Camelô</th>
 {% endblock%}
 
 
@@ -40,7 +38,7 @@
     <td>{{object.quantidade}}</td>
     <td>{{object.quantidade_vendido}}</td>
     <td>{{object.avaliacao_geral}}</td>
-    
+    <td>{{object.camelo}}</td>
 
 
 {% endblock %}
