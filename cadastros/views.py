@@ -449,6 +449,14 @@ class CategoriaCameloList(LoginRequiredMixin, ListView):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect('login')  # ou sua URL personalizada de login
+
+        camelo_id = kwargs.get('pk')
+        camelo = get_object_or_404(Camelo, pk=camelo_id)
+
+        if not camelo.usuarios.filter(id=request.user.id).exists():
+            return redirect('acesso-negado-camelo', pk=camelo_id)
+
+
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -478,8 +486,11 @@ class CategoriaCameloList(LoginRequiredMixin, ListView):
         ]
 
         camelo_id = self.kwargs.get("pk") 
-        camelo = get_object_or_404(Camelo, pk=camelo_id) 
-        context["camelo"] = camelo
+        if camelo_id:
+            campos = [(name, label) for name, label in campos if name != "camelo"] 
+            camelo = get_object_or_404(Camelo, pk=camelo_id) 
+            context["camelo"] = camelo
+
 
         campo_escolhido = self.request.GET.get('campo')
         
@@ -608,26 +619,39 @@ class ProdutoCameloList(LoginRequiredMixin, ListView):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect('login')  # ou sua URL personalizada de login
+
+        camelo_id = kwargs.get('pk')
+        camelo = get_object_or_404(Camelo, pk=camelo_id)
+
+        if not camelo.usuarios.filter(id=request.user.id).exists():
+            return redirect('acesso-negado-camelo', pk=camelo_id)
+
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        camelo_id = self.kwargs.get("pk") # pega o id do camelô da URL
+        camelo_id = self.kwargs.get("pk")  # pode ser None na lista geral
         campo_escolhido = self.request.GET.get('campo')
-        valor = self.request.GET.get(campo_escolhido)  # valor digitado no input
+        valor = self.request.GET.get(campo_escolhido)
 
-        if valor is None:
-            return Produto.objects.filter(camelo_id=camelo_id)
+        # lista geral → sem pk → retorna tudo
+        if camelo_id is None:
+            qs = Produto.objects.all()
+        else:
+            qs = Produto.objects.filter(camelo_id=camelo_id)
 
+        # se não tem valor, retorna tudo (já filtrado pelo camelô se houver pk)
+        if not valor:
+            return qs
 
+        # aplica filtro de pesquisa
         field = Produto._meta.get_field(campo_escolhido)
         if field.get_internal_type() == "ForeignKey":
-            filtro = {f"{campo_escolhido}__nome__icontains": valor, "camelo_id": camelo_id}
-
+            qs = qs.filter(**{f"{campo_escolhido}__nome__icontains": valor})
         else:
-            filtro = {f"{campo_escolhido}__icontains": valor}
+            qs = qs.filter(**{f"{campo_escolhido}__icontains": valor})
 
-        
-        return Produto.objects.filter(**filtro)
+        return qs
+
 
     
 
@@ -639,9 +663,13 @@ class ProdutoCameloList(LoginRequiredMixin, ListView):
             for field in self.model._meta.fields
             if field.name != 'imagem'
         ]
+       
         camelo_id = self.kwargs.get("pk") 
-        camelo = get_object_or_404(Camelo, pk=camelo_id) 
-        context["camelo"] = camelo
+        if camelo_id:
+            campos = [(name, label) for name, label in campos if name != "camelo"] 
+            camelo = get_object_or_404(Camelo, pk=camelo_id) 
+            context["camelo"] = camelo
+
 
 
         campo_escolhido = self.request.GET.get('campo')

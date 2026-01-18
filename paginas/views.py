@@ -34,7 +34,18 @@ class CameloView(TemplateView):
 class AcessoNegadoView(TemplateView):
     template_name = 'paginas/acesso_negado.html'
 
+class AcessoNegadoCameloView(TemplateView):
+    template_name = 'paginas/acesso_negado_camelo.html'
 
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+        
+        camelo_id = self.kwargs.get("pk") 
+        camelo = get_object_or_404(Camelo, pk=camelo_id) 
+        context["camelo"] = camelo
+
+        return context
 
 class ClienteProdutoList(ListView):
 

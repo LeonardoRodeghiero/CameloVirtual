@@ -15,6 +15,7 @@
     <th>nome</th>
     <th>marca</th>
     <th>categoria</th>
+    <th>fornecedor</th>
     <th>descrição</th>
     <th>preço</th>
     <th>quantidade</th>
@@ -33,6 +34,8 @@
     <!-- <td class="{% if not object.descricao %}text-muted{% endif %}">{{object.descricao|default:"&ndash;"|safe}}</td> -->
     <td>{{object.marca}}</td>
     <td>{{object.categoria}}</td>
+    <td>{{object.fornecedor|default:"&ndash;"|safe}}</td>
+
     <td>{{object.descricao}}</td>
     <td>R${{object.preco}}</td>
     <td>{{object.quantidade}}</td>
