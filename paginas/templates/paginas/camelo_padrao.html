@@ -404,7 +404,7 @@
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-md-8 col-lg-6">
-                    <form class="mb-4" action="{% url 'produtos' %}" method="get">
+                    <form class="mb-4" action="{% url 'produtos-camelo' camelo.pk %}" method="get">
                         <div class="input-group">
                         <input type="text" name="nome" id="nome" class="form-control" placeholder="Procure por um produto..." value="{{ request.GET.nome }}" autocomplete="off">
                         <button class="btn" type="submit" style="background-color: var(--preto); color: white;">

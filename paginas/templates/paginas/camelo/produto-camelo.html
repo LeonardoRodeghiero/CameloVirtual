@@ -1,0 +1,81 @@
+{% extends 'paginas/camelo_padrao.html' %}
+
+{% block conteudo %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+        <form class="mb-4" action="{% url 'produtos-camelo' camelo.pk %}" method="get">
+            <div class="input-group">
+            <input type="text" name="nome" id="nome" class="form-control" placeholder="Procure por um produto..." value="{{ request.GET.nome }}" autocomplete="off">
+            <button class="btn" type="submit" style="background-color: var(--preto); color: white;">
+                <i class="bi bi-search"></i> Buscar
+            </button>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="container py-5">
+  <div class="row g-5">
+    <!-- Imagem do produto -->
+    <div class="col-md-5">
+      <div class="card shadow-sm border-0">
+        <img src="{{ object.imagem.url }}" class="card-img-top img-fluid rounded" alt="{{ object.nome }}">
+      </div>
+    </div>
+
+    <!-- Informações do produto -->
+    <div class="col-md-7">
+      <div class="card border-0">
+        <div class="card-body px-0">
+          <h2 class="card-title fw-bold">{{ object.nome }} {{ object.marca }}</h2>
+          <h4 class="text-success fw-semibold mt-2">R$ {{ object.preco }}</h4>
+
+          <!-- Avaliação com estrelas -->
+          <div class="my-3">
+            {% for i in "12345" %}
+              <i class="bi bi-star-fill text-warning"></i>
+            {% endfor %}
+            <small class="text-muted ms-2">(Avaliação média)</small>
+          </div>
+
+          <p class="card-text text-muted">{{ object.descricao }}</p>
+
+          <form action="{% url 'adicionar-produto-carrinho' produto.id %}" method="post" class="mt-4">
+            {% csrf_token %}
+            <div class="mb-3 d-flex align-items-center">
+              <label for="quantidade" class="form-label me-3 fw-semibold mb-0">Quantidade:</label>
+              <div class="input-group" style="max-width: 150px;">
+                <button type="button" class="btn btn-outline-secondary" onclick="alterarQuantidade(-1)">
+                  <i class="bi bi-dash"></i>
+                </button>
+                <input type="number" name="quantidade" id="quantidade" value="1" min="1" class="form-control text-center fw-bold">
+                <button type="button" class="btn btn-outline-secondary" onclick="alterarQuantidade(1)">
+                  <i class="bi bi-plus"></i>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">
+              <i class="bi bi-cart-plus me-2"></i>Adicionar ao Carrinho
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function alterarQuantidade(delta) {
+  const input = document.getElementById('quantidade');
+  let valor = parseInt(input.value) || 1;
+  valor = Math.max(1, valor + delta);
+  input.value = valor;
+}
+</script>
+{% endblock %}

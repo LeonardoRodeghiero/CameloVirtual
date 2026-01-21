@@ -35,7 +35,7 @@ class AcessoNegadoView(TemplateView):
     template_name = 'paginas/acesso_negado.html'
 
 class AcessoNegadoCameloView(TemplateView):
-    template_name = 'paginas/acesso_negado_camelo.html'
+    template_name = 'paginas/camelo/acesso_negado_camelo.html'
 
     def get_context_data(self, **kwargs):
 
@@ -65,11 +65,56 @@ class ClienteProdutoList(ListView):
             self.object_list = Produto.objects.filter()
 
         return self.object_list
+
+
+class ClienteProdutoCameloList(ListView):
+
+
+    model = Produto
+    template_name = 'paginas/camelo/produtos-camelo.html'
+
+    
+    def get_queryset(self): 
+        camelo_id = self.kwargs.get("pk") 
+        qs = Produto.objects.filter(camelo_id=camelo_id) 
+
+        txt_nome = self.request.GET.get('nome') 
+        if txt_nome: 
+            qs = qs.filter(nome__icontains=txt_nome) 
+            
+        return qs
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+
+        camelo_id = self.kwargs.get("pk") 
+        
+        camelo = get_object_or_404(Camelo, pk=camelo_id) 
+        context["camelo"] = camelo
+
+        return context
     
 class ProdutoEspecifico(DetailView):
     model = Produto
     template_name = 'paginas/produto.html'
 
+class ProdutoCameloEspecifico(DetailView):
+    model = Produto
+    template_name = 'paginas/camelo/produto-camelo.html'
+
+    def get_object(self, queryset=None): 
+        produto_id = self.kwargs.get("produto_id") 
+        camelo_id = self.kwargs.get("camelo_id") # garante que só pega produto do camelô atual 
+        return get_object_or_404(Produto, pk=produto_id, camelo_id=camelo_id)
+
+    def get_context_data(self, **kwargs): 
+        context = super().get_context_data(**kwargs) 
+        camelo_id = self.kwargs.get("camelo_id") 
+        camelo = get_object_or_404(Camelo, pk=camelo_id) 
+        context["camelo"] = camelo 
+        return context
 
 class VerCarrinho(ListView):
     model = Carrinho_Produto
