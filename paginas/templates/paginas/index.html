@@ -422,6 +422,21 @@
                 </div>
             </div>
 
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-8 col-lg-6">
+                    <form class="mb-4" action="{% url 'camelos' %}" method="get">
+                        <div class="input-group">
+                        <input type="text" name="nome_fantasia" id="nome_fantasia" class="form-control" placeholder="Procure por um camelô..." value="{{ request.GET.nome_fantasia }}" autocomplete="off">
+                        <button class="btn" type="submit" style="background-color: var(--preto); color: white;">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                        </div>
+                    </form>
+                    </div>
+                </div>
+            </div>
+
         {% endblock %}
     </div>
     

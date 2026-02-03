@@ -66,6 +66,25 @@ class ClienteProdutoList(ListView):
 
         return self.object_list
 
+class ClienteCameloList(ListView):
+
+
+    model = Camelo
+    template_name = 'paginas/camelo/camelos.html'
+
+    
+    def get_queryset(self):
+        self.object_list = Camelo.objects.filter()
+
+        txt_nome = self.request.GET.get('nome_fantasia')
+
+        if txt_nome:
+            self.object_list = Camelo.objects.filter(nome_fantasia__icontains=txt_nome)
+        else:
+            self.object_list = Camelo.objects.filter()
+
+        return self.object_list
+
 
 class ClienteProdutoCameloList(ListView):
 
