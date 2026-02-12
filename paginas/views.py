@@ -18,6 +18,9 @@ from django.utils import timezone
 class IndexView(TemplateView):
     template_name = "paginas/index.html"
 
+class EmailConfirmacaoView(TemplateView):
+    template_name = "paginas/confirmar.html"
+
 
 class CameloView(TemplateView):
     template_name = "paginas/camelo_padrao.html"

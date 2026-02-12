@@ -216,3 +216,21 @@ LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index'
 LOGIN_URL = 'login'
 
+
+#  CONFIGURAÇÃO DE E-MAIL
+
+# Backend de envio de e-mail
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+# Servidor SMTP (exemplo usando Gmail)
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+# Credenciais da conta que vai enviar os e-mails
+EMAIL_HOST_USER = "rodeghieroleonardo@gmail.com"
+EMAIL_HOST_PASSWORD = "tdep hljf qlew hbwe"
+
+# Endereço padrão do remetente
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+

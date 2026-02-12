@@ -10,19 +10,22 @@ from .forms import EmailLoginForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login
 
-from .models import Perfil
+from .models import Perfil, CadastroPendente
 from django import forms
 
 from django.contrib import messages
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 
+from django.core.mail import send_mail
+from django.contrib.auth.hashers import make_password
+
 # Create your views here.
 
 class UsuarioCreate(CreateView):
     template_name = 'cadastros/form.html'
     form_class = UsuarioForm
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('confirmar-codigo')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -35,29 +38,107 @@ class UsuarioCreate(CreateView):
     
 
 
+    # def form_valid(self, form):
+    #     user = form.save(commit=False)
+    #     user.username = form.cleaned_data['nome_completo']
+    #     user.email = form.cleaned_data['email']
+    #     user.save()
+
+    #     grupo = get_object_or_404(Group, name='cliente')
+    #     user.groups.add(grupo)
+
+    #     Perfil.objects.create(
+    #         usuario=user,
+    #         nome_completo=form.cleaned_data['nome_completo'],
+    #         cpf=form.cleaned_data['cpf'],
+    #         telefone=form.cleaned_data['telefone'],
+    #         estado=form.cleaned_data['estado'],
+    #         cidade=form.cleaned_data['cidade'],
+    #     )
+
+    #     login(self.request, user)
+
+    #     self.object = user
+
+    #     return redirect(self.success_url)
+
     def form_valid(self, form):
-        user = form.save(commit=False)
-        user.username = form.cleaned_data['nome_completo']
-        user.email = form.cleaned_data['email']
-        user.save()
+        dados = form.cleaned_data
 
-        grupo = get_object_or_404(Group, name='cliente')
-        user.groups.add(grupo)
+        cadastro = CadastroPendente.objects.create(
+            nome_completo=dados['nome_completo'],
+            email=dados['email'], # vai virar o email do User
+            senha=make_password(dados['password1']), # senha em texto puro, hash será aplicado depois
+            cpf=dados['cpf'],
+            telefone=dados['telefone'],
+            estado=dados['estado'],
+            cidade=dados['cidade'],
+            bairro=dados.get('bairro'),
+            logradouro=dados.get('logradouro'),
+            numero=dados.get('numero'),
+            complemento=dados.get('complemento'),
+            cep=dados.get('cep'),
+        )
+        cadastro.gerar_codigo()
 
-        Perfil.objects.create(
-            usuario=user,
-            nome_completo=form.cleaned_data['nome_completo'],
-            cpf=form.cleaned_data['cpf'],
-            telefone=form.cleaned_data['telefone'],
-            estado=form.cleaned_data['estado'],
-            cidade=form.cleaned_data['cidade'],
+        send_mail(
+            "Confirmação de cadastro",
+            f"Seu código é {cadastro.codigo}",
+            "rodeghieroleonardo@gmail.com", # AQUI É O EMAIL QUE ENVIA OS CÓDIGOS
+            [cadastro.email]
         )
 
-        login(self.request, user)
+        return redirect("confirmar-codigo", email=cadastro.email)
 
-        self.object = user
 
-        return redirect(self.success_url)
+
+def confirmar_codigo(request, email):
+    cadastro = get_object_or_404(CadastroPendente, email=email)
+
+    if cadastro.expirado(): 
+        cadastro.delete() 
+        return render(request, "paginas/confirmar.html", { 
+            "expirou": "Este cadastro expirou. Faça o registro novamente.", 
+            "email": email 
+        })
+
+    if request.method == "POST":
+        codigo = request.POST.get("codigo")
+
+        if codigo == cadastro.codigo:
+            # cria usuário real
+            user = User.objects.create(
+                username=cadastro.nome_completo,
+                email=cadastro.email,
+                password=cadastro.senha  # já está com hash
+            )
+
+            grupo = Group.objects.get(name="cliente")
+            user.groups.add(grupo)
+
+            Perfil.objects.create(
+                usuario=user,
+                nome_completo=cadastro.nome_completo,
+                cpf=cadastro.cpf,
+                telefone=cadastro.telefone,
+                estado=cadastro.estado,
+                cidade=cadastro.cidade,
+                bairro=cadastro.bairro,
+                logradouro=cadastro.logradouro,
+                numero=cadastro.numero,
+                complemento=cadastro.complemento,
+                cep=cadastro.cep,
+            )
+
+            cadastro.delete()
+            login(request, user)
+            return redirect("index")
+
+        return render(request, "paginas/confirmar.html", {"erro": "Código inválido", "email": email})
+
+    return render(request, "paginas/confirmar.html", {"email": email})
+
+
 
 
 

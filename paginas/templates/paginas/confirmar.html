@@ -1,0 +1,25 @@
+{% extends 'paginas/index.html' %}
+
+{% block conteudo %}
+  <h2>Confirme seu cadastro</h2>
+
+    {% if expirou %}
+        <p style="color:red;">{{ expirou }}</p>
+
+
+    {% else %}
+        {% if erro %}
+        <p style="color:red;">{{ erro }}</p>
+        {% endif %}
+
+        <p>Digite o código enviado para {{ email }}</p>
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="codigo" placeholder="Código de verificação" required>
+            <button type="submit">Confirmar</button>
+        </form>
+    {% endif %}
+
+  
+
+{% endblock %}
