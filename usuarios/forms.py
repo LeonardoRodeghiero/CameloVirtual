@@ -14,6 +14,25 @@ class BootstrapFormMixin:
                 widget.attrs['class'] += ' form-control'
 
 
+# FUNÇÃO PARA VALIDAR CPF
+
+# def validar_cpf(cpf):
+#         cpf = ''.join(filter(str.isdigit, cpf))
+
+#         if len(cpf) != 11:
+#             return False
+
+#         if cpf == cpf[0] * 11:
+#             return False
+
+#         for i in range(9, 11):
+#             soma = sum(int(cpf[num]) * ((i + 1) - num) for num in range(0, i))
+#             digito = ((soma * 10) % 11) % 10
+#             if digito != int(cpf[i]):
+#                 return False
+
+
+#         return True
 
 
 class UsuarioForm(UserCreationForm):
@@ -72,10 +91,19 @@ class UsuarioForm(UserCreationForm):
             raise forms.ValidationError("Este nome já está cadastrado.")
         return nome
 
+
+    
+
     def clean_cpf(self):
         cpf = self.cleaned_data['cpf']
+
+        # verificação de cpf válido
+        # if not validar_cpf(cpf):
+        #     raise forms.ValidationError("CPF inválido.")
+
         if Perfil.objects.filter(cpf=cpf).exists():
             raise forms.ValidationError("Este CPF já está cadastrado.")
+
         return cpf
 
     def clean_telefone(self):
@@ -158,6 +186,13 @@ class PerfilForm(forms.ModelForm):
 
     def clean_cpf(self):
         cpf = self.cleaned_data['cpf']
+
+        # verificação de cpf válido
+
+        # if not validar_cpf(cpf):
+        #     raise forms.ValidationError("CPF inválido.")
+
+
         qs = Perfil.objects.filter(cpf=cpf)
         if self.instance.pk:
             qs = qs.exclude(pk=self.instance.pk)
