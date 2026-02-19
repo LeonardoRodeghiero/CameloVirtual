@@ -2,7 +2,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views import View
 
-from .models import Categoria, Produto, Carrinho, Carrinho_Produto, Camelo, Camelo_Usuario
+from .models import Categoria, Produto, Carrinho, Carrinho_Produto, Camelo, Camelo_Usuario, Pedido, Pedido_Produto
 
 from usuarios.models import Perfil
 
@@ -187,6 +187,64 @@ class CameloCreate(LoginRequiredMixin, CreateView):
             usuario=self.request.user
         )
         return response
+
+
+class PedidoCarrinho(LoginRequiredMixin, View):
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        return super().dispatch(request, *args, **kwargs)
+
+
+    def post(self, request, *args, **kwargs):
+        carrinho = get_object_or_404(Carrinho, usuario=request.user)
+
+        if not carrinho.produtos.exists():
+            return redirect('ver-carrinho')
+
+        total = sum(item.produto.preco * item.quantidade for item in carrinho.produtos.all())
+
+        pedido = Pedido.objects.create(
+            usuario=request.user,
+            valor_total=total, 
+            data_pedido=timezone.now(),
+            status="em andamento"
+        )
+
+        for item in carrinho.produtos.all():
+            Pedido_Produto.objects.create(
+                pedido=pedido,
+                produto=item.produto,
+                quantidade=item.quantidade,
+                preco_unitario=item.produto.preco
+            )
+
+        
+        carrinho.produtos.all().delete()
+
+        return redirect('index')
+        
+class PedidoProdutoDireto(View):
+    def post(self, request, *args, **kwargs):
+        produto = get_object_or_404(Produto, id=kwargs['produto_id'])
+        quantidade = int(request.POST.get('quantidade', 1))
+
+        pedido = Pedido.objects.create(
+            usuario=request.user,
+            valor_total=produto.preco * quantidade,
+            data_pedido=timezone.now(),
+            status="em andamento"
+        )
+
+        Pedido_Produto.objects.create(
+            pedido=pedido,
+            produto=produto,
+            quantidade=quantidade,
+            preco_unitario=produto.preco
+        )
+
+        return redirect('index')
 
 
 

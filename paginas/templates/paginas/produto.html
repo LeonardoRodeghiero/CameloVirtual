@@ -62,6 +62,13 @@
               <i class="bi bi-cart-plus me-2"></i>Adicionar ao Carrinho
             </button>
           </form>
+          <form action="{% url 'realizar-pedido-direto' produto.id %}" method="post" class="mt-4">
+            {% csrf_token %}
+          
+            <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">
+              <i class="bi bi-cart-plus me-2"></i>Realizar Pedido
+            </button>
+          </form>
         </div>
       </div>
     </div>
