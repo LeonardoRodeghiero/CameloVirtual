@@ -24,6 +24,8 @@ from django.utils import timezone
 from datetime import datetime
 
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField
+
+from django.core.exceptions import ValidationError
 # Create your views here.
 
 # Create
@@ -179,7 +181,39 @@ class CameloCreate(LoginRequiredMixin, CreateView):
 
         return context
 
+
+    @staticmethod
+    def validar_cnpj(value):
+        if len(value) != 18:
+            raise ValidationError("CNPJ deve ter 18 dígitos.")
+
+        cnpj = ''.join(filter(str.isdigit, value))
+
+        pesos1 = [5,4,3,2,9,8,7,6,5,4,3,2]
+        pesos2 = [6] + pesos1
+
+        def calcular_digito(cnpj, pesos):
+            soma = sum(int(digito) * peso for digito, peso in zip(cnpj, pesos))
+            resto = soma % 11
+            return '0' if resto < 2 else str(11 - resto)
+
+        digito1 = calcular_digito(cnpj[:12], pesos1)
+        digito2 = calcular_digito(cnpj[:12] + digito1, pesos2)
+
+        if cnpj[-2:] != digito1 + digito2:
+            raise ValidationError("CNPJ inválido.")
+
+
+
     def form_valid(self, form):
+
+        # try: 
+        #     self.validar_cnpj(form.cleaned_data['cnpj']) 
+        # except ValidationError as e: 
+        #     form.add_error('cnpj', e) 
+        #     return self.form_invalid(form)
+
+
         response = super().form_valid(form)
         # adiciona o usuário logado como administrador
         Camelo_Usuario.objects.create(
