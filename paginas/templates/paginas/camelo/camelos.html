@@ -4,9 +4,9 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
-        <form class="mb-4" action="{% url 'produtos' %}" method="get">
+        <form class="mb-4" action="{% url 'camelos' %}" method="get">
             <div class="input-group">
-            <input type="text" name="nome" id="nome" class="form-control" placeholder="Procure por um produto..." value="{{ request.GET.nome }}" autocomplete="off">
+            <input type="text" name="nome_fantasia" id="nome_fantasia" class="form-control" placeholder="Procure por um camelô..." value="{{ request.GET.nome_fantasia }}" autocomplete="off">
             <button class="btn" type="submit" style="background-color: var(--preto); color: white;">
                 <i class="bi bi-search"></i> Buscar
             </button>
@@ -22,9 +22,9 @@
         <div class="col-md-8">
           <div class="card mb-3 shadow-sm">
             <div class="row g-0">
-              {% if object.imagem %}
+              {% if object.imagem_logo %}
               <div class="col-md-4">
-                <img src="{{ object.imagem_logo.url }}" alt="" style="width: 100px;">
+                <img src="{{ object.imagem_logo.url }}" class="img-fluid rounded-start" alt="{{ object.nome_fantasia }}">
               </div>
               {% endif %}
               <div class="col-md-8">
@@ -41,6 +41,10 @@
                             <i class="bi bi-star text-warning"></i>
                         {% endif %}
                     {% endfor %}
+                  
+                  <p class="card-text">{{ object.descricao_loja}}</p>
+                  <p class="card-text">{{ object.telefone}}</p>
+
                 </div>
               </div>
             </div>
