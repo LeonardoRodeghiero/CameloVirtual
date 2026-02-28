@@ -44,13 +44,19 @@ class CadastroPendente(models.Model):
 
 
     codigo = models.CharField(max_length=6) 
+    codigo_sms = models.CharField(max_length=6) 
+
     criado_em = models.DateTimeField(auto_now_add=True)
 
     def gerar_codigo(self):
         self.codigo = str(random.randint(100000, 999999))
         self.save()
+    
+    def gerar_codigo_sms(self):
+        self.codigo_sms = str(random.randint(100000, 999999))
+        self.save()
 
     def expirado(self): 
-        return timezone.now() > self.criado_em + timedelta(minutes=10)
+        return timezone.now() > self.criado_em + timedelta(seconds=600)
 
-
+    

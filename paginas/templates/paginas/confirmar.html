@@ -12,10 +12,23 @@
         <p style="color:red;">{{ erro }}</p>
         {% endif %}
 
-        <p>Digite o código enviado para {{ email }}</p>
+        
         <form method="post">
             {% csrf_token %}
-            <input type="text" name="codigo" placeholder="Código de verificação" required>
+            <p>Digite o código enviado para {{ email }}</p>
+            <input type="text" name="codigo_email" placeholder="Código de verificação de e-mail" required>
+
+            {% if erros.email %}
+                <p style="color:red;">{{ erros.email }}</p>
+            {% endif %}
+
+            <p>Digite o código enviado via sms para {{ telefone }}</p>
+            <input type="text" name="codigo_sms" placeholder="Código de verificação de telefone" required>
+
+            {% if erros.telefone %}
+                <p style="color:red;">{{ erros.telefone }}</p>
+            {% endif %}
+
             <button type="submit">Confirmar</button>
         </form>
     {% endif %}

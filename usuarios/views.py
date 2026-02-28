@@ -20,6 +20,10 @@ from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.contrib.auth.hashers import make_password
 
+from twilio.rest import Client
+from decouple import config
+
+
 # Create your views here.
 
 class UsuarioCreate(CreateView):
@@ -68,7 +72,7 @@ class UsuarioCreate(CreateView):
         cadastro = CadastroPendente.objects.create(
             nome_completo=dados['nome_completo'],
             email=dados['email'], # vai virar o email do User
-            senha=make_password(dados['password1']), # senha em texto puro, hash será aplicado depois
+            senha=make_password(dados['password1']), 
             cpf=dados['cpf'],
             telefone=dados['telefone'],
             estado=dados['estado'],
@@ -80,6 +84,7 @@ class UsuarioCreate(CreateView):
             cep=dados.get('cep'),
         )
         cadastro.gerar_codigo()
+        cadastro.gerar_codigo_sms()
 
         send_mail(
             "Confirmação de cadastro",
@@ -88,6 +93,27 @@ class UsuarioCreate(CreateView):
             [cadastro.email]
         )
 
+
+        telefone = cadastro.telefone
+        telefone = telefone.replace("(", "")
+        telefone = telefone.replace(")", "")
+        telefone = telefone.replace("-", "")
+        telefone = telefone.strip(" ")
+        telefone = telefone.replace(" ", "")
+        telefone = "+55" + telefone
+
+
+
+        print(telefone)
+        # Envia SMS 
+        account_sid = config("TWILIO_SID")
+        auth_token = config("TWILIO_AUTH_TOKEN")
+        client = Client(account_sid, auth_token) 
+        client.messages.create( 
+            body=f"Seu código de telefone é {cadastro.codigo_sms}", 
+            from_=config("TWILIO_NUMBER"), 
+            to=telefone 
+        )
         return redirect("confirmar-codigo", email=cadastro.email)
 
 
@@ -99,13 +125,24 @@ def confirmar_codigo(request, email):
         cadastro.delete() 
         return render(request, "paginas/confirmar.html", { 
             "expirou": "Este cadastro expirou. Faça o registro novamente.", 
-            "email": email 
+            "email": email,
+            "telefone": cadastro.telefone,
         })
 
     if request.method == "POST":
-        codigo = request.POST.get("codigo")
+        codigo_email = request.POST.get("codigo_email")
+        codigo_sms = request.POST.get("codigo_sms")
 
-        if codigo == cadastro.codigo:
+        erros = {}
+
+        if codigo_email != cadastro.codigo:
+            erros["email"] = "Código de e-mail inválido"
+
+        if codigo_sms != cadastro.codigo_sms:
+            erros["telefone"] = "Código de telefone inválido"
+
+
+        if not erros:
             # cria usuário real
             user = User.objects.create(
                 username=cadastro.nome_completo,
@@ -134,9 +171,9 @@ def confirmar_codigo(request, email):
             login(request, user)
             return redirect("index")
 
-        return render(request, "paginas/confirmar.html", {"erro": "Código inválido", "email": email})
+        return render(request, "paginas/confirmar.html", {"email": email, "telefone": cadastro.telefone, "erros": erros})
 
-    return render(request, "paginas/confirmar.html", {"email": email})
+    return render(request, "paginas/confirmar.html", {"email": email, "telefone": cadastro.telefone})
 
 
 
