@@ -74,9 +74,82 @@
     </div>
   </div>
 </div>
+
+
+  <div class="mt-4">
+    {% if not ja_avaliou %}
+      <h5>Deixe sua avaliação:</h5>
+      <form method="post">
+        {% csrf_token %}
+        
+          <div class="rating mb-3">
+          {% for i in "54321" %}
+            <input type="radio" id="star{{ i }}" name="nota" value="{{ i }}">
+            <label for="star{{ i }}" title="{{ i }} estrelas">
+              <i class="bi bi-star-fill"></i>
+            </label>
+          {% endfor %}
+          </div>
+
+        {{ form.mensagem }}
+        <button type="submit" class="btn btn-success mt-2">Enviar Avaliação</button>
+      </form>
+    {% endif %}
+  </div>
+
+<div class="mt-4">
+  <h5>Avaliações:</h5>
+  {% for avaliacao in avaliacoes %}
+    <p>
+      <strong>{{ avaliacao.usuario.username }}</strong> - 
+      Nota: {{ avaliacao.nota }} <i class="bi bi-star-fill text-warning"></i><br>
+      {{ avaliacao.mensagem }}
+    </p>
+  {% empty %}
+    <p>Este produto ainda não possui avaliações.</p>
+  {% endfor %}
+</div>
 {% endblock %}
 
+
+
+
+
+
+
 {% block scripts %}
+<style>
+  .rating {
+  display: flex;
+  flex-direction: row-reverse; /* 5 estrelas à direita */
+  justify-content: flex-start;
+  gap: 10px; /* espaçamento entre as estrelas */
+  margin-left: 0; /* garante que não haja recuo */
+}
+
+.rating input {
+  display: none; /* esconde os radios */
+}
+
+
+.rating label {
+  font-size: 2rem;
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.rating input:checked ~ label {
+  color: gold;
+}
+
+.rating label:hover,
+.rating label:hover ~ label {
+  color: gold;
+}
+
+</style>
+
 <script>
 function alterarQuantidade(delta) {
   const input = document.getElementById('quantidade');

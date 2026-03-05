@@ -3,6 +3,10 @@ from django.views.generic import TemplateView
 
 
 from cadastros.views import Produto, Carrinho_Produto, Carrinho, Camelo
+
+from cadastros.models import Produto, Avaliacao
+from cadastros.forms import AvaliacaoForm
+
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views import View
@@ -121,6 +125,34 @@ class ClienteProdutoCameloList(ListView):
 class ProdutoEspecifico(DetailView):
     model = Produto
     template_name = 'paginas/produto.html'
+    context_object_name = 'produto'
+
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        produto = self.object
+        usuario = self.request.user
+
+        ja_avaliou = Avaliacao.objects.filter(produto=produto, usuario=usuario)
+
+        context['form'] = AvaliacaoForm()
+        context['avaliacoes'] = Avaliacao.objects.filter(produto=self.object)
+        context['ja_avaliou'] = ja_avaliou
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = AvaliacaoForm(request.POST)
+        if form.is_valid():
+            avaliacao = form.save(commit=False)
+            avaliacao.usuario = request.user
+            avaliacao.produto = self.object
+            avaliacao.save()
+            return redirect('produto', pk=self.object.pk)
+        context = self.get_context_data(form=form)
+        return self.render_to_response(context)
+
 
 class ProdutoCameloEspecifico(DetailView):
     model = Produto

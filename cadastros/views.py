@@ -2,7 +2,9 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views import View
 
-from .models import Categoria, Produto, Carrinho, Carrinho_Produto, Camelo, Camelo_Usuario, Pedido, Pedido_Produto
+from .models import Categoria, Produto, Carrinho, Carrinho_Produto, Camelo, Camelo_Usuario, Pedido, Pedido_Produto, Avaliacao
+
+from .forms import AvaliacaoForm
 
 from usuarios.models import Perfil
 
@@ -281,6 +283,20 @@ class PedidoProdutoDireto(View):
         return redirect('index')
 
 
+# class AvaliacaoCreate(LoginRequiredMixin, View):
+#     def get(self, request, produto_id):
+#         form = AvaliacaoForm()
+#         return render(request, 'produto.html', {'form': form})
+
+#     def post(self, request, produto_id):
+#         form = AvaliacaoForm(request.POST)
+#         if form.is_valid():
+#             avaliacao = form.save(commit=False)
+#             avaliacao.usuario = request.user
+#             avaliacao.produto_id = produto_id
+#             avaliacao.save()
+#             return render('produto_detail', pk=produto_id)
+#         return render(request, 'produto.html', {'form': form})
 
 # Update
 class CategoriaUpdate(GroupRequiredMixin, LoginRequiredMixin, UpdateView):

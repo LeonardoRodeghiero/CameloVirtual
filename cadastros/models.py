@@ -1,6 +1,8 @@
 from django.db import models
 
 from django.contrib.auth.models import User
+
+from django.core.validators import MinValueValidator, MaxValueValidator
 # Create your models here.
 
 class Camelo(models.Model):
@@ -64,6 +66,8 @@ class Produto(models.Model):
     def __str__(self):
         return f'{self.nome} - R${self.preco}'
     
+
+
 class Carrinho(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True, verbose_name='criado em')
     atualizado_em = models.DateTimeField(auto_now=True, verbose_name='atualizado em')
@@ -88,18 +92,18 @@ class Pedido(models.Model):
 
 
 class Avaliacao(models.Model):
-    nota = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='Valor Total')
-    data_hora_mensagem = models.DateTimeField(auto_now=True, verbose_name='data do pedido')
-    mensagem = models.CharField(max_length=30, null=False, default="em andamento")
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    nota = models.IntegerField(verbose_name='Nota', validators=[MinValueValidator(1), MaxValueValidator(5)])
+    data_hora_mensagem = models.DateTimeField(auto_now=True, verbose_name='data e hora da avaliação')
+    mensagem = models.CharField(max_length=255, null=False, verbose_name="mensagem da avalição")
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     produto = models.ForeignKey(Produto, on_delete=models.CASCADE, null=True)
     camelo = models.ForeignKey(Camelo, on_delete=models.CASCADE, null=True)
 
 
     def __str__(self):
-        if self.camelo == null:
+        if self.camelo is None:
             txt = f'Avaliação de {self.usuario.nome_completo} no produto {self.produto.nome}'
-        if self.produto == null:
+        if self.produto is None:
             txt = f'Avaliação de {self.usuario.nome_completo} no camelô {self.camelo.nome_fantasia}'
 
 
