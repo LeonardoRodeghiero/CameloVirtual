@@ -34,11 +34,20 @@
           <h4 class="text-success fw-semibold mt-2">R$ {{ object.preco }}</h4>
 
           <!-- Avaliação com estrelas -->
+          
           <div class="my-3">
+            <i class="text-muted ms-2">{{ object.avaliacao_geral }}</i>
             {% for i in "12345" %}
-              <i class="bi bi-star-fill text-warning"></i>
+              {% if i|add:"0" <= media_inteira %}
+                <i class="bi bi-star-fill text-warning"></i>
+              {% elif i|add:"0" == media_inteira|add:"1" and media_meia %}
+                <i class="bi bi-star-half text-warning"></i>
+
+              {% else %}
+                <i class="bi bi-star text-warning"></i>
+              {% endif %}
             {% endfor %}
-            <small class="text-muted ms-2">(Avaliação média)</small>
+            <small class="text-muted ms-2">({{ qtd_avaliacoes }})</small>
           </div>
 
           <p class="card-text text-muted">{{ object.descricao }}</p>
@@ -66,7 +75,7 @@
             {% csrf_token %}
           
             <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">
-              <i class="bi bi-cart-plus me-2"></i>Realizar Pedido
+              <i class="bi bi-cart-check me-2"></i>Realizar Pedido
             </button>
           </form>
         </div>
@@ -102,7 +111,15 @@
   {% for avaliacao in avaliacoes %}
     <p>
       <strong>{{ avaliacao.usuario.username }}</strong> - 
-      Nota: {{ avaliacao.nota }} <i class="bi bi-star-fill text-warning"></i><br>
+      {% for i in "12345" %}
+        {% if i|add:"0" <= avaliacao.nota %}
+          <i class="bi bi-star-fill text-warning"></i>
+        {% else %}
+          <i class="bi bi-star text-warning"></i>
+        {% endif %}
+        
+      {% endfor %}
+      <br>
       {{ avaliacao.mensagem }}
     </p>
   {% empty %}

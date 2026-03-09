@@ -136,8 +136,21 @@ class ProdutoEspecifico(DetailView):
 
         ja_avaliou = Avaliacao.objects.filter(produto=produto, usuario=usuario)
 
+
+        avaliacoes = Avaliacao.objects.filter(produto=produto)
+
+        # Forma para meia estrela
+        inteira = int(produto.avaliacao_geral)
+        tem_meia = (produto.avaliacao_geral - inteira) >= 0.5
+        context["media_avaliacoes"] = round(produto.avaliacao_geral, 1)
+        context["media_inteira"] = inteira
+        context["media_meia"] = tem_meia
+
+
+
         context['form'] = AvaliacaoForm()
-        context['avaliacoes'] = Avaliacao.objects.filter(produto=self.object)
+        context['avaliacoes'] = avaliacoes
+        context['qtd_avaliacoes'] = avaliacoes.count()
         context['ja_avaliou'] = ja_avaliou
         return context
 
