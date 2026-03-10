@@ -28,6 +28,8 @@ from datetime import datetime
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField
 
 from django.core.exceptions import ValidationError
+
+from django.db.models import Q
 # Create your views here.
 
 # Create
@@ -496,6 +498,30 @@ class CarrinhoDeleteUser(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('index')
 
 
+class AvaliacaoDeleteUser(LoginRequiredMixin, DeleteView):
+
+    login_url = reverse_lazy('login')
+
+    model = Avaliacao
+    success_url = reverse_lazy('index')
+
+
+class AvaliacaoDelete(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
+
+    login_url = reverse_lazy('login')
+
+    group_required = u"administrador"
+
+    model = Avaliacao
+    success_url = reverse_lazy('listar-avaliacoes')
+
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')  # ou sua URL personalizada de login
+        if not request.user.groups.filter(name='administrador').exists():
+            return redirect('acesso-negado')  # ou 'acesso-negado'
+        return super().dispatch(request, *args, **kwargs)
 
 # List
 class CategoriaList(GroupRequiredMixin, LoginRequiredMixin, ListView):
@@ -518,14 +544,27 @@ class CategoriaList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         campo_escolhido = self.request.GET.get('campo')
         valor = self.request.GET.get(campo_escolhido)  # valor digitado no input
 
-        if valor is None:
-            categorias = Categoria.objects.all()
-        else:
-            filtro = {f"{campo_escolhido}__icontains": valor}
-            categorias = Categoria.objects.filter(**filtro)
-
         
-        return categorias
+
+        if valor is None:
+            return Categoria.objects.all()
+
+
+        field = Categoria._meta.get_field(campo_escolhido)
+        if field.get_internal_type() == "ForeignKey":
+
+            filtro = (
+                Q(**{f"camelo__nome_fantasia__icontains": valor})
+            )
+
+        else:
+            filtro = (
+                Q(**{f"{campo_escolhido}__icontains": valor})
+            )
+        
+        
+        return Categoria.objects.filter(filtro)
+
 
 
 
@@ -686,13 +725,18 @@ class ProdutoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
 
         field = Produto._meta.get_field(campo_escolhido)
         if field.get_internal_type() == "ForeignKey":
-            filtro = {f"{campo_escolhido}__nome__icontains": valor}
+            filtro = (
+                Q(**{f"categoria__nome__icontains": valor}) |
+                Q(**{f"camelo__nome_fantasia__icontains": valor})
+            )
+
 
         else:
-            filtro = {f"{campo_escolhido}__icontains": valor}
+            filtro = Q(**{f"{campo_escolhido}__icontains": valor})
+
 
         
-        return Produto.objects.filter(**filtro)
+        return Produto.objects.filter(filtro)
 
     
 
@@ -925,7 +969,10 @@ class CameloList(GroupRequiredMixin, LoginRequiredMixin, ListView):
 
         field = Camelo._meta.get_field(campo_escolhido)
         if field.get_internal_type() == "ForeignKey":
-            filtro = {f"{campo_escolhido}__username__icontains": valor}
+            filtro = (
+                Q(**{f"usuarios__username__icontains": valor}) |
+                Q(**{f"usuarios__perfil__cpf__icontains": valor})
+            )
         
         elif field.get_internal_type() in ["DateTimeField", "DateField"]:
             try:
@@ -949,10 +996,11 @@ class CameloList(GroupRequiredMixin, LoginRequiredMixin, ListView):
                 except ValueError:
                     return Camelo.objects.all()
         else:
-            filtro = {f"{campo_escolhido}__icontains": valor}
+            filtro = Q(**{f"{campo_escolhido}__icontains": valor})
+
 
         
-        return Camelo.objects.filter(**filtro)
+        return Camelo.objects.filter(filtro)
     
     def get_context_data(self, **kwargs):
 
@@ -962,11 +1010,12 @@ class CameloList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         campos_camelo = [
             (field.name, field.verbose_name.title() if field.verbose_name else field.name.title())
             for field in self.model._meta.fields
+            if field.name != 'imagem_logo'
         ]
 
         campos_usuario = [
             ("usuarios__username", "Nome Completo do Usuário"),
-            ("usuarios_cpf", "CPF do Usuário"),
+            ("usuarios__perfil__cpf", "CPF do Usuário"),
         ]
 
 
@@ -979,3 +1028,140 @@ class CameloList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         context['campos'] = campos_camelo + campos_usuario
         context['nome_modelo_lista'] = 'camelos'
         return context
+
+class AvaliacaoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
+
+    group_required = u"administrador"
+
+    model = Avaliacao
+    template_name = 'cadastros/listas/avaliacao.html'
+
+    paginate_by = 10
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')  # ou sua URL personalizada de login
+        if not request.user.groups.filter(name='administrador').exists():
+            return redirect('acesso-negado')  # ou 'acesso-negado'
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        campo_escolhido = self.request.GET.get('campo')
+        valor = self.request.GET.get(campo_escolhido)  # valor digitado no input
+
+
+        if valor is None:
+            return Avaliacao.objects.all()
+        
+        if campo_escolhido and campo_escolhido.startswith("usuarios__"):
+            filtro = {f"{campo_escolhido}__icontains": valor}
+            return Avaliacao.objects.filter(**filtro).distinct()
+
+        field = Avaliacao._meta.get_field(campo_escolhido)
+        if field.get_internal_type() == "ForeignKey":
+
+            filtro = (
+                Q(**{f"usuario__username__icontains": valor}) |
+                Q(**{f"produto__nome__icontains": valor}) |
+                Q(**{f"camelo__nome_fantasia__icontains": valor})
+            )
+
+
+        
+        elif field.get_internal_type() in ["DateTimeField", "DateField"]:
+            try:
+                # tenta DD/MM/AAAA
+                data = datetime.strptime(valor, "%d/%m/%Y").date()
+                if field.get_internal_type() == "DateTimeField":
+                    inicio = datetime.combine(data, datetime.min.time())
+                    fim = datetime.combine(data, datetime.max.time())
+                    filtro = {f"{campo_escolhido}__range": (inicio, fim)}
+                else:
+                    filtro = {campo_escolhido: data}
+
+            except ValueError:
+                try:
+                    # tenta DD/MM (sem ano)
+                    data = datetime.strptime(valor, "%d/%m")
+                    filtro = {
+                        f"{campo_escolhido}__day": data.day,
+                        f"{campo_escolhido}__month": data.month,
+                    }
+                except ValueError:
+                    return Avaliacao.objects.all()
+        else:
+            filtro = Q(**{f"{campo_escolhido}__icontains": valor})
+
+        
+        return Avaliacao.objects.filter(filtro)
+
+
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+
+        campos = [
+            (field.name, field.verbose_name.title() if field.verbose_name else field.name.title())
+            for field in self.model._meta.fields
+        ]
+
+
+        campo_escolhido = self.request.GET.get('campo')
+        
+        context['campo_escolhido'] = campo_escolhido
+        context['campos'] = campos
+        context['nome_modelo_lista'] = 'avaliacoes'
+        return context
+
+
+class PedidoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
+
+    group_required = u"administrador"
+
+    model = Categoria
+    template_name = 'cadastros/listas/categoria.html'
+
+    paginate_by = 10
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')  # ou sua URL personalizada de login
+        if not request.user.groups.filter(name='administrador').exists():
+            return redirect('acesso-negado')  # ou 'acesso-negado'
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        campo_escolhido = self.request.GET.get('campo')
+        valor = self.request.GET.get(campo_escolhido)  # valor digitado no input
+
+        if valor is None:
+            categorias = Categoria.objects.all()
+        else:
+            filtro = {f"{campo_escolhido}__icontains": valor}
+            categorias = Categoria.objects.filter(**filtro)
+
+        
+        return categorias
+
+
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+
+        campos = [
+            (field.name, field.verbose_name.title() if field.verbose_name else field.name.title())
+            for field in self.model._meta.fields
+        ]
+
+
+        campo_escolhido = self.request.GET.get('campo')
+        
+        context['campo_escolhido'] = campo_escolhido
+        context['campos'] = campos
+        context['nome_modelo_lista'] = 'categorias'
+        return context
+

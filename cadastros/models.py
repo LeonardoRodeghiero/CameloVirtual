@@ -64,7 +64,7 @@ class Produto(models.Model):
 
 
     def __str__(self):
-        return f'{self.nome} - R${self.preco}'
+        return f'{self.nome} - R${self.preco} ({self.camelo.nome_fantasia})'
     
 
 
@@ -102,9 +102,9 @@ class Avaliacao(models.Model):
 
     def __str__(self):
         if self.camelo is None:
-            txt = f'Avaliação de {self.usuario.nome_completo} no produto {self.produto.nome}'
+            txt = f'Avaliação de {self.usuario.username} no produto {self.produto.nome}'
         if self.produto is None:
-            txt = f'Avaliação de {self.usuario.nome_completo} no camelô {self.camelo.nome_fantasia}'
+            txt = f'Avaliação de {self.usuario.username} no camelô {self.camelo.nome_fantasia}'
 
 
         return txt

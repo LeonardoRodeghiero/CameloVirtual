@@ -1,0 +1,37 @@
+{% extends 'cadastros/listas/template.html' %}
+
+{% block titulo_botao %}   
+    <div class="d-flex">
+    <div>Avaliações</div>
+    </div>
+{% endblock %}
+
+
+{% block editar_proibido %}
+
+{% endblock %}
+
+
+{% block cabecalho %}
+    <th>id</th>
+    <th>Usuário</th>
+    <th>mensagem</th>
+    <th>Nota</th>
+    <th>data e hora</th>
+    <th>Produto avaliado</th>
+    <th>Camelô avaliado</th>
+    
+{% endblock%}
+
+
+
+{% block conteudo_tabela %}
+    <td>{{object.pk}}</td>
+    <td>{{object.usuario.username}}</td>
+    <td>{{object.mensagem}}</td>
+    <td>{{object.nota}}</td>
+    <td>{{object.data_hora_mensagem}}</td>
+    <td class="{% if not object.produto %}text-muted{% endif %}">{{object.produto|default:"&ndash;"|safe}}</td>
+    <td class="{% if not object.camelo %}text-muted{% endif %}">{{object.camelo|default:"&ndash;"|safe}}</td>
+    
+{% endblock %}
