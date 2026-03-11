@@ -14,10 +14,27 @@
 {% block cabecalho %}
     <th>id</th>
     <th>Usuário</th>
-    <th>mensagem</th>
-    <th>Nota</th>
-    <th>data e hora</th>
-    <th>Produto avaliado</th>
-    <th>Camelô avaliado</th>
-    
+    <th>Data do pedido</th>
+    <th>Status do pedido</th>
+    <th>Produto no Pedido</th>
+    <th>Valor Total</th>
 {% endblock%}
+
+
+{% block conteudo_tabela %}
+    <td>{{object.pk}}</td>
+    <td>{{object.usuario}}</td>
+    <td>{{object.data_pedido}}</td>
+    <td>{{object.status}}</td>
+    <td>
+        <ul>
+            {% for item in object.produtos.all %}
+                <li class="pb-2">{{item.quantidade}}X {{ item.produto.nome }} {{ item.produto.marca }} (R${{ item.preco_unitario }})</li>
+                
+            {% empty %}
+                <li>Nenhum produto</li>
+            {% endfor %}
+        </ul>
+    </td>
+    <td>R$ {{object.valor_total|floatformat:2}}</td>
+{% endblock %}

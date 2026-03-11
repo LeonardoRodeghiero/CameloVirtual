@@ -88,7 +88,7 @@ class Pedido(models.Model):
 
 
     def __str__(self):
-        return f'Pedido de {self.usuario.nome_completo} no camelô {self.camelo.nome_fantasia}'
+        return f'Pedido de {self.usuario.username}'
 
 
 class Avaliacao(models.Model):

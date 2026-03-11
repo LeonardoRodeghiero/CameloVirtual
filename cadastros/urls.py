@@ -4,9 +4,9 @@ from .views import CategoriaCreate, ProdutoCreate, CarrinhoCreate, CarrinhoProdu
 
 from .views import CategoriaUpdate, ProdutoUpdate
 
-from .views import CategoriaDelete, ProdutoDelete, CarrinhoDelete, CarrinhoDeleteUser, CameloDelete, AvaliacaoDelete, AvaliacaoDeleteUser
+from .views import CategoriaDelete, ProdutoDelete, CarrinhoDelete, CarrinhoDeleteUser, CameloDelete, AvaliacaoDelete, AvaliacaoDeleteUser, PedidoDelete, PedidoDeleteUser
 
-from .views import CategoriaList, PerfilList, ProdutoList, CarrinhoList, CameloList, CategoriaCameloList, ProdutoCameloList, AvaliacaoList
+from .views import CategoriaList, PerfilList, ProdutoList, CarrinhoList, CameloList, CategoriaCameloList, ProdutoCameloList, AvaliacaoList, PedidoList
 
 urlpatterns = [
     
@@ -31,6 +31,8 @@ urlpatterns = [
     path('excluir/camelo/<int:pk>/', CameloDelete.as_view(), name="excluir-camelo"),
     path('excluir/avaliacao/<int:pk>/', AvaliacaoDelete.as_view(), name="excluir-avaliacao"),
     path('excluir/avaliacao/usuario/<int:pk>/', AvaliacaoDeleteUser.as_view(), name="excluir-avaliacao-usuario"),
+    path('excluir/pedido/<int:pk>/', PedidoDelete.as_view(), name="excluir-pedido"),
+    path('excluir/pedido/usuario/<int:pk>/', PedidoDeleteUser.as_view(), name="excluir-pedido-usuario"),
 
 
     path('listar/categorias/', CategoriaList.as_view(), name="listar-categorias"),
@@ -44,5 +46,7 @@ urlpatterns = [
     path('listar/camelos/', CameloList.as_view(), name="listar-camelos"),
     
     path('listar/avaliacoes/', AvaliacaoList.as_view(), name="listar-avaliacoes"),
+    path('listar/pedidos/', PedidoList.as_view(), name="listar-pedidos"),
+
 
 ]

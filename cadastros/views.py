@@ -523,6 +523,32 @@ class AvaliacaoDelete(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
             return redirect('acesso-negado')  # ou 'acesso-negado'
         return super().dispatch(request, *args, **kwargs)
 
+
+class PedidoDelete(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
+
+    login_url = reverse_lazy('login')
+
+    group_required = u"administrador"
+
+    model = Pedido
+    success_url = reverse_lazy('listar-pedidos')
+
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')  # ou sua URL personalizada de login
+        if not request.user.groups.filter(name='administrador').exists():
+            return redirect('acesso-negado')  # ou 'acesso-negado'
+        return super().dispatch(request, *args, **kwargs)
+
+
+class PedidoDeleteUser(LoginRequiredMixin, DeleteView):
+
+    login_url = reverse_lazy('login')
+
+    model = Pedido
+    success_url = reverse_lazy('index')
+
 # List
 class CategoriaList(GroupRequiredMixin, LoginRequiredMixin, ListView):
 
@@ -1120,9 +1146,12 @@ class PedidoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
 
     group_required = u"administrador"
 
-    model = Categoria
-    template_name = 'cadastros/listas/categoria.html'
+    model = Pedido
+    template_name = 'cadastros/listas/pedido.html'
 
+    # foreign_key_map = {
+    #         'usuario': 'username',
+    #     }
     paginate_by = 10
 
     def dispatch(self, request, *args, **kwargs):
@@ -1136,32 +1165,79 @@ class PedidoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         campo_escolhido = self.request.GET.get('campo')
         valor = self.request.GET.get(campo_escolhido)  # valor digitado no input
 
+        qs = Pedido.objects.all()
+
+        # if campo_escolhido == "valorTotal" and valor:
+        #     qs = qs.annotate(
+        #         valor_total=Sum(
+        #             F("produtos__quantidade") * F("produtos__produto__preco"),
+        #             output_field=DecimalField()
+        #         )
+        #     ).filter(valor_total__icontains=valor)
+        #     return qs
+
         if valor is None:
-            categorias = Categoria.objects.all()
+            return Pedido.objects.all()
+        
+        if campo_escolhido.startswith("produtos__"):
+            filtro = {f"{campo_escolhido}__icontains": valor}
+            return Pedido.objects.filter(**filtro).distinct()
+
+        field = Pedido._meta.get_field(campo_escolhido)
+        if field.get_internal_type() == "ForeignKey":
+            filtro = {f"{campo_escolhido}__username__icontains": valor}
+        
+        elif field.get_internal_type() in ["DateTimeField", "DateField"]:
+            try:
+                # tenta DD/MM/AAAA
+                data = datetime.strptime(valor, "%d/%m/%Y").date()
+                if field.get_internal_type() == "DateTimeField":
+                    inicio = datetime.combine(data, datetime.min.time())
+                    fim = datetime.combine(data, datetime.max.time())
+                    filtro = {f"{campo_escolhido}__range": (inicio, fim)}
+                else:
+                    filtro = {campo_escolhido: data}
+
+            except ValueError:
+                try:
+                    # tenta DD/MM (sem ano)
+                    data = datetime.strptime(valor, "%d/%m")
+                    filtro = {
+                        f"{campo_escolhido}__day": data.day,
+                        f"{campo_escolhido}__month": data.month,
+                    }
+                except ValueError:
+                    return Pedido.objects.all()
         else:
             filtro = {f"{campo_escolhido}__icontains": valor}
-            categorias = Categoria.objects.filter(**filtro)
 
         
-        return categorias
-
-
-
+        return Pedido.objects.filter(**filtro)
+    
     def get_context_data(self, **kwargs):
 
         context = super().get_context_data(**kwargs)
 
 
-        campos = [
+        campos_pedido = [
             (field.name, field.verbose_name.title() if field.verbose_name else field.name.title())
             for field in self.model._meta.fields
         ]
+
+        campos_produto = [
+            ("produtos__produto__nome", "Nome do Produto"),
+            ("produtos__quantidade", "Quantidade"),
+        ]
+
+        # campos_extra = [
+        #     ("valorTotal", "Valor Total"),
+        # ]
 
 
         campo_escolhido = self.request.GET.get('campo')
         
         context['campo_escolhido'] = campo_escolhido
-        context['campos'] = campos
-        context['nome_modelo_lista'] = 'categorias'
+        context['campos'] = campos_pedido + campos_produto
+        context['nome_modelo_lista'] = 'pedidos'
         return context
 
