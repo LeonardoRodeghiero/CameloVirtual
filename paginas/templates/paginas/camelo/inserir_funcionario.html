@@ -1,0 +1,24 @@
+{% extends 'paginas/camelo_padrao.html' %}
+{% load static %}
+
+{% block conteudo %}
+<h1>Adicionar funcionário ao camelô {{ camelo.nome_fantasia }}</h1>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Buscar</button>
+</form>
+
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/jquery.mask.min.js' %}"></script>
+<script>
+    $(document).ready(function(){
+        $('#id_cpf').mask("000.000.000-00");
+    });
+</script>
+{% endblock %}
+    

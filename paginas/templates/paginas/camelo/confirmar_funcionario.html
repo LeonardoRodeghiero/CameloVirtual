@@ -1,0 +1,17 @@
+{% extends 'paginas/camelo_padrao.html' %}
+
+{% block conteudo %}
+<h2>Confirmar adição de funcionário</h2>
+
+<div class="card">
+  <p><strong>Nome:</strong> {{ perfil.usuario.username }}</p>
+  <p><strong>CPF:</strong> {{ perfil.cpf }}</p>
+  <p><strong>Email:</strong> {{ perfil.usuario.email }}</p>
+</div>
+
+<form method="post" action="{% url 'confirmar-funcionario' camelo.pk perfil.pk %}">
+  {% csrf_token %}
+  <button type="submit">Adicionar</button>
+</form>
+
+{% endblock %}

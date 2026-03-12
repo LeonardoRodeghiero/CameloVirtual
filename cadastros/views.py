@@ -170,7 +170,11 @@ class CameloCreate(LoginRequiredMixin, CreateView):
     model = Camelo
     fields = ['nome_fantasia', 'cnpj', 'email', 'telefone', 'descricao_loja', 'imagem_logo', 'endereco']
     template_name = 'cadastros/form.html'
-    success_url = reverse_lazy('index')
+    # success_url = reverse_lazy('camelo', kwargs={'pk': self.kwargs.get("pk")})
+
+    def get_success_url(self):
+        return reverse_lazy('camelo', kwargs={'pk': self.object.pk})
+
     
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:

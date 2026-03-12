@@ -4,18 +4,26 @@ from django.views.generic import TemplateView
 
 from cadastros.views import Produto, Carrinho_Produto, Carrinho, Camelo
 
-from cadastros.models import Produto, Avaliacao
+from cadastros.models import Produto, Avaliacao, Camelo, Camelo_Usuario
 from cadastros.forms import AvaliacaoForm
 
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views import View
 
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 
 from django.http import JsonResponse
 
 from django.utils import timezone
+
+from django.contrib.auth.models import User
+
+from .forms import BuscarUsuarioForm
+
+from django.views.generic import FormView
+
+from usuarios.models import Perfil
 # Create your views here.
 
 
@@ -236,3 +244,53 @@ def alterar_quantidade(request, item_id, acao):
     return JsonResponse({'quantidade': item.quantidade,
                         'total': f'{total:.2f}'.replace('.', ',')
                     })
+
+
+class InserirFuncionarioView(FormView):
+    template_name = "paginas/camelo/inserir_funcionario.html"
+    form_class = BuscarUsuarioForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        camelo_id = self.kwargs.get("pk")
+        camelo = get_object_or_404(Camelo, pk=camelo_id)
+        context["camelo"] = camelo
+        return context
+
+    def form_valid(self, form):
+        camelo = get_object_or_404(Camelo, pk=self.kwargs.get("pk"))
+        cpf = form.cleaned_data["cpf"]
+
+        try:
+            perfil = Perfil.objects.get(cpf=cpf)
+        except Perfil.DoesNotExist:
+            form.add_error("cpf", "Nenhum usuário encontrado com esse CPF.")
+            return self.form_invalid(form)
+
+
+        return render(self.request, "paginas/camelo/confirmar_funcionario.html", {
+            "camelo": camelo,
+            "perfil": perfil
+        })
+
+
+
+
+
+        # perfil = get_object_or_404(Perfil, cpf=cpf)
+        # usuario = perfil.usuario
+
+        # Camelo_Usuario.objects.get_or_create(camelo=camelo, usuario=usuario)
+
+        # return redirect("camelo", pk=camelo.pk)
+
+
+
+class ConfirmarFuncionarioView(View):
+    def post(self, request, pk, perfil_pk):
+        camelo = get_object_or_404(Camelo, pk=pk)
+        perfil = get_object_or_404(Perfil, pk=perfil_pk)
+        usuario = perfil.usuario
+
+        Camelo_Usuario.objects.get_or_create(camelo=camelo, usuario=usuario)
+        return redirect("camelo", pk=camelo.pk)

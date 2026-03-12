@@ -319,6 +319,9 @@
                         <li><span class="dropdown-item-text">Gerencie os dados</span></li>
                         <li><a class="dropdown-item" href="{% url 'listar-produtos-camelo' camelo.pk %}">Produtos</a></li>
                         <li><a class="dropdown-item" href="{% url 'listar-categorias-camelo' camelo.pk %}">Categorias</a></li>
+                        <li><span class="dropdown-item-text">Funcionários</span></li>
+                        <li><a href="{% url 'inserir-funcionario' camelo.pk%}" class="dropdown-item">Cadastre Funcionários</a></li>
+
                     </ul>
                 </li>
             {% endif %}
@@ -381,6 +384,10 @@
                             <span class="dropdown-item-text">Gerencie os dados</span>
                             <a href="{% url 'listar-produtos-camelo' camelo.pk %}" class="dropdown-item">Produtos</a>
                             <a href="{% url 'listar-categorias-camelo' camelo.pk %}" class="dropdown-item">Categorias</a>
+                            <span class="dropdown-item-text">Funcionários</span>
+                            <a href="{% url 'inserir-funcionario' camelo.pk%}" class="dropdown-item">Cadastre Funcionários</a>
+
+
                         </div>
                     </div>
                 </div>
