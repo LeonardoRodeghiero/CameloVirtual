@@ -23,7 +23,15 @@ from django.contrib.auth.hashers import make_password
 from twilio.rest import Client
 from decouple import config
 
+from formtools.wizard.views import SessionWizardView
 
+
+from .forms import (
+    UsuarioDadosPessoaisForm,
+    UsuarioContatoForm,
+    UsuarioEnderecoForm,
+    UsuarioSenhaForm,
+)
 # Create your views here.
 
 class UsuarioCreate(CreateView):
@@ -40,31 +48,6 @@ class UsuarioCreate(CreateView):
         return context
     
     
-
-
-    # def form_valid(self, form):
-    #     user = form.save(commit=False)
-    #     user.username = form.cleaned_data['nome_completo']
-    #     user.email = form.cleaned_data['email']
-    #     user.save()
-
-    #     grupo = get_object_or_404(Group, name='cliente')
-    #     user.groups.add(grupo)
-
-    #     Perfil.objects.create(
-    #         usuario=user,
-    #         nome_completo=form.cleaned_data['nome_completo'],
-    #         cpf=form.cleaned_data['cpf'],
-    #         telefone=form.cleaned_data['telefone'],
-    #         estado=form.cleaned_data['estado'],
-    #         cidade=form.cleaned_data['cidade'],
-    #     )
-
-    #     login(self.request, user)
-
-    #     self.object = user
-
-    #     return redirect(self.success_url)
 
     def form_valid(self, form):
         dados = form.cleaned_data
@@ -126,20 +109,20 @@ def confirmar_codigo(request, email):
         return render(request, "paginas/confirmar.html", { 
             "expirou": "Este cadastro expirou. Faça o registro novamente.", 
             "email": email,
-            "telefone": cadastro.telefone,
+            # "telefone": cadastro.telefone,
         })
 
     if request.method == "POST":
         codigo_email = request.POST.get("codigo_email")
-        codigo_sms = request.POST.get("codigo_sms")
+        # codigo_sms = request.POST.get("codigo_sms")
 
         erros = {}
 
         if codigo_email != cadastro.codigo:
             erros["email"] = "Código de e-mail inválido"
 
-        if codigo_sms != cadastro.codigo_sms:
-            erros["telefone"] = "Código de telefone inválido"
+        # if codigo_sms != cadastro.codigo_sms:
+        #     erros["telefone"] = "Código de telefone inválido"
 
 
         if not erros:
@@ -171,11 +154,97 @@ def confirmar_codigo(request, email):
             login(request, user)
             return redirect("index")
 
-        return render(request, "paginas/confirmar.html", {"email": email, "telefone": cadastro.telefone, "erros": erros})
+        return render(request, "paginas/confirmar.html", {"email": email})
+        # return render(request, "paginas/confirmar.html", {"email": email, "telefone": cadastro.telefone, "erros": erros})
 
-    return render(request, "paginas/confirmar.html", {"email": email, "telefone": cadastro.telefone})
+    return render(request, "paginas/confirmar.html", {"email": email})
 
 
+class UsuarioCreateWizard(SessionWizardView):
+    form_list = [
+        UsuarioDadosPessoaisForm,
+        UsuarioContatoForm,
+        UsuarioEnderecoForm,
+        UsuarioSenhaForm,
+    ]
+    template_name = "cadastros/form.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        titulos = {
+            '0': "Preencha seus dados pessoais",
+            '1': "Preencha seus dados para contato",
+            '2': "Informe seu endereço",
+            '3': "Defina sua senha e E-mail",
+        }
+
+        # pega o step atual e define o título
+        step_atual = self.steps.current
+        context['titulo_form'] = titulos.get(step_atual, "Crie sua conta")
+
+        # botão muda conforme etapa
+        context['titulo_botao'] = (
+            "Criar" if step_atual == self.steps.last else "Próximo"
+        )
+
+
+        current = int(self.steps.step1)
+        total = self.steps.count
+        progress_percent = int((current / total) * 100)
+
+        # pega o step anterior (se não for o primeiro)
+        previous = current - 1 if current > 1 else 0
+        previous_percent = int((previous / total) * 100)
+
+        context['progress_percent'] = progress_percent
+        context['previous_percent'] = previous_percent
+        context['progress_text'] = f"Etapa {current} de {total}"
+
+
+
+
+        return context
+
+    def done(self, form_list, **kwargs):
+        dados_pessoais = form_list[0].cleaned_data
+        contato = form_list[1].cleaned_data
+        endereco = form_list[2].cleaned_data
+        senha = form_list[3].cleaned_data
+
+        cadastro = CadastroPendente.objects.create(
+            nome_completo=dados_pessoais['nome_completo'],
+            cpf=dados_pessoais['cpf'],
+            email=senha['email'],
+            telefone=contato['telefone'],
+            estado=endereco['estado'],
+            cidade=endereco['cidade'],
+            bairro=endereco.get('bairro'),
+            logradouro=endereco.get('logradouro'),
+            numero=endereco.get('numero'),
+            complemento=endereco.get('complemento'),
+            cep=endereco.get('cep'),
+            senha=make_password(senha['password1']),
+        )
+        cadastro.gerar_codigo()
+        cadastro.gerar_codigo_sms()
+
+        send_mail(
+            "Confirmação de cadastro",
+            f"Seu código é {cadastro.codigo}",
+            "rodeghieroleonardo@gmail.com",
+            [cadastro.email]
+        )
+
+        # telefone = "+55" + ''.join(filter(str.isdigit, cadastro.telefone))
+        # client = Client(config("TWILIO_SID"), config("TWILIO_AUTH_TOKEN"))
+        # client.messages.create(
+        #     body=f"Seu código de telefone é {cadastro.codigo_sms}",
+        #     from_=config("TWILIO_NUMBER"),
+        #     to=telefone
+        # )
+
+        return redirect("confirmar-codigo", email=cadastro.email)
 
 
 

@@ -95,7 +95,7 @@ class Avaliacao(models.Model):
     nota = models.IntegerField(verbose_name='Nota', validators=[MinValueValidator(1), MaxValueValidator(5)])
     data_hora_mensagem = models.DateTimeField(auto_now=True, verbose_name='data e hora da avaliação')
     mensagem = models.CharField(max_length=255, null=False, verbose_name="mensagem da avalição")
-    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     produto = models.ForeignKey(Produto, on_delete=models.CASCADE, null=True)
     camelo = models.ForeignKey(Camelo, on_delete=models.CASCADE, null=True)
 

@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 
+from .models import Perfil
+
 class BootstrapFormMixin:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -112,8 +114,30 @@ class UsuarioForm(UserCreationForm):
             raise forms.ValidationError("Este telefone já está cadastrado.")
         return telefone
 
+class UsuarioDadosPessoaisForm(forms.ModelForm):
+    class Meta:
+        model = Perfil
+        fields = ["nome_completo", "cpf"]
 
-from .models import Perfil
+class UsuarioContatoForm(forms.ModelForm):
+    class Meta:
+        model = Perfil
+        fields = ["telefone"]
+
+class UsuarioEnderecoForm(forms.ModelForm):
+    class Meta:
+        model = Perfil
+        fields = ["estado", "cidade", "bairro", "logradouro", "numero", "complemento", "cep"]
+
+class UsuarioSenhaForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ["email", "password1", "password2"]
+
+
+
+
+
 
 class PerfilForm(forms.ModelForm):
     email = forms.EmailField(label='Email')

@@ -16,6 +16,7 @@ django-braces==1.17.0
 django-cleanup==9.0.0
 django-cloudinary-storage==0.3.0
 django-crispy-forms==2.4
+django-formtools==2.5.1
 frozenlist==1.8.0
 gunicorn==23.0.0
 idna==3.11

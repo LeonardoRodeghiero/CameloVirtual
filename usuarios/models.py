@@ -6,11 +6,42 @@ from datetime import timedelta
 # Create your models here.
 
 class Perfil(models.Model):
+    ESTADO_CHOICES = [
+        ('AC', 'Acre'),
+        ('AL', 'Alagoas'),
+        ('AP', 'Amapá'),
+        ('AM', 'Amazonas'),
+        ('BA', 'Bahia'),
+        ('CE', 'Ceará'),
+        ('DF', 'Distrito Federal'),
+        ('ES', 'Espírito Santo'),
+        ('GO', 'Goiás'),
+        ('MA', 'Maranhão'),
+        ('MT', 'Mato Grosso'),
+        ('MS', 'Mato Grosso do Sul'),
+        ('MG', 'Minas Gerais'),
+        ('PA', 'Pará'),
+        ('PB', 'Paraíba'),
+        ('PR', 'Paraná'),
+        ('PE', 'Pernambuco'),
+        ('PI', 'Piauí'),
+        ('RJ', 'Rio de Janeiro'),
+        ('RN', 'Rio Grande do Norte'),
+        ('RS', 'Rio Grande do Sul'),
+        ('RO', 'Rondônia'),
+        ('RR', 'Roraima'),
+        ('SC', 'Santa Catarina'),
+        ('SP', 'São Paulo'),
+        ('SE', 'Sergipe'),
+        ('TO', 'Tocantins'),
+    ]
+
+
     nome_completo = models.CharField(max_length=80, null=False)
     cpf = models.CharField(max_length=14, null=False, verbose_name="CPF", unique=True)
     telefone = models.CharField(max_length=16, null=False, unique=True)
     tipo = models.CharField(max_length=30, null=False, default="cliente")
-    estado = models.CharField(max_length=2, null=False)
+    estado = models.CharField(max_length=2, choices=ESTADO_CHOICES, null=False)
     cidade = models.CharField(max_length=70, null=False)
     bairro = models.CharField(max_length=100, null=True, blank=True)
     logradouro = models.CharField(max_length=100, null=True, blank=True)

@@ -1,6 +1,13 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
-from .views import UsuarioCreate, PerfilUpdate, UsuarioDelete, login_email_view, confirmar_codigo
+from .views import UsuarioCreateWizard, PerfilUpdate, UsuarioDelete, login_email_view, confirmar_codigo
+
+from .forms import (
+    UsuarioDadosPessoaisForm,
+    UsuarioContatoForm,
+    UsuarioEnderecoForm,
+    UsuarioSenhaForm,
+)
 
 
 
@@ -8,7 +15,12 @@ urlpatterns = [
     path('login/', login_email_view, name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name="logout"),
 
-    path('registrar/', UsuarioCreate.as_view(), name="registrar"),
+    path('registrar/', UsuarioCreateWizard.as_view([
+        UsuarioDadosPessoaisForm,
+        UsuarioContatoForm,
+        UsuarioEnderecoForm,
+        UsuarioSenhaForm,
+    ]), name="registrar"),
     path("confirmar/<str:email>/", confirmar_codigo, name="confirmar-codigo"),
 
     path('atualizar/perfil/<int:pk>/', PerfilUpdate.as_view(), name="atualizar-perfil"),

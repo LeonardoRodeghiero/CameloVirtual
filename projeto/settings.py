@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django_cleanup.apps.CleanupConfig',
     "cloudinary",
     "cloudinary_storage",
+    "formtools",
 
 
     'paginas.apps.PaginasConfig',

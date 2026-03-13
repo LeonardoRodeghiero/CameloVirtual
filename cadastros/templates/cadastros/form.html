@@ -14,13 +14,37 @@
     {% endblock %}
 
     <hr>
+    {% if wizard %}
+        <div class="progress mb-3">
+            <div class="progress-bar" role="progressbar"
+                data-width="{{ progress_percent }}"
+                style="width: {{ previous_percent }}%"
+                aria-valuenow="{{ progress_percent }}"
+                aria-valuemin="0"
+                aria-valuemax="100">
+                {{ progress_text }}
+            </div>
+        </div>
+    {% endif %}
+
+
+
     <form action="" method="post" enctype="multipart/form-data">
 
         {% csrf_token %}
 
-        {{ form|crispy }}
+        {% if wizard %}
+            {{ wizard.management_form }}
+            {{ wizard.form|crispy }}
+            <button type="submit" class="btn btn-primary w-100 mt-2">
+                {{ titulo_botao }}
+            </button>
+            
 
-        <button type="submit" class="btn btn-primary w-100 mt-2">{{ titulo_botao }}</button>
+        {% else %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary w-100 mt-2">{{ titulo_botao }}</button>
+        {% endif %}
 
     </form>
 
@@ -84,8 +108,20 @@
 {% endblock %}
 
 {% block scripts %}
+
+    
+
     <script src="{% static 'js/jquery.mask.min.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
+
+
+    <style>
+        .progress-bar {
+        transition: width 0.6s ease-in-out;
+        }
+    </style>
+    
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -96,9 +132,17 @@
         });
         $(document).ready(function(){
             $('#id_cpf').mask("000.000.000-00");
+            $('#id_0-cpf').mask("000.000.000-00");
+
             $('#id_telefone').mask("(00) 00000-0000");
+            $('#id_1-telefone').mask("(00) 00000-0000");
+
             $('#id_cep').mask("00000-000");
+            $('#id_2-cep').mask("00000-000");
+
             $('#id_cnpj').mask("00.000.000/0000-00");
+            $('#id_cnpj').mask("00.000.000/0000-00");
+
         });
 
         var cleave = new Cleave('#id_preco', {
@@ -112,8 +156,27 @@
             let preco = $('#id_preco').val().replace(/\./g, '').replace(',', '.');
             $('#id_preco').val(preco);
         });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const bar = document.querySelector(".progress-bar");
+            const target = bar.getAttribute("data-width");
+            bar.style.width = target + "%";
+        });
     </script>
     
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const bar = document.querySelector(".progress-bar");
+            if (bar) {
+                const target = bar.getAttribute("data-width");
+                // aplica o valor real com um pequeno delay
+                setTimeout(() => {
+                    bar.style.width = target + "%";
+                }, 100); 
+            }
+        });
+    </script>
+
 
 
 {% endblock %}
