@@ -3,6 +3,10 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from django.core.validators import MinValueValidator, MaxValueValidator
+
+import random
+from django.utils import timezone 
+from datetime import timedelta
 # Create your models here.
 
 class Camelo(models.Model):
@@ -26,6 +30,40 @@ class Camelo(models.Model):
 
     def __str__(self): 
         return f"{self.nome_fantasia} ({self.cnpj})"
+
+
+# class CameloPendente(models.Model):
+#     nome_fantasia = models.CharField(max_length=50)
+#     cnpj = models.CharField(max_length=18)
+#     email = models.EmailField(max_length=254, unique=True, blank=False, null=False,help_text="Insira E-mail para contato")    
+    
+#     telefone = models.CharField(max_length=16)
+#     data_cadastro = models.DateTimeField(auto_now=True, verbose_name='cadastrado em')
+#     status = models.CharField(max_length=50, default="ativo")
+#     descricao_loja = models.CharField(max_length=100)
+#     imagem_logo = models.FileField(upload_to='pdf/')
+#     endereco = models.CharField(max_length=150)
+
+
+#     usuarios = models.ManyToManyField( 
+#         User,
+#         through="Camelo_Usuario_Pendente", 
+#         related_name="camelos_pendente" 
+#         )
+
+#     def gerar_codigo(self):
+#         self.codigo = str(random.randint(100000, 999999))
+#         self.save()
+    
+#     def gerar_codigo_sms(self):
+#         self.codigo_sms = str(random.randint(100000, 999999))
+#         self.save()
+
+#     def expirado(self): 
+#         return timezone.now() > self.criado_em + timedelta(seconds=600)
+
+
+
 
 class Camelo_Usuario(models.Model):
     camelo = models.ForeignKey(Camelo, related_name="relacoes_usuarios", on_delete=models.CASCADE)

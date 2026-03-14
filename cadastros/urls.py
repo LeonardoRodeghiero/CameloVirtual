@@ -8,12 +8,41 @@ from .views import CategoriaDelete, ProdutoDelete, CarrinhoDelete, CarrinhoDelet
 
 from .views import CategoriaList, PerfilList, ProdutoList, CarrinhoList, CameloList, CategoriaCameloList, ProdutoCameloList, AvaliacaoList, PedidoList
 
+
+from .views import CameloCreateWizard
+from .forms import (
+    CameloIdentificacaoForm,
+    CameloContatoForm,
+    CameloPerfilForm,
+    CameloEnderecoForm,
+)
+
+from .views import ProdutoCreateWizard
+from .forms import (
+    ProdutoInformacaoForm,
+    ProdutoDetalhesForm,
+    ProdutoImagemForm,
+    ProdutoFornecedorForm,
+)
+
+
+
 urlpatterns = [
     
     path('<int:pk>/cadastrar/categoria/', CategoriaCreate.as_view(), name="cadastrar-categoria"),
 
-    path('<int:pk>/cadastrar/produto/', ProdutoCreate.as_view(), name="cadastrar-produto"),
-    path('cadastrar/camelo/', CameloCreate.as_view(), name="cadastrar-camelo"),
+    path('<int:pk>/cadastrar/produto/', ProdutoCreateWizard.as_view([
+        ProdutoInformacaoForm,
+        ProdutoDetalhesForm,
+        ProdutoImagemForm,
+        ProdutoFornecedorForm,
+    ]), name="cadastrar-produto"),
+    path('cadastrar/camelo/', CameloCreateWizard.as_view([
+        CameloIdentificacaoForm,
+        CameloContatoForm,
+        CameloPerfilForm,
+        CameloEnderecoForm,
+    ]), name="cadastrar-camelo"),
     path('carrinho/<int:produto_id>/', CarrinhoCreate.as_view(), name="adicionar-ao-carrinho"),
     path('carrinho/adicionar/<int:produto_id>/', CarrinhoProdutoCreate.as_view(), name="adicionar-produto-carrinho"),
 

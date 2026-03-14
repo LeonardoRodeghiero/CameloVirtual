@@ -6,6 +6,20 @@ from .models import Categoria, Produto, Carrinho, Carrinho_Produto, Camelo, Came
 
 from .forms import AvaliacaoForm
 
+from .forms import (
+    CameloIdentificacaoForm,
+    CameloContatoForm,
+    CameloPerfilForm,
+    CameloEnderecoForm,
+)
+
+from .forms import (
+    ProdutoInformacaoForm,
+    ProdutoDetalhesForm,
+    ProdutoImagemForm,
+    ProdutoFornecedorForm,
+)
+
 from usuarios.models import Perfil
 
 
@@ -30,6 +44,14 @@ from django.db.models import Sum, F, ExpressionWrapper, DecimalField
 from django.core.exceptions import ValidationError
 
 from django.db.models import Q
+
+from formtools.wizard.views import SessionWizardView
+from django.core.files.storage import FileSystemStorage
+
+file_storage = FileSystemStorage(location='/tmp/wizard')
+
+
+
 # Create your views here.
 
 # Create
@@ -117,6 +139,85 @@ class ProdutoCreate(LoginRequiredMixin, CreateView):
         camelo_id = self.kwargs.get("pk") # pega o id da URL 
         form.instance.camelo_id = camelo_id # vincula ao modelo 
         return super().form_valid(form)
+
+class ProdutoCreateWizard(SessionWizardView):
+    form_list = [
+        ProdutoInformacaoForm,
+        ProdutoDetalhesForm,
+        ProdutoImagemForm,
+        ProdutoFornecedorForm,
+    ]
+    template_name = "cadastros/form.html"
+    file_storage = file_storage
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        titulos = {
+            '0': "Preencha as informações do produto",
+            '1': "Preencha os detalhes do produto",
+            '2': "Defina a imagem do produto",
+            '3': "Informe o fornecedor do produto",
+        }
+
+        # pega o step atual e define o título
+        step_atual = self.steps.current
+        context['titulo_form'] = titulos.get(step_atual, "Crie seu camelô")
+
+        # botão muda conforme etapa
+        context['titulo_botao'] = (
+            "Criar" if step_atual == self.steps.last else "Próximo"
+        )
+
+
+        current = int(self.steps.step1)
+        total = self.steps.count
+        progress_percent = int((current / total) * 100)
+
+        # pega o step anterior (se não for o primeiro)
+        previous = current - 1 if current > 1 else 0
+        previous_percent = int((previous / total) * 100)
+
+        context['progress_percent'] = progress_percent
+        context['previous_percent'] = previous_percent
+        context['progress_text'] = f"Etapa {current} de {total}"
+
+
+
+
+        return context
+
+    def get_form_kwargs(self, step=None):
+        kwargs = super().get_form_kwargs(step)
+        kwargs['camelo'] = self.request.user.camelo  # ou como você obtém o camelô
+        return kwargs
+
+
+
+    def done(self, form_list, **kwargs):
+        informacao = form_list[0].cleaned_data
+        detalhes = form_list[1].cleaned_data
+        imagem = form_list[2].cleaned_data
+        fornecedor = form_list[3].cleaned_data
+
+        cadastro = Produto.objects.create(
+            nome=informacao['nome'],
+            marca=informacao['marca'],
+            categoria=informacao['categoria'],
+
+            descricao=detalhes['descricao'],
+            preco=detalhes['preco'],
+            quantidade=detalhes['quantidade'],
+            imagem=imagem['imagemfornecedor'],
+            fornecedor=fornecedor['fornecedor'],
+        )
+        
+
+
+        return reverse_lazy('listar-produtos-camelo', kwargs={'pk': self.kwargs.get("pk")})
+
+
 
 class CarrinhoCreate(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
@@ -229,6 +330,101 @@ class CameloCreate(LoginRequiredMixin, CreateView):
             usuario=self.request.user
         )
         return response
+
+class CameloCreateWizard(SessionWizardView):
+    form_list = [
+        CameloIdentificacaoForm,
+        CameloContatoForm,
+        CameloPerfilForm,
+        CameloEnderecoForm,
+    ]
+    template_name = "cadastros/form.html"
+    file_storage = file_storage
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        titulos = {
+            '0': "Preencha a identificação do Camelô",
+            '1': "Preencha os dados para contato",
+            '2': "Defina o perfil do camelô",
+            '3': "Informe o endereço do camelô",
+        }
+
+        # pega o step atual e define o título
+        step_atual = self.steps.current
+        context['titulo_form'] = titulos.get(step_atual, "Crie seu camelô")
+
+        # botão muda conforme etapa
+        context['titulo_botao'] = (
+            "Criar" if step_atual == self.steps.last else "Próximo"
+        )
+
+
+        current = int(self.steps.step1)
+        total = self.steps.count
+        progress_percent = int((current / total) * 100)
+
+        # pega o step anterior (se não for o primeiro)
+        previous = current - 1 if current > 1 else 0
+        previous_percent = int((previous / total) * 100)
+
+        context['progress_percent'] = progress_percent
+        context['previous_percent'] = previous_percent
+        context['progress_text'] = f"Etapa {current} de {total}"
+
+
+
+
+        return context
+
+    def done(self, form_list, **kwargs):
+        identificacao = form_list[0].cleaned_data
+        contato = form_list[1].cleaned_data
+        perfil = form_list[2].cleaned_data
+        endereco = form_list[3].cleaned_data
+
+        cadastro = Camelo.objects.create(
+            nome_fantasia=identificacao['nome_fantasia'],
+            cnpj=identificacao['cnpj'],
+            email=contato['email'],
+            telefone=contato['telefone'],
+            descricao_loja=perfil['descricao_loja'],
+            imagem_logo=perfil['imagem_logo'],
+            endereco=endereco['endereco'],
+        )
+        Camelo_Usuario.objects.create(
+            camelo=cadastro,
+            usuario=self.request.user
+        )
+
+
+
+
+
+        # cadastro.gerar_codigo()
+        # cadastro.gerar_codigo_sms()
+
+        # send_mail(
+        #     "Confirmação de cadastro",
+        #     f"Seu código é {cadastro.codigo}",
+        #     "rodeghieroleonardo@gmail.com",
+        #     [cadastro.email]
+        # )
+
+        # telefone = "+55" + ''.join(filter(str.isdigit, cadastro.telefone))
+        # client = Client(config("TWILIO_SID"), config("TWILIO_AUTH_TOKEN"))
+        # client.messages.create(
+        #     body=f"Seu código de telefone é {cadastro.codigo_sms}",
+        #     from_=config("TWILIO_NUMBER"),
+        #     to=telefone
+        # )
+
+        # return redirect("confirmar-codigo", email=cadastro.email)
+        return redirect("index")
+
+
 
 
 class PedidoCarrinho(LoginRequiredMixin, View):
