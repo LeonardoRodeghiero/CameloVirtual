@@ -109,27 +109,55 @@
 <div class="mt-4">
   <h5>Avaliações:</h5>
   {% for avaliacao in avaliacoes %}
-    <p>
-      <strong>{{ avaliacao.usuario.username }}</strong> - 
-      {% for i in "12345" %}
-        {% if i|add:"0" <= avaliacao.nota %}
-          <i class="bi bi-star-fill text-warning"></i>
-        {% else %}
-          <i class="bi bi-star text-warning"></i>
-        {% endif %}
-        
-      {% endfor %}
-      <small class="text-muted ms-2">{{ avaliacao.data_hora_mensagem|date:"d/m/Y" }}</small>
-      <br>
-      {{ avaliacao.mensagem }}
-    </p>
+    <div class="d-flex justify-content-between align-items-start mb-2">
+      <div>
+        <strong>{{ avaliacao.usuario.username }}</strong> - 
+        {% for i in "12345" %}
+          {% if i|add:"0" <= avaliacao.nota %}
+            <i class="bi bi-star-fill text-warning"></i>
+          {% else %}
+            <i class="bi bi-star text-warning"></i>
+          {% endif %}
+        {% endfor %}
+        <small class="text-muted ms-2">{{ avaliacao.data_hora_mensagem|date:"d/m/Y" }}</small>
+        <br>
+        {{ avaliacao.mensagem }}
+      </div>
+
+      {% if request.user == avaliacao.usuario %}
+        <button type="button" class="btn btn-sm btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#confirmModal{{ avaliacao.pk }}" title="Excluir">
+          <i class="bi bi-trash"></i>
+        </button>
+      {% endif %}
+    </div>
+
+    <!-- Modal de confirmação -->
+    <div class="modal fade" id="confirmModal{{ avaliacao.pk }}" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form method="post" action="{% url 'excluir-avaliacao-usuario' avaliacao.pk %}">
+            {% csrf_token %}
+            <div class="modal-header">
+              <h5 class="modal-title">Confirmar exclusão</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              Tem certeza que deseja excluir <strong>Sua Avaliação neste produto</strong>?
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-danger">Excluir</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   {% empty %}
     <p>Este produto ainda não possui avaliações.</p>
   {% endfor %}
 </div>
 {% endblock %}
-
-
+    
 
 
 

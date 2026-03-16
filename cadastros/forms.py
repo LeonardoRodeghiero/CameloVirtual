@@ -1,5 +1,5 @@
 from django import forms
-from .models import Avaliacao, Camelo, Produto
+from .models import Avaliacao, Camelo, Produto, Categoria
 from django.core.exceptions import ValidationError
 
 
@@ -71,6 +71,14 @@ class ProdutoInformacaoForm(forms.ModelForm):
     class Meta:
         model = Produto
         fields = ["nome", "marca", "categoria"]
+
+
+    def __init__(self, *args, **kwargs):
+        camelo_id = kwargs.pop('camelo_id', None)
+        super().__init__(*args, **kwargs)
+        if camelo_id:
+            self.fields['categoria'].queryset = Categoria.objects.filter(camelo_id=camelo_id)
+
 
 class ProdutoDetalhesForm(forms.ModelForm):
     class Meta:

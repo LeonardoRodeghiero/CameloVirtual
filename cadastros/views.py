@@ -154,6 +154,16 @@ class ProdutoCreateWizard(SessionWizardView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+
+        camelo_id = self.kwargs.get("pk") 
+        if camelo_id: 
+            context["base_template"] = "paginas/camelo_padrao.html" 
+        else: 
+            context["base_template"] = "paginas/index.html"
+
+        camelo = get_object_or_404(Camelo, pk=camelo_id) 
+        context["camelo"] = camelo
+        
         titulos = {
             '0': "Preencha as informações do produto",
             '1': "Preencha os detalhes do produto",
@@ -188,11 +198,17 @@ class ProdutoCreateWizard(SessionWizardView):
 
         return context
 
+    # def get_form_kwargs(self, step=None):
+    #     kwargs = super().get_form_kwargs(step)
+    #     kwargs['camelo'] = self.request.user.camelos.all()
+    #     return kwargs
+
     def get_form_kwargs(self, step=None):
         kwargs = super().get_form_kwargs(step)
-        kwargs['camelo'] = self.request.user.camelo  # ou como você obtém o camelô
+        camelo_id = self.kwargs.get("pk")
+        if camelo_id:
+            kwargs['camelo_id'] = camelo_id
         return kwargs
-
 
 
     def done(self, form_list, **kwargs):
@@ -703,7 +719,10 @@ class AvaliacaoDeleteUser(LoginRequiredMixin, DeleteView):
     login_url = reverse_lazy('login')
 
     model = Avaliacao
-    success_url = reverse_lazy('index')
+
+    def get_success_url(self):
+        produto = self.object.produto  # pega o produto da avaliação que foi deletada
+        return reverse_lazy('produto', kwargs={'pk': produto.pk})
 
 
 class AvaliacaoDelete(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
