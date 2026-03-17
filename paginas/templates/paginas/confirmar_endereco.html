@@ -1,0 +1,18 @@
+{% extends 'paginas/index.html' %}
+
+{% block conteudo %}
+<div class="container py-5">
+  <h2>Confirmar Endereço</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="endereco" class="form-label">Endereço de entrega</label>
+      <input type="text" name="endereco" id="endereco" class="form-control" value="{{ endereco_padrao }}" required>
+    </div>
+    <button type="submit" class="btn btn-success">Finalizar Pedido</button>
+  </form>
+  {% if erro %}
+    <p class="text-danger mt-2">{{ erro }}</p>
+  {% endif %}
+</div>
+{% endblock %}

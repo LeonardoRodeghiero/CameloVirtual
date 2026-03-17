@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 
 from cadastros.views import Produto, Carrinho_Produto, Carrinho, Camelo
 
-from cadastros.models import Produto, Avaliacao, Camelo, Camelo_Usuario
+from cadastros.models import Produto, Avaliacao, Camelo, Camelo_Usuario, Pedido, Pedido_Produto
 from cadastros.forms import AvaliacaoForm
 
 from django.views.generic.list import ListView
@@ -294,3 +294,53 @@ class ConfirmarFuncionarioView(View):
 
         Camelo_Usuario.objects.get_or_create(camelo=camelo, usuario=usuario)
         return redirect("camelo", pk=camelo.pk)
+
+        
+class ConfirmarEndereco(View):
+    def get(self, request):
+        dados = request.session.get('pedido_temp')
+        if not dados:
+            return redirect("index")
+
+        perfil = getattr(request.user, "perfil", None)
+        endereco_padrao = ""
+        if perfil:
+            endereco_padrao = f"{perfil.logradouro or ''}, {perfil.numero or ''}, {perfil.complemento or ''} - {perfil.bairro or ''}, {perfil.cidade or ''}/{perfil.estado or ''}, CEP {perfil.cep or ''}"
+
+        return render(request, "paginas/confirmar_endereco.html", {
+            "endereco_padrao": endereco_padrao.strip(", -")
+        })
+
+    def post(self, request):
+        dados = request.session.get('pedido_temp')
+        if not dados:
+            return redirect("index")
+
+        endereco = request.POST.get("endereco")
+        if not endereco:
+            return render(request, "paginas/confirmar_endereco.html", {"erro": "Informe um endereço válido"})
+
+        produto = get_object_or_404(Produto, id=dados['produto_id'])
+        quantidade = dados['quantidade']
+
+        pedido = Pedido.objects.create(
+            usuario=request.user,
+            valor_total=produto.preco * quantidade,
+            data_pedido=timezone.now(),
+            status="em andamento",
+            opcao_pedido=dados['opcao_pedido'],
+            endereco=endereco
+        )
+
+        Pedido_Produto.objects.create(
+            pedido=pedido,
+            produto=produto,
+            quantidade=quantidade,
+            preco_unitario=produto.preco
+        )
+
+        # limpa sessão
+        del request.session['pedido_temp']
+
+        return redirect("index")
+  

@@ -498,28 +498,36 @@ class PedidoProdutoDireto(View):
             quantidade = int(request.POST.get('quantidade', 1))
         except ValueError:
             quantidade = 1
-        opcao_pedido = request.POST.get('Receber em casa', 'Buscar na loja')  # pega direto do POST
+        opcao_pedido = request.POST.get('entrega')  # pega direto do POST
+        print(opcao_pedido)
         
+        if opcao_pedido == "casa":
+            # redireciona para página de endereço, passando dados via sessão
+            request.session['pedido_temp'] = {
+                'produto_id': produto.id,
+                'quantidade': quantidade,
+                'opcao_pedido': opcao_pedido
+            }
+            return redirect("confirmar-endereco")
+        else:
+            pedido = Pedido.objects.create(
+                usuario=request.user,
+                valor_total=produto.preco * quantidade,
+                data_pedido=timezone.now(),
+                status="em andamento",
+                opcao_pedido=opcao_pedido
 
-        pedido = Pedido.objects.create(
-            usuario=request.user,
-            valor_total=produto.preco * quantidade,
-            data_pedido=timezone.now(),
-            status="em andamento",
-            opcao_pedido=opcao_pedido
+            )
 
-        )
+            Pedido_Produto.objects.create(
+                pedido=pedido,
+                produto=produto,
+                quantidade=quantidade,
+                preco_unitario=produto.preco
+            )
 
-        Pedido_Produto.objects.create(
-            pedido=pedido,
-            produto=produto,
-            quantidade=quantidade,
-            preco_unitario=produto.preco
-        )
+            return redirect('index')
 
-        return redirect('index')
-        
-            
 
 # class AvaliacaoCreate(LoginRequiredMixin, View):
 #     def get(self, request, produto_id):

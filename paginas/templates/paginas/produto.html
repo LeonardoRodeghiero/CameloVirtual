@@ -64,6 +64,20 @@
               </div>
             </div>
             
+            
+          <form action="{% url 'adicionar-produto-carrinho' produto.id %}" method="post" class="mt-4" onsubmit="copiarQuantidade(this)">
+            {% csrf_token %}
+            
+
+
+
+            <input type="hidden" name="quantidade">
+            <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">
+              <i class="bi bi-cart-plus me-2"></i>Adicionar ao Carrinho
+            </button>
+          </form>
+          <form action="{% url 'realizar-pedido-direto' produto.id %}" method="post" class="mt-4" onsubmit="copiarQuantidade(this)">
+            {% csrf_token %}
             <div class="mb-3">
               <label class="fw-semibold">Opção de Pedido:</label><br>
               <div class="form-check">
@@ -79,19 +93,6 @@
                   </label>
               </div>
           </div>
-          <form action="{% url 'adicionar-produto-carrinho' produto.id %}" method="post" class="mt-4" onsubmit="copiarQuantidade(this)">
-            {% csrf_token %}
-            
-
-
-
-            <input type="hidden" name="quantidade">
-            <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">
-              <i class="bi bi-cart-plus me-2"></i>Adicionar ao Carrinho
-            </button>
-          </form>
-          <form action="{% url 'realizar-pedido-direto' produto.id %}" method="post" class="mt-4" onsubmit="copiarQuantidade(this)">
-            {% csrf_token %}
             <input type="hidden" name="quantidade">
             <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">
               <i class="bi bi-cart-check me-2"></i>Realizar Pedido

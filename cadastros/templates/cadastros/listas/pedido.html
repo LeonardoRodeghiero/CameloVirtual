@@ -18,6 +18,7 @@
     <th>Status do pedido</th>
     <th>Produtos no Pedido</th>
     <th>Opção do Pedido</th>
+    <th>Endereço</th>
     <th>Valor Total</th>
 {% endblock%}
 
@@ -38,5 +39,7 @@
         </ul>
     </td>
     <td>{{object.opcao_pedido}}</td>
+    <td class="{% if not object.endereco %}text-muted{% endif %}">{{object.endereco|default:"&ndash;"|safe}}</td>
+
     <td>R$ {{object.valor_total|floatformat:2}}</td>
 {% endblock %}
