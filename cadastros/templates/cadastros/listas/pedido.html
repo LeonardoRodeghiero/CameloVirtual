@@ -16,7 +16,8 @@
     <th>Usuário</th>
     <th>Data do pedido</th>
     <th>Status do pedido</th>
-    <th>Produto no Pedido</th>
+    <th>Produtos no Pedido</th>
+    <th>Opção do Pedido</th>
     <th>Valor Total</th>
 {% endblock%}
 
@@ -36,5 +37,6 @@
             {% endfor %}
         </ul>
     </td>
+    <td>{{object.opcao_pedido}}</td>
     <td>R$ {{object.valor_total|floatformat:2}}</td>
 {% endblock %}

@@ -20,7 +20,14 @@
     <th>data de cadastro</th>
     <th>status</th>
     <th>descrição da loja</th>
-    <th>endereço</th>
+    
+    <th>cep</th>
+    <th>estado</th>
+    <th>cidade</th>
+    <th>bairro</th>
+    <th>logradouro</th>
+    <th>número</th>
+    <th>complemento</th>
     <th>usuários Administradores</th>
 {% endblock%}
 
@@ -38,7 +45,13 @@
     <td>{{object.data_cadastro}}</td>
     <td>{{object.status}}</td>
     <td>{{object.descricao_loja}}</td>
-    <td>{{object.endereco}}</td>
+    <td>{{object.cep}}</td>
+    <td>{{object.estado}}</td>
+    <td>{{object.cidade}}</td>
+    <td>{{object.bairro}}</td>
+    <td">{{object.logradouro}}</td>
+    <td>{{object.numero}}</td>
+    <td class="{% if not object.complemento %}text-muted{% endif %}">{{object.complemento|default:"&ndash;"|safe}}</td>
     <td> 
         <ul> 
             {% for usuario in object.usuarios.all %} 

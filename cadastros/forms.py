@@ -1,5 +1,5 @@
 from django import forms
-from .models import Avaliacao, Camelo, Produto, Categoria
+from .models import Avaliacao, Camelo, Produto, Categoria, Pedido
 from django.core.exceptions import ValidationError
 
 
@@ -61,7 +61,7 @@ class CameloPerfilForm(forms.ModelForm):
 class CameloEnderecoForm(forms.ModelForm):
     class Meta:
         model = Camelo
-        fields = ["endereco"]
+        fields = ["estado", "cidade", "bairro", "logradouro", "numero", "complemento", "cep"]
 
 
 
@@ -94,3 +94,14 @@ class ProdutoFornecedorForm(forms.ModelForm):
     class Meta:
         model = Produto
         fields = ["fornecedor"]
+
+
+
+
+class PedidoForm(forms.ModelForm):
+    class Meta:
+        model = Pedido
+        fields = ["opcao_pedido"]
+        widgets = {
+            "opcao_pedido": forms.RadioSelect
+        }

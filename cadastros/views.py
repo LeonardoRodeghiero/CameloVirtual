@@ -4,7 +4,7 @@ from django.views import View
 
 from .models import Categoria, Produto, Carrinho, Carrinho_Produto, Camelo, Camelo_Usuario, Pedido, Pedido_Produto, Avaliacao
 
-from .forms import AvaliacaoForm
+from .forms import AvaliacaoForm, PedidoForm
 
 from .forms import (
     CameloIdentificacaoForm,
@@ -31,7 +31,7 @@ from braces.views import GroupRequiredMixin
 
 from django.shortcuts import get_object_or_404
 
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 
 from django.db.models import CharField, TextField
 
@@ -408,7 +408,13 @@ class CameloCreateWizard(SessionWizardView):
             telefone=contato['telefone'],
             descricao_loja=perfil['descricao_loja'],
             imagem_logo=perfil['imagem_logo'],
-            endereco=endereco['endereco'],
+            estado=endereco['estado'],
+            cidade=endereco['cidade'],
+            bairro=endereco.get('bairro'),
+            logradouro=endereco.get('logradouro'),
+            numero=endereco.get('numero'),
+            complemento=endereco.get('complemento'),
+            cep=endereco.get('cep'),
         )
         Camelo_Usuario.objects.create(
             camelo=cadastro,
@@ -480,15 +486,28 @@ class PedidoCarrinho(LoginRequiredMixin, View):
         return redirect('index')
         
 class PedidoProdutoDireto(View):
+    def get(self, request, *args, **kwargs):
+        form = PedidoForm()
+        produto = get_object_or_404(Produto, id=kwargs['produto_id'])
+        return render(request, "paginas/produto.html", {"produto": produto, "form": form})
+
+    
     def post(self, request, *args, **kwargs):
         produto = get_object_or_404(Produto, id=kwargs['produto_id'])
-        quantidade = int(request.POST.get('quantidade', 1))
+        try:
+            quantidade = int(request.POST.get('quantidade', 1))
+        except ValueError:
+            quantidade = 1
+        opcao_pedido = request.POST.get('Receber em casa', 'Buscar na loja')  # pega direto do POST
+        
 
         pedido = Pedido.objects.create(
             usuario=request.user,
             valor_total=produto.preco * quantidade,
             data_pedido=timezone.now(),
-            status="em andamento"
+            status="em andamento",
+            opcao_pedido=opcao_pedido
+
         )
 
         Pedido_Produto.objects.create(
@@ -499,7 +518,8 @@ class PedidoProdutoDireto(View):
         )
 
         return redirect('index')
-
+        
+            
 
 # class AvaliacaoCreate(LoginRequiredMixin, View):
 #     def get(self, request, produto_id):

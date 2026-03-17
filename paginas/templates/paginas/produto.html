@@ -51,10 +51,7 @@
           </div>
 
           <p class="card-text text-muted">{{ object.descricao }}</p>
-
-          <form action="{% url 'adicionar-produto-carrinho' produto.id %}" method="post" class="mt-4">
-            {% csrf_token %}
-            <div class="mb-3 d-flex align-items-center">
+          <div class="mb-3 d-flex align-items-center">
               <label for="quantidade" class="form-label me-3 fw-semibold mb-0">Quantidade:</label>
               <div class="input-group" style="max-width: 150px;">
                 <button type="button" class="btn btn-outline-secondary" onclick="alterarQuantidade(-1)">
@@ -66,14 +63,36 @@
                 </button>
               </div>
             </div>
+            
+            <div class="mb-3">
+              <label class="fw-semibold">Opção de Pedido:</label><br>
+              <div class="form-check">
+                  <input class="form-check-input" type="radio" name="entrega" id="entregaCasa" value="casa" checked>
+                  <label class="form-check-label" for="entregaCasa">
+                      Receber em casa
+                  </label>
+              </div>
+              <div class="form-check">
+                  <input class="form-check-input" type="radio" name="entrega" id="entregaLoja" value="loja">
+                  <label class="form-check-label" for="entregaLoja">
+                      Buscar na loja
+                  </label>
+              </div>
+          </div>
+          <form action="{% url 'adicionar-produto-carrinho' produto.id %}" method="post" class="mt-4" onsubmit="copiarQuantidade(this)">
+            {% csrf_token %}
+            
 
+
+
+            <input type="hidden" name="quantidade">
             <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">
               <i class="bi bi-cart-plus me-2"></i>Adicionar ao Carrinho
             </button>
           </form>
-          <form action="{% url 'realizar-pedido-direto' produto.id %}" method="post" class="mt-4">
+          <form action="{% url 'realizar-pedido-direto' produto.id %}" method="post" class="mt-4" onsubmit="copiarQuantidade(this)">
             {% csrf_token %}
-          
+            <input type="hidden" name="quantidade">
             <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">
               <i class="bi bi-cart-check me-2"></i>Realizar Pedido
             </button>
@@ -105,6 +124,8 @@
       </form>
     {% endif %}
   </div>
+
+
 
 <div class="mt-4">
   <h5>Avaliações:</h5>
@@ -202,6 +223,11 @@ function alterarQuantidade(delta) {
   let valor = parseInt(input.value) || 1;
   valor = Math.max(1, valor + delta);
   input.value = valor;
+}
+
+function copiarQuantidade(form) {
+  const valor = document.getElementById('quantidade').value;
+  form.querySelector('input[name="quantidade"]').value = valor;
 }
 </script>
 {% endblock %}

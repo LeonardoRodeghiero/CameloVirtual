@@ -10,6 +10,36 @@ from datetime import timedelta
 # Create your models here.
 
 class Camelo(models.Model):
+    ESTADO_CHOICES = [
+        ('AC', 'Acre'),
+        ('AL', 'Alagoas'),
+        ('AP', 'Amapá'),
+        ('AM', 'Amazonas'),
+        ('BA', 'Bahia'),
+        ('CE', 'Ceará'),
+        ('DF', 'Distrito Federal'),
+        ('ES', 'Espírito Santo'),
+        ('GO', 'Goiás'),
+        ('MA', 'Maranhão'),
+        ('MT', 'Mato Grosso'),
+        ('MS', 'Mato Grosso do Sul'),
+        ('MG', 'Minas Gerais'),
+        ('PA', 'Pará'),
+        ('PB', 'Paraíba'),
+        ('PR', 'Paraná'),
+        ('PE', 'Pernambuco'),
+        ('PI', 'Piauí'),
+        ('RJ', 'Rio de Janeiro'),
+        ('RN', 'Rio Grande do Norte'),
+        ('RS', 'Rio Grande do Sul'),
+        ('RO', 'Rondônia'),
+        ('RR', 'Roraima'),
+        ('SC', 'Santa Catarina'),
+        ('SP', 'São Paulo'),
+        ('SE', 'Sergipe'),
+        ('TO', 'Tocantins'),
+    ]
+
     nome_fantasia = models.CharField(max_length=50)
     cnpj = models.CharField(max_length=18)
     email = models.EmailField(max_length=254, unique=True, blank=False, null=False,help_text="Insira E-mail para contato")    
@@ -19,7 +49,13 @@ class Camelo(models.Model):
     status = models.CharField(max_length=50, default="ativo")
     descricao_loja = models.CharField(max_length=100)
     imagem_logo = models.FileField(upload_to='pdf/')
-    endereco = models.CharField(max_length=150)
+    estado = models.CharField(max_length=2, choices=ESTADO_CHOICES, null=False)
+    cidade = models.CharField(max_length=70, null=False)
+    bairro = models.CharField(max_length=100, null=False)
+    logradouro = models.CharField(max_length=100, null=False)
+    numero = models.IntegerField(null=False)
+    complemento = models.CharField(max_length=150, null=True, blank=True)
+    cep = models.CharField(max_length=9, null=False, verbose_name="CEP")
 
 
     usuarios = models.ManyToManyField( 
@@ -122,6 +158,9 @@ class Pedido(models.Model):
     valor_total = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='Valor Total')
     data_pedido = models.DateTimeField(auto_now=True, verbose_name='data do pedido')
     status = models.CharField(max_length=30, null=False, default="em andamento")
+    opcao_pedido = models.CharField(max_length=30, choices=[("casa", "Receber em casa"), ("loja", "Buscar na loja")], null=False, default="Receber em casa")
+    endereco = models.CharField(max_length=150, null=True, verbose_name="endereço")
+
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
