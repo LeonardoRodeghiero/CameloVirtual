@@ -1,0 +1,61 @@
+{% extends 'paginas/index.html' %}
+
+
+{% block conteudo %}
+    <div class="container mt-4">
+        {% if object_list %}
+        <div class="container d-flex align-items-center">
+            <h1>Seus Pedidos <i class="bi bi-clipboard2-check-fill me-2" style="font-size: 1.5rem;"></i></h1>
+        {% endif %}
+    </div>
+
+
+        <hr>
+
+
+{% for pedido in pedidos %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header">
+                <strong>{{ pedido.data_pedido|date:"d/m/Y" }}</strong> R$ {{ pedido.valor_total }}
+            </div>
+            <div class="card-body">
+                {% for item in pedido.produtos.all %}
+                <div class="row mb-3">
+                    {% if item.produto.imagem %}
+                    <div class="col-md-3">
+                        <img src="{{ item.produto.imagem.url }}" class="img-fluid rounded-start" alt="{{ item.produto.nome }}">
+                    </div>
+                    {% endif %}
+                    <div class="col-md-9">
+                        <h5>{{ item.produto.nome }} {{ item.produto.marca }}</h5>
+                        <p>{{ item.produto.descricao|truncatewords:25 }}</p>
+                        <p>Quantidade: {{ item.quantidade }}</p>
+                        <p>Preço: R$ {{ item.produto.preco }}</p>
+                    </div>
+                </div>
+                {% empty %}
+                <p>Este pedido não possui itens.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% empty %}
+<div class="alert alert-info d-flex align-items-center justify-content-between" role="alert">
+    <div>
+        <i class="bi bi-cart-x-fill me-2" style="font-size: 1.5rem;"></i>
+        <strong>Você ainda não fez nenhum pedido.</strong> Faça seu primeiro pedido!
+    </div>
+</div>
+<div class="text-center">
+    <a href="{% url 'index' %}" class="btn btn-primary">Procure Por Produtos Na Tela Inicial!</a>
+</div>
+{% endfor %}
+
+
+
+
+
+{% endblock %}

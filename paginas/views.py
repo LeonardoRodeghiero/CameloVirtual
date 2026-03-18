@@ -2,7 +2,7 @@ from django.views.generic import TemplateView
 
 
 
-from cadastros.views import Produto, Carrinho_Produto, Carrinho, Camelo
+from cadastros.views import Produto, Carrinho_Produto, Carrinho, Camelo, Pedido_Produto
 
 from cadastros.models import Produto, Avaliacao, Camelo, Camelo_Usuario, Pedido, Pedido_Produto
 from cadastros.forms import AvaliacaoForm
@@ -213,6 +213,27 @@ class VerCarrinho(ListView):
         context['total'] = total
         return context
     
+
+
+class VerHistoricoPedidos(ListView):
+    model = Pedido_Produto
+    template_name = 'paginas/historico_pedidos.html'
+    context_object_name = 'itens'
+
+    def get_queryset(self):
+        pedidos = Pedido.objects.filter(usuario=self.request.user)
+
+        if pedidos.exists():
+            return Pedido_Produto.objects.filter(pedido__in=pedidos)
+        else:
+            return Pedido_Produto.objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) 
+        pedidos = Pedido.objects.filter(usuario=self.request.user)
+        context['pedidos'] = pedidos
+        
+        return context
 # class AlterarQuantidadeView(View):
 #     def post(self, request, item_id, acao):
 #         item = get_object_or_404(Carrinho_Produto, id=item_id, carrinho__usuario=request.user)
