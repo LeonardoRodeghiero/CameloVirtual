@@ -24,6 +24,8 @@ from .forms import BuscarUsuarioForm
 from django.views.generic import FormView
 
 from usuarios.models import Perfil
+
+from django.db.models import Count
 # Create your views here.
 
 
@@ -67,19 +69,46 @@ class ClienteProdutoList(ListView):
 
     model = Produto
     template_name = 'paginas/produtos.html'
+    context_object_name = 'produtos'
 
     
     def get_queryset(self):
-        self.object_list = Produto.objects.filter()
+        queryset = Produto.objects.annotate(qtd_total_avaliacoes=Count('avaliacao'))
 
         txt_nome = self.request.GET.get('nome')
 
         if txt_nome:
-            self.object_list = Produto.objects.filter(nome__icontains=txt_nome)
-        else:
-            self.object_list = Produto.objects.filter()
+            queryset = queryset.filter(nome__icontains=txt_nome)
 
-        return self.object_list
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        produtos_originais = context['produtos']
+
+        lista_customizada = []
+
+        for produto in produtos_originais:
+            # Forma para meia estrela
+            inteira = int(produto.avaliacao_geral)
+            tem_meia = (produto.avaliacao_geral - inteira) >= 0.5
+            
+
+            item = {
+                'produto': produto,
+                'media_avaliacoes': round(produto.avaliacao_geral, 1),
+                'media_inteira': range(inteira),
+                'tem_meia': tem_meia,
+                'qtd_avaliacoes': produto.qtd_total_avaliacoes,
+            }
+            lista_customizada.append(item)
+
+
+         
+        context['lista_com_dados'] = lista_customizada
+        return context
+
 
 class ClienteCameloList(ListView):
 
@@ -231,7 +260,18 @@ class VerHistoricoPedidos(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs) 
         pedidos = Pedido.objects.filter(usuario=self.request.user)
-        context['pedidos'] = pedidos
+
+        context['tem_pedido'] = pedidos.exists()
+
+        pedidos_andamento = Pedido.objects.filter(usuario=self.request.user, status='em andamento')
+        pedidos_finalizado = Pedido.objects.filter(usuario=self.request.user, status='finalizado')
+        pedidos_cancelado = Pedido.objects.filter(usuario=self.request.user, status='cancelado')
+
+        context['pedidos_andamento'] = pedidos_andamento
+        context['pedidos_finalizado'] = pedidos_finalizado
+        context['pedidos_cancelado'] = pedidos_cancelado
+
+
         
         return context
 # class AlterarQuantidadeView(View):
