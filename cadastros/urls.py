@@ -6,7 +6,7 @@ from .views import CategoriaUpdate, ProdutoUpdate
 
 from .views import CategoriaDelete, ProdutoDelete, CarrinhoDelete, CarrinhoDeleteUser, CameloDelete, AvaliacaoDelete, AvaliacaoDeleteUser, PedidoDelete, PedidoDeleteUser
 
-from .views import CategoriaList, PerfilList, ProdutoList, CarrinhoList, CameloList, CategoriaCameloList, ProdutoCameloList, AvaliacaoList, PedidoList
+from .views import CategoriaList, PerfilList, ProdutoList, CarrinhoList, CameloList, CategoriaCameloList, ProdutoCameloList, AvaliacaoList, PedidoList, VerPedidosCamelo
 
 
 from .views import CameloCreateWizard
@@ -76,6 +76,9 @@ urlpatterns = [
     
     path('listar/avaliacoes/', AvaliacaoList.as_view(), name="listar-avaliacoes"),
     path('listar/pedidos/', PedidoList.as_view(), name="listar-pedidos"),
+
+    path("<int:camelo_id>/ver/pedidos/", VerPedidosCamelo.as_view(), name="listar-pedidos-camelo"),
+
 
 
 ]

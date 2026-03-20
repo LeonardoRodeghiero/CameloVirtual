@@ -61,6 +61,7 @@
                     <a href="{% rota_objeto 'atualizar' object %}?next={{ request.path }}" class="btn btn-warning" title="Editar"><i class="bi bi-pencil-square"></i></a>
                   {% endblock %}
                   <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal{{ object.pk }}" title="Excluir"><i class="bi bi-trash"></i></button>
+                  
                 </td>
                 
               </tr>
@@ -205,6 +206,8 @@
         break;
 
       case 'criado_em':
+        $('#valor').mask('00/00/0000');
+        break;
       case 'atualizado_em':
         $('#valor').mask('00/00/0000');
         break;

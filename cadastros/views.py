@@ -1488,3 +1488,221 @@ class PedidoList(GroupRequiredMixin, LoginRequiredMixin, ListView):
         context['nome_modelo_lista'] = 'pedidos'
         return context
 
+
+class VerPedidosCamelo(ListView):
+    
+    model = Pedido_Produto
+    template_name = 'cadastros/listas/camelos/pedidos-camelo.html'
+    context_object_name = 'itens-pedido'
+
+    # foreign_key_map = {
+    #         'usuario': 'username',
+    #     }
+    paginate_by = 10
+
+
+    # def get_queryset(self):
+    #     camelo_id = self.kwargs.get("camelo_id")
+    #     campo_escolhido = self.request.GET.get('campo')
+    #     valor = self.request.GET.get(campo_escolhido)  # valor digitado no input
+
+    #     qs = Pedido_Produto.objects.filter(
+    #         produto__camelo_id=camelo_id
+    #     ).annotate(
+    #         subtotal=ExpressionWrapper(
+    #             F('preco_unitario') * F('quantidade'),
+    #             output_field=DecimalField()
+    #         )
+    #     ).select_related('pedido', 'produto', 'pedido__usuario')
+
+
+
+
+    #     # if campo_escolhido == "valorTotal" and valor:
+    #     #     qs = qs.annotate(
+    #     #         valor_total=Sum(
+    #     #             F("produtos__quantidade") * F("produtos__produto__preco"),
+    #     #             output_field=DecimalField()
+    #     #         )
+    #     #     ).filter(valor_total__icontains=valor)
+    #     #     return qs
+
+    #     if valor is None:
+    #         return qs
+        
+    #     if campo_escolhido.startswith("produto__"):
+    #         filtro = {f"{campo_escolhido}__icontains": valor}
+    #         return  qs.filter(**filtro).distinct()
+
+    #     # Se for busca em campos do pedido (ex: status, endereco)
+    #     if campo_escolhido.startswith("pedido__"):
+    #         # Verificamos o tipo do campo dentro do modelo Pedido
+    #         nome_campo_real = campo_escolhido.replace("pedido__", "")
+    #         field = Pedido._meta.get_field(nome_campo_real)
+
+    #         # Lógica para Datas no Pedido
+    #         if field.get_internal_type() in ["DateTimeField", "DateField"]:
+    #             try:
+    #                 data = datetime.strptime(valor, "%d/%m/%Y").date()
+    #                 if field.get_internal_type() == "DateTimeField":
+    #                     inicio = datetime.combine(data, datetime.min.time())
+    #                     fim = datetime.combine(data, datetime.max.time())
+    #                     filtro = {f"{campo_escolhido}__range": (inicio, fim)}
+    #                 else:
+    #                     filtro = {campo_escolhido: data}
+    #             except ValueError:
+    #                 try:
+    #                     data_parcial = datetime.strptime(valor, "%d/%m")
+    #                     filtro = {
+    #                         f"{campo_escolhido}__day": data_parcial.day,
+    #                         f"{campo_escolhido}__month": data_parcial.month,
+    #                     }
+    #                 except ValueError:
+    #                     return qs # Se a data for inválida, ignora o filtro
+    #         # Lógica para ForeignKey no Pedido (ex: usuario)
+    #         elif field.get_internal_type() == "ForeignKey":
+    #             filtro = {f"{campo_escolhido}__username__icontains": valor}
+            
+    #         # Se for um campo direto de Pedido_Produto (ex: preco_unitario)
+    #     else:
+    #         try:
+    #             field = Pedido_Produto._meta.get_field(campo_escolhido)
+    #             if field.get_internal_type() == "ForeignKey":
+    #                 # Se for a FK de pedido ou produto direto
+    #                 filtro = {f"{campo_escolhido}__id": valor}
+    #             else:
+    #                 filtro = {f"{campo_escolhido}__icontains": valor}
+    #         except:
+    #             filtro = {f"{campo_escolhido}__icontains": valor}
+
+    #     return qs.filter(**filtro)
+
+    def get_queryset(self):
+        camelo_id = self.kwargs.get("camelo_id")
+        campo_escolhido = self.request.GET.get('campo')
+        valor = self.request.GET.get(campo_escolhido)
+
+        # 1. Base sempre filtrada pelo camelo e com subtotal calculado
+        qs = Pedido_Produto.objects.filter(
+            produto__camelo_id=camelo_id
+        ).annotate(
+            subtotal=ExpressionWrapper(
+                F('preco_unitario') * F('quantidade'),
+                output_field=DecimalField()
+            )
+        ).select_related('pedido', 'produto', 'pedido__usuario')
+
+        # Se não houver busca, retorna a base
+        if not campo_escolhido or not valor:
+            return qs
+
+
+        # Se o usuário tentar filtrar pelo 'subtotal' (que é anotado),
+        # o filter comum não funciona, precisa ser um .filter() direto
+        if campo_escolhido == "subtotal":
+            return qs.filter(subtotal__icontains=valor)
+
+
+        # --- SOLUÇÃO DO ERRO: Inicializamos o filtro aqui ---
+        filtro = {}
+
+        # 2. Se o campo tiver MAIS DE UM "__", é busca profunda (ex: pedido__usuario__username)
+        # Não usamos _meta aqui, mandamos direto para o filter
+        if campo_escolhido.count('__') >= 2:
+            filtro = {f"{campo_escolhido}__icontains": valor}
+            return qs.filter(**filtro)
+
+        try:
+            # 2. Lógica para campos do Produto
+            if campo_escolhido.startswith("produto__"):
+                filtro = {f"{campo_escolhido}__icontains": valor}
+            
+            # 3. Lógica para campos do Pedido
+            elif campo_escolhido.startswith("pedido__"):
+                nome_campo_real = campo_escolhido.replace("pedido__", "")
+                field = Pedido._meta.get_field(nome_campo_real)
+                
+                if field.get_internal_type() in ["DateTimeField", "DateField"]:
+                    try:
+                        data = datetime.strptime(valor, "%d/%m/%Y").date()
+                        if field.get_internal_type() == "DateTimeField":
+                            inicio = datetime.combine(data, datetime.min.time())
+                            fim = datetime.combine(data, datetime.max.time())
+                            filtro = {f"{campo_escolhido}__range": (inicio, fim)}
+                        else:
+                            filtro = {campo_escolhido: data}
+                    except ValueError:
+                        # Se a data for inválida, tentamos dia/mês ou ignoramos
+                        try:
+                            data_p = datetime.strptime(valor, "%d/%m")
+                            filtro = {
+                                f"{campo_escolhido}__day": data_p.day,
+                                f"{campo_escolhido}__month": data_p.month
+                            }
+                        except ValueError:
+                            filtro = {} # Valor de data inválido, não filtra nada
+                
+                elif field.get_internal_type() == "ForeignKey":
+                    filtro = {f"{campo_escolhido}__username__icontains": valor}
+                else:
+                    filtro = {f"{campo_escolhido}__icontains": valor}
+
+            # 4. Campos diretos de Pedido_Produto (quantidade, preco_unitario)
+            else:
+                filtro = {f"{campo_escolhido}__icontains": valor}
+
+        except Exception:
+            # Caso o campo_escolhido não exista nos modelos (evita erro de Meta.get_field)
+            filtro = {}
+
+        # Se o filtro foi preenchido, aplica. Se ficou {}, retorna o qs original.
+        
+        return qs.filter(**filtro) if filtro else qs
+
+        
+    
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+        # 1. Campos diretos de Pedido_Produto
+        # (preco_unitario, quantidade)
+        campos_item = [
+            ("id", "Nº do Pedido"), # Mudamos de 'pedido__id' para 'id'
+            ("subtotal", "Valor Subtotal (R$)"), # Adicione esta linha
+            ("preco_unitario", "Preço Unitário"),
+            ("quantidade", "Quantidade"),
+        ]
+
+        # 2. Campos que estão no Pedido relacionado (prefixo pedido__)
+        # Aqui acessamos o modelo Pedido através da FK 'pedido'
+        campos_pedido = [
+            ("pedido__usuario__username", "Cliente (Nome)"),
+            ("pedido__status", "Status"),
+            ("pedido__data_pedido", "Data do Pedido"),
+            ("pedido__endereco", "Endereço de Entrega"),
+        ]
+
+        # 3. Campos que estão no Produto relacionado (prefixo produto__)
+        campos_produto = [
+            ("produto__nome", "Nome do Produto"),
+        ]
+
+        # Unimos tudo em uma lista para o <select> do HTML
+        context['campos'] = campos_item + campos_pedido + campos_produto
+
+        # campos_extra = [
+        #     ("valorTotal", "Valor Total"),
+        # ]
+
+        camelo_id = self.kwargs.get("camelo_id") 
+        camelo = get_object_or_404(Camelo, pk=camelo_id) 
+        context["camelo"] = camelo 
+
+
+    
+        campo_escolhido = self.request.GET.get('campo')
+        
+        context['campo_escolhido'] = campo_escolhido
+        context['nome_modelo_lista'] = 'pedidos'
+        return context

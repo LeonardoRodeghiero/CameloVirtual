@@ -26,4 +26,6 @@ urlpatterns = [
     path("historico/pedidos/", VerHistoricoPedidos.as_view(), name="historico-pedidos"),
 
 
+
+
 ]

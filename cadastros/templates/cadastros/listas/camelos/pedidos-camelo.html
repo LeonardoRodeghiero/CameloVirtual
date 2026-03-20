@@ -1,0 +1,52 @@
+{% extends 'cadastros/listas/camelos/template-camelo.html' %}
+{% load rotas %}
+
+
+{% block titulo_botao %}   
+    <div class="d-flex">
+    <div>Pedidos</div>
+    </div>
+{% endblock %}
+
+{% block limpar %}
+    <a href="{% rota_objeto_listas_camelo nome_modelo_lista camelo.pk %}" class="btn btn-outline-secondary">Limpar <i class="bi bi-arrow-clockwise"></i></a>
+{% endblock %}
+
+{% block editar_proibido %}
+
+{% endblock %}
+
+
+{% block cabecalho %}
+    <th>id</th>
+    <th>Usuário</th>
+    <th>Data do pedido</th>
+    <th>Status do pedido</th>
+    <th>Produtos no Pedido</th>
+    <th>Opção do Pedido</th>
+    <th>Endereço</th>
+    <th>Valor Total</th>
+{% endblock%}
+
+
+{% block conteudo_tabela %}
+    <td>{{object.pk}}</td>
+    <td>{{object.pedido.usuario}}</td>
+    <td>{{object.pedido.data_pedido}}</td>
+    <td>{{object.pedido.status}}</td>
+    <td>
+        
+            {{object.quantidade}}X {{ object.produto.nome }} {{ object.produto.marca }} (R${{ object.preco_unitario }})
+                
+            
+    </td>
+    <td>{{object.pedido.opcao_pedido}}</td>
+    <td class="{% if not object.pedido.endereco %}text-muted{% endif %}">{{object.pedido.endereco|default:"&ndash;"|safe}}</td>
+
+    <td>R$ {{ object.subtotal|floatformat:2 }}</td>
+
+
+{% block excluir_proibido %}
+
+{% endblock %}
+{% endblock %}
