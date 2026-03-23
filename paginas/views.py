@@ -139,30 +139,52 @@ class ClienteProdutoCameloList(ListView):
 
     model = Produto
     template_name = 'paginas/camelo/produtos-camelo.html'
+    context_object_name = 'produtos'
 
     
-    def get_queryset(self): 
-        camelo_id = self.kwargs.get("pk") 
-        qs = Produto.objects.filter(camelo_id=camelo_id) 
+    def get_queryset(self):
 
-        txt_nome = self.request.GET.get('nome') 
-        if txt_nome: 
-            qs = qs.filter(nome__icontains=txt_nome) 
-            
-        return qs
+        camelo_id = self.kwargs.get("pk")
+        queryset = Produto.objects.annotate(qtd_total_avaliacoes=Count('avaliacao'))
+
+        txt_nome = self.request.GET.get('nome')
+
+        if txt_nome:
+            queryset = queryset.filter(nome__icontains=txt_nome, camelo_id=camelo_id)
+
+        return queryset
 
     def get_context_data(self, **kwargs):
-
         context = super().get_context_data(**kwargs)
+        
+        produtos_originais = context['produtos']
 
+        lista_customizada = []
+
+        for produto in produtos_originais:
+            # Forma para meia estrela
+            inteira = int(produto.avaliacao_geral)
+            tem_meia = (produto.avaliacao_geral - inteira) >= 0.5
+            
+
+            item = {
+                'produto': produto,
+                'media_avaliacoes': round(produto.avaliacao_geral, 1),
+                'media_inteira': range(inteira),
+                'tem_meia': tem_meia,
+                'qtd_avaliacoes': produto.qtd_total_avaliacoes,
+            }
+            lista_customizada.append(item)
 
         camelo_id = self.kwargs.get("pk") 
         
         camelo = get_object_or_404(Camelo, pk=camelo_id) 
         context["camelo"] = camelo
-
+         
+        context['lista_com_dados'] = lista_customizada
         return context
-    
+
+
 class ProdutoEspecifico(DetailView):
     model = Produto
     template_name = 'paginas/produto.html'
@@ -192,7 +214,10 @@ class ProdutoEspecifico(DetailView):
         context['form'] = AvaliacaoForm()
         context['avaliacoes'] = avaliacoes
         context['qtd_avaliacoes'] = avaliacoes.count()
-        context['ja_avaliou'] = ja_avaliou
+
+        if usuario.is_authenticated:
+            context['ja_avaliou'] = ja_avaliou      
+        
         return context
 
     def post(self, request, *args, **kwargs):
@@ -209,21 +234,95 @@ class ProdutoEspecifico(DetailView):
 
 
 class ProdutoCameloEspecifico(DetailView):
+    # model = Produto
+    # template_name = 'paginas/camelo/produto-camelo.html'
+
+    # def get_object(self, queryset=None): 
+    #     produto_id = self.kwargs.get("produto_id") 
+    #     camelo_id = self.kwargs.get("camelo_id") # garante que só pega produto do camelô atual 
+    #     return get_object_or_404(Produto, pk=produto_id, camelo_id=camelo_id)
+
+    # def get_context_data(self, **kwargs): 
+    #     context = super().get_context_data(**kwargs) 
+    #     camelo_id = self.kwargs.get("camelo_id") 
+    #     camelo = get_object_or_404(Camelo, pk=camelo_id) 
+    #     context["camelo"] = camelo 
+    #     return context
+
+
     model = Produto
     template_name = 'paginas/camelo/produto-camelo.html'
+    context_object_name = 'produto'
 
-    def get_object(self, queryset=None): 
-        produto_id = self.kwargs.get("produto_id") 
-        camelo_id = self.kwargs.get("camelo_id") # garante que só pega produto do camelô atual 
+    def get_object(self, queryset=None):
+        # Captura os IDs da URL
+        camelo_id = self.kwargs.get("camelo_id")
+        produto_id = self.kwargs.get("produto_id")
+        
+        # Busca o produto garantindo que ele pertence ao camelô da URL
         return get_object_or_404(Produto, pk=produto_id, camelo_id=camelo_id)
 
-    def get_context_data(self, **kwargs): 
-        context = super().get_context_data(**kwargs) 
-        camelo_id = self.kwargs.get("camelo_id") 
-        camelo = get_object_or_404(Camelo, pk=camelo_id) 
-        context["camelo"] = camelo 
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        produto = self.object
+        usuario = self.request.user
+
+        ja_avaliou = Avaliacao.objects.filter(produto=produto, usuario=usuario)
+
+
+        avaliacoes = Avaliacao.objects.filter(produto=produto)
+
+        context["camelo"] = get_object_or_404(Camelo, pk=self.kwargs.get("camelo_id"))
+
+
+
+        # Forma para meia estrela
+        inteira = int(produto.avaliacao_geral)
+        tem_meia = (produto.avaliacao_geral - inteira) >= 0.5
+        context["media_avaliacoes"] = round(produto.avaliacao_geral, 1)
+        context["media_inteira"] = inteira
+        context["media_meia"] = tem_meia
+
+
+
+        context['form'] = AvaliacaoForm()
+        context['avaliacoes'] = avaliacoes
+        context['qtd_avaliacoes'] = avaliacoes.count()
+
+        if usuario.is_authenticated:
+            context['ja_avaliou'] = ja_avaliou
+        
         return context
 
+    # def post(self, request, *args, **kwargs):
+    #     self.object = self.get_object()
+    #     form = AvaliacaoForm(request.POST)
+    #     if form.is_valid():
+    #         avaliacao = form.save(commit=False)
+    #         avaliacao.usuario = request.user
+    #         avaliacao.produto = self.object
+    #         avaliacao.save()
+    #         return redirect('produto', pk=self.object.pk)
+    #     context = self.get_context_data(form=form)
+    #     return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = AvaliacaoForm(request.POST)
+        if form.is_valid():
+            avaliacao = form.save(commit=False)
+            avaliacao.usuario = request.user
+            avaliacao.produto = self.object
+            avaliacao.save()
+            # Redireciona para a mesma página (mantendo os IDs da URL)
+            return redirect('produto-camelo', 
+                            camelo_id=self.kwargs.get("camelo_id"), 
+                            produto_id=self.object.pk)
+        
+        return self.render_to_response(self.get_context_data(form=form))
 class VerCarrinho(ListView):
     model = Carrinho_Produto
     template_name = 'paginas/ver_carrinho.html'

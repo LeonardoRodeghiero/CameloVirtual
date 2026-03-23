@@ -198,17 +198,13 @@ class ProdutoCreateWizard(SessionWizardView):
 
         return context
 
+    
     # def get_form_kwargs(self, step=None):
     #     kwargs = super().get_form_kwargs(step)
-    #     kwargs['camelo'] = self.request.user.camelos.all()
+    #     camelo_id = self.kwargs.get("pk")
+    #     if camelo_id:
+    #         kwargs['camelo_id'] = camelo_id
     #     return kwargs
-
-    def get_form_kwargs(self, step=None):
-        kwargs = super().get_form_kwargs(step)
-        camelo_id = self.kwargs.get("pk")
-        if camelo_id:
-            kwargs['camelo_id'] = camelo_id
-        return kwargs
 
 
     def done(self, form_list, **kwargs):
@@ -217,7 +213,10 @@ class ProdutoCreateWizard(SessionWizardView):
         imagem = form_list[2].cleaned_data
         fornecedor = form_list[3].cleaned_data
 
+        camelo_instancia = get_object_or_404(Camelo, pk=self.kwargs.get("pk"))
+
         cadastro = Produto.objects.create(
+            camelo=camelo_instancia,
             nome=informacao['nome'],
             marca=informacao['marca'],
             categoria=informacao['categoria'],
@@ -225,14 +224,13 @@ class ProdutoCreateWizard(SessionWizardView):
             descricao=detalhes['descricao'],
             preco=detalhes['preco'],
             quantidade=detalhes['quantidade'],
-            imagem=imagem['imagemfornecedor'],
+            imagem=imagem['imagem'],
             fornecedor=fornecedor['fornecedor'],
         )
         
 
 
-        return reverse_lazy('listar-produtos-camelo', kwargs={'pk': self.kwargs.get("pk")})
-
+        return redirect('listar-produtos-camelo', pk=self.kwargs.get("pk"))
 
 
 class CarrinhoCreate(LoginRequiredMixin, View):
