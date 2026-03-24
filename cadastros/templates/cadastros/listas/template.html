@@ -16,7 +16,7 @@
       <!-- Formulário de busca -->
       <form method="get" class="p-3 border rounded bg-light shadow-sm">
         <div class="d-flex align-items-center mb-3 gap-4">
-          <label for="campo" class="form-label">Atributo escolhido:</label>
+          <label for="campo" class="form-label">Buscar Por:</label>
           <select name="campo" id="campo" class="form-select" style="width: 200px;" onchange="atualizarCampo()">
             {% for campo, label in campos %}
               <option value="{{ campo }}" {% if campo == campo_escolhido %}selected{% endif %}>{{ label }}</option>
