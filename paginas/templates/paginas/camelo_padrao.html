@@ -15,11 +15,22 @@
     <title>Camelô Virtual</title>
     
     <style>
+        .errorlist {
+            color: red;
+            font-weight: bold;
+            margin: 5px 0;
+            list-style: none;
+        }
+
         :root{
-            --branco: #f5f5f5;
-            --cinza-claro: #d3d3d3;
+            /* --branco: #f5f5f5;
+            --cinza-claro: #d3d3d3; */
             --cinza: #a9a9a9;
             --preto: #1c1c1c;
+
+            --off-white: #FAFAFA;
+            --verde: #27992d;
+            --branco: #FFFFFF;
         }
         p{
             font-weight: bolder;
@@ -35,16 +46,16 @@
         }
         
         .navbar-nav .nav-link:hover {
-            color: var(--preto) !important;
+            color: var(--branco) !important;
             border-radius: 0.25rem;
             transition: background-color 0.2s;
             font-weight: 500;
             }
-        .branco {
-            background-color: var(--branco);
+        .off-white {
+            background-color: var(--off-white);
         }
-        .cinza-claro{
-            background-color: var(--cinza-claro);
+        .verde{
+            background-color: var(--verde);
         }
         .cinza{
             background-color: var(--cinza);
@@ -52,12 +63,15 @@
         .preto{
             background-color: var(--preto);
         }
+        .branco{
+            background-color: var(--branco);
+        }
 
-        footer a.text-dark:hover,
-        footer a.text-dark:focus,
-        footer a[class*="text-dark"]:hover,
-        footer a[class*="text-dark"]:focus {
-            color: var(--preto) !important;
+        footer a.text-light:hover,
+        footer a.text-light:focus,
+        footer a[class*="text-light"]:hover,
+        footer a[class*="text-light"]:focus {
+            color: var(--branco) !important;
             font-weight: 500;
         }
         .dropdown-item-text{
@@ -81,11 +95,16 @@
         transition: background-color 0.15s ease-in-out;
         }
 
-        .navbar-toggler:hover,
-        .navbar-toggler:focus {
-        background-color: var(--cinza-claro);
+        .navbar .nav-link,
+        .navbar .navbar-brand,
+        .navbar .navbar-text {
+            color: var(--branco) !important;
         }
 
+        .navbar-toggler:hover,
+        .navbar-toggler:focus {
+        background-color: var(--verde);
+        }
 
         .navbar-center-title {
             position: absolute;
@@ -108,7 +127,18 @@
         input[type=number] {
             -moz-appearance: textfield; /* stylelint-disable-line property-no-unknown */
         }
-        
+
+        .btn-buscar {
+            background-color: var(--verde);
+            color: white;
+            font-weight: bold;
+            padding: 8px 16px;
+            border: none;
+        }
+
+        .btn-buscar:hover {
+            background-color: #1f6f25;
+        }
 
         @media (min-width: 991px) and (max-width: 1400px) {
             .navbar-center-title {
@@ -159,12 +189,12 @@
 
 </head>
 <body class="d-flex flex-column min-vh-100">
-    <nav class="navbar navbar-expand-lg navbar-light cinza-claro position-relative">
+    <nav class="navbar navbar-expand-lg navbar-light verde position-relative">
         <div class="container position-relative">
 
             <!-- Logo à esquerda -->
             <a class="navbar-brand d-flex align-items-center" href="{% url 'index' %}">
-                <img src="../../../static/img/insira_aqui.png" alt="Logo" class="d-inline-block align-top mr-2">
+                <img src="../../../static/img/logo_camelodromo_virtual6.png" alt="Logo" class="d-inline-block align-top mr-2" style="height: 90px; width: auto;">
             </a>
             <!-- Título centralizado e fixo -->
             <div class="navbar-center-title">
@@ -436,16 +466,16 @@
     
 
     <!-- rodapé do site -->
-    <footer class="cinza-claro text-center text-lg-start mt-5 py-3">
+    <footer class="verde text-center text-lg-start mt-5 py-3">
         <div class="container d-flex flex-column align-items-center">
 
             <div class="mb-2 mb-lg-0">
-            <a href="#" class="text-decoration-none text-dark mx-2" >Sobre</a>
-            <a href="#" class="text-decoration-none text-dark mx-2">Contato</a>
-            <a href="#" class="text-decoration-none text-dark mx-2">Política de Privacidade</a>
-            <a href="#" class="text-decoration-none text-dark mx-2">Ajuda</a>
+            <a href="#" class="text-decoration-none text-light mx-2" >Sobre</a>
+            <a href="#" class="text-decoration-none text-light mx-2">Contato</a>
+            <a href="#" class="text-decoration-none text-light mx-2">Política de Privacidade</a>
+            <a href="#" class="text-decoration-none text-light mx-2">Ajuda</a>
             </div>
-            <div class="text-muted small mt-2">
+            <div class="small mt-2" style="color: var(--off-white);">
             &copy; 2025 Camelô Virtual
             </div>
         </div>

@@ -13,8 +13,13 @@
 
 
     <title>Camelô Virtual</title>
-    
+
     <style>
+        /* Verde principal: #2E7D32
+        Verde claro: #66BB6A
+        Branco: #FFFFFF
+        Preto: #111111
+        Off-white (fundo): #FAFAFA */
         .errorlist {
             color: red;
             font-weight: bold;
@@ -23,10 +28,16 @@
         }
 
         :root{
-            --branco: #f5f5f5;
-            --cinza-claro: #d3d3d3;
+            /* --branco: #f5f5f5; */
+            /* --cinza-claro: #d3d3d3; */
             --cinza: #a9a9a9;
             --preto: #1c1c1c;
+
+
+            --off-white: #FAFAFA;
+            --verde: #27992d;
+            --branco: #FFFFFF;
+
         }
         p{
             font-weight: bolder;
@@ -40,18 +51,18 @@
             width: 80px;
             object-fit: contain;
         }
-        
+
         .navbar-nav .nav-link:hover {
-            color: var(--preto) !important;
+            color: var(--branco) !important;
             border-radius: 0.25rem;
             transition: background-color 0.2s;
             font-weight: 500;
             }
-        .branco {
-            background-color: var(--branco);
+        .off-white {
+            background-color: var(--off-white);
         }
-        .cinza-claro{
-            background-color: var(--cinza-claro);
+        .verde{
+            background-color: var(--verde);
         }
         .cinza{
             background-color: var(--cinza);
@@ -59,19 +70,20 @@
         .preto{
             background-color: var(--preto);
         }
+        
 
-        footer a.text-dark:hover,
-        footer a.text-dark:focus,
-        footer a[class*="text-dark"]:hover,
-        footer a[class*="text-dark"]:focus {
-            color: var(--preto) !important;
+        footer a.text-light:hover,
+        footer a.text-light:focus,
+        footer a[class*="text-light"]:hover,
+        footer a[class*="text-light"]:focus {
+            color: var(--branco) !important;
             font-weight: 500;
         }
         .dropdown-item-text{
             font-weight: bolder;
         }
         .navbar-toggler {
-            background-color: var(--branco);         /* fundo branco */
+            background-color: var(--off-white);         /* fundo branco */
             border: 1px solid #ccc;          /* borda leve opcional */
             padding: 6px 10px;               /* ajusta o tamanho */
             border-radius: 4px;              /* cantos arredondados */
@@ -88,9 +100,15 @@
         transition: background-color 0.15s ease-in-out;
         }
 
+        .navbar .nav-link,
+        .navbar .navbar-brand,
+        .navbar .navbar-text {
+            color: var(--branco) !important;
+        }
+
         .navbar-toggler:hover,
         .navbar-toggler:focus {
-        background-color: var(--cinza-claro);
+        background-color: var(--verde);
         }
 
 
@@ -115,7 +133,19 @@
         input[type=number] {
             -moz-appearance: textfield; /* stylelint-disable-line property-no-unknown */
         }
-        
+
+
+        .btn-buscar {
+            background-color: var(--verde);
+            color: white;
+            font-weight: bold;
+            padding: 8px 16px;
+            border: none;
+        }
+
+        .btn-buscar:hover {
+            background-color: #1f6f25;
+        }
 
         @media (min-width: 991px) and (max-width: 1400px) {
             .navbar-center-title {
@@ -123,7 +153,7 @@
             }
         }
 
-    
+
 
 
         /* Menu colapsado sobreposto */
@@ -133,7 +163,7 @@
                 top: 100%;
                 right: 0;
                 /* Remova o left: 0; */
-                background: var(--branco);
+                background: var(--off-white);
                 z-index: 10;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.05);
                 width: auto; /* Deixe a largura automática */
@@ -148,7 +178,7 @@
                 display: block;
                 width: 100%;
                 padding: 0.5rem 1rem;
-                color: var(--preto);
+                color: var(--branco);
                 border-radius: 0.25rem;
                 margin-bottom: 0.5rem;
                 text-decoration: none;
@@ -157,26 +187,27 @@
 
             .accordion-body .dropdown-item:hover {
                 background-color: rgba(209, 209, 209, 0.137);
-            }
-            
 
-            
+            }
+
+
+
         }
         </style>
 
 </head>
 <body class="d-flex flex-column min-vh-100">
-    <nav class="navbar navbar-expand-lg navbar-light cinza-claro position-relative">
+    <nav class="navbar navbar-expand-lg navbar-light verde position-relative">
         <div class="container position-relative">
 
             <!-- Logo à esquerda -->
             <a class="navbar-brand d-flex align-items-center" href="{% url 'index' %}">
-                <img src="../../../static/img/insira_aqui.png" alt="Logo" class="d-inline-block align-top mr-2">
+                <img src="../../../static/img/logo_camelodromo_virtual6.png" alt="Logo" class="d-inline-block align-top mr-2" style="height: 90px; width: auto;">
             </a>
             <!-- Título centralizado e fixo -->
-            <div class="navbar-center-title">
+            <!-- <div class="navbar-center-title">
                 <span class="navbar-text h4 mb-0">Camelô Virtual</span>
-            </div>
+            </div> -->
 
 
             <div class="d-lg-none d-flex align-items-center ms-auto">
@@ -223,7 +254,7 @@
                     <li><a class="dropdown-item" href="{% url 'login' %}">Entrar</a></li>
                     <li><a class="dropdown-item" href="{% url 'registrar' %}">Crie Sua Conta</a></li>
 
-                    
+
                     </ul>
                 </div>
                 </div>
@@ -236,11 +267,11 @@
             </button>
             </div>
 
-            
 
 
 
-            
+
+
 
             <!-- Menu -->
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
@@ -286,13 +317,13 @@
                 <li><a class="dropdown-item" href="{% url 'login' %}">Entrar</a></li>
                 <li><a class="dropdown-item" href="{% url 'registrar' %}">Crie Sua Conta</a></li>
 
-            
+
 
             </ul>
             </li>
 
             {% endif %}
-            
+
 
             <li class="nav-item dropdown d-none d-lg-block">
                 <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -332,8 +363,8 @@
             <!-- Layout Mobile (telas pequenas) -->
             <div class="d-lg-none w-100">
         <div class="accordion" id="mobileMenuAccordion">
-            
-            
+
+
             <!-- Sobre a loja -->
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingSobrealoja">
@@ -420,29 +451,29 @@
 
         {% endblock %}
     </div>
-    
+
 </main>
-    
+
 
     <!-- rodapé do site -->
-    <footer class="cinza-claro text-center text-lg-start mt-5 py-3">
+    <footer class="verde text-center text-lg-start mt-5 py-3">
         <div class="container d-flex flex-column align-items-center">
 
             <div class="mb-2 mb-lg-0">
-            <a href="#" class="text-decoration-none text-dark mx-2" >Sobre</a>
-            <a href="#" class="text-decoration-none text-dark mx-2">Contato</a>
-            <a href="#" class="text-decoration-none text-dark mx-2">Política de Privacidade</a>
-            <a href="#" class="text-decoration-none text-dark mx-2">Ajuda</a>
+            <a href="#" class="text-decoration-none text-light mx-2" >Sobre</a>
+            <a href="#" class="text-decoration-none text-light mx-2">Contato</a>
+            <a href="#" class="text-decoration-none text-light mx-2">Política de Privacidade</a>
+            <a href="#" class="text-decoration-none text-light mx-2">Ajuda</a>
             </div>
-            <div class="text-muted small mt-2">
+            <div class="small mt-2" style="color: var(--off-white);">
             &copy; 2025 Camelô Virtual
             </div>
         </div>
     </footer>
-    
-    
-    
-    
+
+
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 
@@ -452,7 +483,7 @@
     <script src="{% static 'js/datatables.min.js' %}"></script>
 
     {% block scripts %}
-    
+
     {% endblock %}
 
 
