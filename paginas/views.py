@@ -36,6 +36,35 @@ from datetime import datetime
 class IndexView(TemplateView):
     template_name = "paginas/index.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # 1. Buscamos os produtos usando o Manager que criamos
+        melhores_produtos_qs = Produto.objects.melhores_avaliados().annotate(
+            qtd_total_avaliacoes=Count('avaliacoes')
+        )
+        # 2. Criamos a lista customizada com a lógica das estrelas
+        lista_customizada = []
+        for produto in melhores_produtos_qs:
+            # Lógica para estrelas (usando o campo avaliacao_geral do seu Model)
+            inteira = int(produto.avaliacao_geral)
+            tem_meia = (produto.avaliacao_geral - inteira) >= 0.5
+            
+            lista_customizada.append({
+                'produto': produto,
+                'media_avaliacoes': round(produto.avaliacao_geral, 1),
+                'media_inteira': range(inteira),
+                'tem_meia': tem_meia,
+                # Se você não tiver esse campo no model, use o annotate do Manager
+                'qtd_avaliacoes': produto.qtd_total_avaliacoes, 
+            })
+
+        # 3. Enviamos para o contexto
+        context['melhores_produtos'] = lista_customizada
+        context['camelos'] = Camelo.objects.all()
+        
+        return context
+
 class EmailConfirmacaoView(TemplateView):
     template_name = "paginas/confirmar.html"
 
@@ -77,7 +106,7 @@ class ClienteProdutoList(ListView):
 
     
     def get_queryset(self):
-        queryset = Produto.objects.annotate(qtd_total_avaliacoes=Count('avaliacao'))
+        queryset = Produto.objects.annotate(qtd_total_avaliacoes=Count('avaliacoes'))
 
         txt_nome = self.request.GET.get('nome')
 

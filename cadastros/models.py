@@ -7,6 +7,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 import random
 from django.utils import timezone 
 from datetime import timedelta
+
+from django.db.models import Avg, Count, F
 # Create your models here.
 
 class Camelo(models.Model):
@@ -123,6 +125,23 @@ class Categoria(models.Model):
     def __str__(self):
         return f"{self.nome}"
 
+
+class ProdutoManager(models.Manager):
+    def melhores_avaliados(self, limite=10):
+        """
+        Retorna os produtos com maior nota média, 
+        usando a quantidade de vendas como critério de desempate.
+        """
+        return self.annotate(
+            # Calculamos a média real baseada nas instâncias de Avaliacao
+            media_calculada=Avg('avaliacoes__nota'),
+            total_votos=Count('avaliacoes')
+        ).filter(
+            total_votos__gt=0 # Opcional: apenas produtos que já foram avaliados
+        ).order_by('-media_calculada', '-quantidade_vendido')[:limite]
+
+
+
 class Produto(models.Model):
     nome = models.CharField(max_length=100)
     marca = models.CharField(max_length=50)
@@ -136,6 +155,8 @@ class Produto(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     camelo = models.ForeignKey(Camelo, on_delete=models.CASCADE)
 
+
+    objects = ProdutoManager()
 
     def __str__(self):
         return f'{self.nome} - R${self.preco} ({self.camelo.nome_fantasia})'
@@ -173,7 +194,7 @@ class Avaliacao(models.Model):
     data_hora_mensagem = models.DateTimeField(auto_now=True, verbose_name='data e hora da avaliação')
     mensagem = models.CharField(max_length=255, null=False, verbose_name="mensagem da avalição")
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
-    produto = models.ForeignKey(Produto, on_delete=models.CASCADE, null=True)
+    produto = models.ForeignKey(Produto, on_delete=models.CASCADE, null=True, related_name="avaliacoes")
     camelo = models.ForeignKey(Camelo, on_delete=models.CASCADE, null=True)
 
 
