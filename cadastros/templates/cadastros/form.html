@@ -109,6 +109,60 @@
 
 {% block scripts %}
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Estilização para o container do input e o ícone */
+        .password-container {
+            position: relative;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
+            z-index: 5;
+        }
+        /* Ajustando para o texto não ficar embaixo do ícone */
+        .input-senha {
+            padding-right: 40px !important;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Seleciona todos os inputs com a classe input-senha
+            const passwordInputs = document.querySelectorAll('.input-senha');
+
+            passwordInputs.forEach(input => {
+                // Cria o ícone do olhinho
+                const icon = document.createElement('i');
+                
+                icon.classList.add('fa-solid', 'fa-eye-slash', 'toggle-password'); 
+                
+                // Envolve o input em um container relativo para o ícone se posicionar
+                const wrapper = document.createElement('div');
+                wrapper.classList.add('password-container');
+                input.parentNode.insertBefore(wrapper, input);
+                wrapper.appendChild(input);
+                wrapper.appendChild(icon);
+
+                
+                // E no evento de clique:
+                icon.addEventListener('click', function() {
+                    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                    input.setAttribute('type', type);
+                    
+                    // Inverte a lógica: se for texto, mostra olho aberto; se for password, olho cortado.
+                    this.classList.toggle('fa-eye-slash');
+                    this.classList.toggle('fa-eye');
+                });
+            });
+        });
+    </script>
+
     
 
     <script src="{% static 'js/jquery.mask.min.js' %}"></script>

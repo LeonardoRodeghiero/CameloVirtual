@@ -30,6 +30,8 @@ from django.db.models import Count
 from django.utils import timezone
 
 from datetime import datetime
+
+from django.db import transaction
 # Create your views here.
 
 
@@ -174,7 +176,7 @@ class ClienteProdutoCameloList(ListView):
     def get_queryset(self):
 
         camelo_id = self.kwargs.get("pk")
-        queryset = Produto.objects.annotate(qtd_total_avaliacoes=Count('avaliacao'))
+        queryset = Produto.objects.annotate(qtd_total_avaliacoes=Count('avaliacoes'))
 
         txt_nome = self.request.GET.get('nome')
 
@@ -513,27 +515,88 @@ class ConfirmarEndereco(View):
         if not endereco:
             return render(request, "paginas/confirmar_endereco.html", {"erro": "Informe um endereço válido"})
 
-        produto = get_object_or_404(Produto, id=dados['produto_id'])
-        quantidade = dados['quantidade']
+        try:
+            with transaction.atomic():
+                if dados.get('origem') == 'carrinho':
+                    # --- LÓGICA PARA CARRINHO ---
+                    carrinho = get_object_or_404(Carrinho, usuario=request.user)
+                    
+                    # 1. Calcula o valor total do carrinho
+                    total = sum(item.produto.preco * item.quantidade for item in carrinho.produtos.all())
 
-        pedido = Pedido.objects.create(
-            usuario=request.user,
-            valor_total=produto.preco * quantidade,
-            data_pedido=timezone.now(),
-            status="em andamento",
-            opcao_pedido=dados['opcao_pedido'],
-            endereco=endereco
-        )
+                    # 2. Cria o Pedido principal (Pedido Model)
+                    pedido = Pedido.objects.create(
+                        usuario=request.user,
+                        valor_total=total,
+                        data_pedido=timezone.now(),
+                        status="em andamento",
+                        opcao_pedido=dados.get('opcao_pedido', 'casa'),
+                        endereco=endereco
+                    )
 
-        Pedido_Produto.objects.create(
-            pedido=pedido,
-            produto=produto,
-            quantidade=quantidade,
-            preco_unitario=produto.preco
-        )
+                    # 3. Loop nos itens do carrinho criando Pedido_Produto para cada um
+                    for item in carrinho.produtos.all():
+                        Pedido_Produto.objects.create(
+                            pedido=pedido,
+                            produto=item.produto,
+                            quantidade=item.quantidade,
+                            preco_unitario=item.produto.preco
+                        )
 
-        # limpa sessão
-        del request.session['pedido_temp']
+                    # 4. Deleta o carrinho do banco
+                    carrinho.produtos.all().delete()
 
-        return redirect("index")
+                else:
+                    # --- LÓGICA PARA PRODUTO DIRETO ---
+                    produto = get_object_or_404(Produto, id=dados['produto_id'])
+                    quantidade = dados['quantidade']
+
+                    pedido = Pedido.objects.create(
+                        usuario=request.user,
+                        valor_total=produto.preco * quantidade,
+                        data_pedido=timezone.now(),
+                        status="em andamento",
+                        opcao_pedido=dados['opcao_pedido'],
+                        endereco=endereco
+                    )
+
+                    Pedido_Produto.objects.create(
+                        pedido=pedido,
+                        produto=produto,
+                        quantidade=quantidade,
+                        preco_unitario=produto.preco
+                    )
+
+        # Se chegou aqui, a transação foi um sucesso. Limpa a sessão.
+            del request.session['pedido_temp']
+            return redirect("index")
+
+        except Exception as e:
+        # Caso dê algum erro inesperado no banco de dados, aponta o erro no template
+            return render(request, "paginas/confirmar_endereco.html", {"erro": f"Erro ao processar pedido: {e}"})
+
+
+        # produto = get_object_or_404(Produto, id=dados['produto_id'])
+        # quantidade = dados['quantidade']
+
+        # pedido = Pedido.objects.create(
+        #     usuario=request.user,
+        #     valor_total=produto.preco * quantidade,
+        #     data_pedido=timezone.now(),
+        #     status="em andamento",
+        #     opcao_pedido=dados['opcao_pedido'],
+        #     endereco=endereco
+        # )
+
+        # Pedido_Produto.objects.create(
+        #     pedido=pedido,
+        #     produto=produto,
+        #     quantidade=quantidade,
+        #     preco_unitario=produto.preco
+        # )
+
+        # # limpa sessão
+        # del request.session['pedido_temp']
+
+        # return redirect("index")
   

@@ -46,7 +46,7 @@ urlpatterns = [
     path('carrinho/<int:produto_id>/', CarrinhoCreate.as_view(), name="adicionar-ao-carrinho"),
     path('carrinho/adicionar/<int:produto_id>/', CarrinhoProdutoCreate.as_view(), name="adicionar-produto-carrinho"),
 
-    path('carrinho/finalizar/<int:pk>', PedidoCarrinho.as_view(), name="realizar-pedido-carrinho"),
+    path('carrinho/finalizar/<int:produto_id>', PedidoCarrinho.as_view(), name="realizar-pedido-carrinho"),
     path('realizar/pedido/<int:produto_id>', PedidoProdutoDireto.as_view(), name="realizar-pedido-direto"),
 
 

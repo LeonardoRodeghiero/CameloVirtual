@@ -130,6 +130,13 @@ class UsuarioEnderecoForm(forms.ModelForm):
         fields = ["estado", "cidade", "bairro", "logradouro", "numero", "complemento", "cep"]
 
 class UsuarioSenhaForm(UserCreationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Adicionando a classe 'input-name' para o JS encontrar o campo no html 
+        self.fields['password1'].widget.attrs.update({'class': 'input-senha'})
+        self.fields['password2'].widget.attrs.update({'class': 'input-senha'})
+    
+
     class Meta:
         model = User
         fields = ["email", "password1", "password2"]
@@ -276,6 +283,9 @@ class PerfilForm(forms.ModelForm):
 
 class EmailLoginForm(forms.Form):
     email = forms.EmailField(label='Email')
-    password = forms.CharField(widget=forms.PasswordInput, label='Senha')
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'input-senha'}), 
+        label='Senha'
+    )
 
 

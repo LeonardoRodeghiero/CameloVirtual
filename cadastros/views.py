@@ -461,27 +461,14 @@ class PedidoCarrinho(LoginRequiredMixin, View):
         if not carrinho.produtos.exists():
             return redirect('ver-carrinho')
 
-        total = sum(item.produto.preco * item.quantidade for item in carrinho.produtos.all())
-
-        pedido = Pedido.objects.create(
-            usuario=request.user,
-            valor_total=total, 
-            data_pedido=timezone.now(),
-            status="em andamento"
-        )
-
-        for item in carrinho.produtos.all():
-            Pedido_Produto.objects.create(
-                pedido=pedido,
-                produto=item.produto,
-                quantidade=item.quantidade,
-                preco_unitario=item.produto.preco
-            )
-
+        # apenas vai salvar na sessão que o pedido virá do carrinho
+        request.session['pedido_temp'] = {
+            'origem': 'carrinho',
+            'opcao_pedido': 'casa'
+        }
         
-        carrinho.produtos.all().delete()
+        return redirect("confirmar-endereco")
 
-        return redirect('index')
         
 class PedidoProdutoDireto(View):
     def get(self, request, *args, **kwargs):
@@ -497,7 +484,6 @@ class PedidoProdutoDireto(View):
         except ValueError:
             quantidade = 1
         opcao_pedido = request.POST.get('entrega')  # pega direto do POST
-        print(opcao_pedido)
         
         if opcao_pedido == "casa":
             # redireciona para página de endereço, passando dados via sessão
