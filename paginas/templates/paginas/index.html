@@ -563,72 +563,63 @@
 </div> -->
 
 <style>
-    /* CSS para fazer os cards ficarem lado a lado no carrossel */
-    @media (min-width: 768px) {
-        .carousel-inner {
-            display: flex;
-        }
-        .carousel-item {
-            margin-right: 0;
-            flex: 0 0 25%; /* 4 itens por vez (100 / 4) */
-            display: block;
-        }
-    }
-    /* Ajuste para tablets */
-    @media (min-width: 576px) and (max-width: 767px) {
-        .carousel-item {
-            flex: 0 0 50%; /* 2 itens por vez */
-        }
-    }
-    .carousel-inner {
-        padding: 1em;
-    }
-    .card {
-        margin: 0 0.5em;
-        height: 100%;
-    }
-    /* Estilo das setas para não sumirem no fundo */
-    .carousel-control-prev-icon, .carousel-control-next-icon {
-        background-color: rgba(0,0,0,0.5);
-        border-radius: 50%;
-        padding: 20px;
-    }
+    /* Container que segura os itens lado a lado */
+.vitrine-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 15px; /* Espaço entre cards */
+    padding: 15px 5px;
+    -webkit-overflow-scrolling: touch; /* Melhora o scroll no iOS */
+}
 
-    .vitrine-container {
-        display: flex;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        scroll-behavior: smooth;
-        gap: 15px;
-        padding: 20px 0;
-    }
+/* Esconde a barra de rolagem */
+.vitrine-container::-webkit-scrollbar {
+    display: none;
+}
 
-    /* Esconde a barra de rolagem mas mantém a função */
-    .vitrine-container::-webkit-scrollbar {
-        display: none;
-    }
+/* Configuração base para o Card (Mobile Primeiro) */
+.vitrine-item {
+    /* Exibe 2 cards por tela (48% para sobrar um respiro) */
+    flex: 0 0 48%; 
+    min-width: 0; 
+}
 
+/* Tablets: Exibe 3 cards */
+@media (min-width: 576px) {
     .vitrine-item {
-        flex: 0 0 calc(25% - 15px); /* 4 itens no desktop */
-        scroll-snap-align: start;
+        flex: 0 0 31%; 
     }
+}
 
-    @media (max-width: 992px) {
-        .vitrine-item { flex: 0 0 calc(50% - 15px); } /* 2 itens no tablet */
+/* Desktops Médios: Exibe 4 cards */
+@media (min-width: 992px) {
+    .vitrine-item {
+        flex: 0 0 23%; 
     }
+}
 
-    @media (max-width: 576px) {
-        .vitrine-item { flex: 0 0 calc(100% - 15px); } /* 1 item no mobile */
+/* Desktops Grandes: Exibe 5 cards */
+@media (min-width: 1200px) {
+    .vitrine-item {
+        flex: 0 0 19%; 
     }
+}
 
-    .btn-control {
-        background: rgba(0,0,0,0.7);
-        color: white;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        border: none;
-    }
+/* Estilo dos Botões de Controle */
+.btn-control {
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    border: none;
+    transition: background 0.3s;
+}
+
+.btn-control:hover {
+    background: var(--verde);
+}
 </style>
 <div class="container mt-4 position-relative">
     <button class="btn-control position-absolute top-50 start-0 translate-middle-y z-3" onclick="scrollVitrine(-1)">
@@ -650,6 +641,8 @@
                     <h6 class="card-title text-truncate">{{ item.produto.nome }} {{item.produto.marca}}</h6>
                     <p class="fw-bold text-primary mb-0">R$ {{ item.produto.preco }}</p>
                     <div class="my-2">
+                        <i class="text-muted">{{ item.media_avaliacoes }}</i>
+
                         {% for i in "12345" %}
                             {% with n=i|add:"0" %}
                                 {% if n <= item.media_inteira|length %}
@@ -663,7 +656,7 @@
                         {% endfor %}
                         <small class="text-muted">({{ item.qtd_avaliacoes }})</small>
                     </div>
-                    <p class="card-text small"><i class="bi bi-shop"></i> {{ item.produto.camelo.nome_fantasia }}</p>
+                    <p class="card-text small"><i class="bi bi-shop"></i> {{ item.produto.camelo.nome_fantasia }} ({{ item.produto.camelo.estado }})</p>
 
                 </div>
             </a>
