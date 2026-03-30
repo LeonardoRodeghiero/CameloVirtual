@@ -108,7 +108,7 @@
 
 
   <div class="mt-4">
-    {% if not ja_avaliou %}
+    {% if pode_avaliar and not ja_avaliou %}
       <h5>Deixe sua avaliação:</h5>
       <form method="post">
         {% csrf_token %}

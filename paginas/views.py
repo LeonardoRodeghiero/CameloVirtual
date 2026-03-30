@@ -228,8 +228,9 @@ class ProdutoEspecifico(DetailView):
         produto = self.object
         usuario = self.request.user
 
-        ja_avaliou = Avaliacao.objects.filter(produto=produto, usuario=usuario)
+        ja_avaliou = Avaliacao.objects.filter(produto=produto, usuario=usuario).exists()
 
+        pode_avaliar =  Pedido_Produto.objects.filter(produto=produto, pedido__usuario=usuario, pedido__status="finalizado").exists()  #AQUI VAI TER QUE MUDAR O STATUS PAA APONTAR PARA PEDIDO_PRODUTO
 
         avaliacoes = Avaliacao.objects.filter(produto=produto)
 
@@ -247,7 +248,8 @@ class ProdutoEspecifico(DetailView):
         context['qtd_avaliacoes'] = avaliacoes.count()
 
         if usuario.is_authenticated:
-            context['ja_avaliou'] = ja_avaliou      
+            context['ja_avaliou'] = ja_avaliou  
+            context['pode_avaliar'] = pode_avaliar    
         
         return context
 
