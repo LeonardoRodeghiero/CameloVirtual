@@ -233,7 +233,8 @@ class UsuarioCreateWizard(SessionWizardView):
             "Confirmação de cadastro",
             f"Seu código é {cadastro.codigo}",
             "rodeghieroleonardo@gmail.com",
-            [cadastro.email]
+            [cadastro.email],
+            fail_silently=True
         )
 
         # telefone = "+55" + ''.join(filter(str.isdigit, cadastro.telefone))
