@@ -25,6 +25,11 @@ from decouple import config
 
 from formtools.wizard.views import SessionWizardView
 
+import resend
+import os
+from django.conf import settings
+
+resend.api_key = os.environ.get("RESEND_API_KEY")
 
 from .forms import (
     UsuarioDadosPessoaisForm,
@@ -34,70 +39,70 @@ from .forms import (
 )
 # Create your views here.
 
-class UsuarioCreate(CreateView):
-    template_name = 'cadastros/form.html'
-    form_class = UsuarioForm
-    success_url = reverse_lazy('confirmar-codigo')
+# class UsuarioCreate(CreateView):
+#     template_name = 'cadastros/form.html'
+#     form_class = UsuarioForm
+#     success_url = reverse_lazy('confirmar-codigo')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
 
-        context['titulo_form'] = "Crie Sua Conta"
-        context['titulo_botao'] = "Criar"
+#         context['titulo_form'] = "Crie Sua Conta"
+#         context['titulo_botao'] = "Criar"
 
-        return context
+#         return context
     
     
 
-    def form_valid(self, form):
-        dados = form.cleaned_data
+#     def form_valid(self, form):
+#         dados = form.cleaned_data
 
-        cadastro = CadastroPendente.objects.create(
-            nome_completo=dados['nome_completo'],
-            email=dados['email'], # vai virar o email do User
-            senha=make_password(dados['password1']), 
-            cpf=dados['cpf'],
-            telefone=dados['telefone'],
-            estado=dados['estado'],
-            cidade=dados['cidade'],
-            bairro=dados.get('bairro'),
-            logradouro=dados.get('logradouro'),
-            numero=dados.get('numero'),
-            complemento=dados.get('complemento'),
-            cep=dados.get('cep'),
-        )
-        cadastro.gerar_codigo()
-        cadastro.gerar_codigo_sms()
+#         cadastro = CadastroPendente.objects.create(
+#             nome_completo=dados['nome_completo'],
+#             email=dados['email'], # vai virar o email do User
+#             senha=make_password(dados['password1']), 
+#             cpf=dados['cpf'],
+#             telefone=dados['telefone'],
+#             estado=dados['estado'],
+#             cidade=dados['cidade'],
+#             bairro=dados.get('bairro'),
+#             logradouro=dados.get('logradouro'),
+#             numero=dados.get('numero'),
+#             complemento=dados.get('complemento'),
+#             cep=dados.get('cep'),
+#         )
+#         cadastro.gerar_codigo()
+#         cadastro.gerar_codigo_sms()
 
-        send_mail(
-            "Confirmação de cadastro",
-            f"Seu código é {cadastro.codigo}",
-            "rodeghieroleonardo@gmail.com", # AQUI É O EMAIL QUE ENVIA OS CÓDIGOS
-            [cadastro.email]
-        )
-
-
-        telefone = cadastro.telefone
-        telefone = telefone.replace("(", "")
-        telefone = telefone.replace(")", "")
-        telefone = telefone.replace("-", "")
-        telefone = telefone.strip(" ")
-        telefone = telefone.replace(" ", "")
-        telefone = "+55" + telefone
+#         send_mail(
+#             "Confirmação de cadastro",
+#             f"Seu código é {cadastro.codigo}",
+#             "rodeghieroleonardo@gmail.com", # AQUI É O EMAIL QUE ENVIA OS CÓDIGOS
+#             [cadastro.email]
+#         )
 
 
+#         telefone = cadastro.telefone
+#         telefone = telefone.replace("(", "")
+#         telefone = telefone.replace(")", "")
+#         telefone = telefone.replace("-", "")
+#         telefone = telefone.strip(" ")
+#         telefone = telefone.replace(" ", "")
+#         telefone = "+55" + telefone
 
-        print(telefone)
-        # Envia SMS 
-        account_sid = config("TWILIO_SID")
-        auth_token = config("TWILIO_AUTH_TOKEN")
-        client = Client(account_sid, auth_token) 
-        client.messages.create( 
-            body=f"Seu código de telefone é {cadastro.codigo_sms}", 
-            from_=config("TWILIO_NUMBER"), 
-            to=telefone 
-        )
-        return redirect("confirmar-codigo", email=cadastro.email)
+
+
+#         print(telefone)
+#         # Envia SMS 
+#         account_sid = config("TWILIO_SID")
+#         auth_token = config("TWILIO_AUTH_TOKEN")
+#         client = Client(account_sid, auth_token) 
+#         client.messages.create( 
+#             body=f"Seu código de telefone é {cadastro.codigo_sms}", 
+#             from_=config("TWILIO_NUMBER"), 
+#             to=telefone 
+#         )
+#         return redirect("confirmar-codigo", email=cadastro.email)
 
 
 
@@ -229,15 +234,33 @@ class UsuarioCreateWizard(SessionWizardView):
         cadastro.gerar_codigo()
         cadastro.gerar_codigo_sms()
 
-        send_mail(
-            "Confirmação de cadastro",
-            f"Seu código é {cadastro.codigo}",
-            "rodeghieroleonardo@gmail.com",
-            [cadastro.email],
-            # fail_silently=True
-            fail_silently=False
+        # send_mail(
+        #     "Confirmação de cadastro",
+        #     f"Seu código é {cadastro.codigo}",
+        #     "rodeghieroleonardo@gmail.com",
+        #     [cadastro.email],
+        #     # fail_silently=True
+        #     fail_silently=False
 
-        )
+        # )
+
+        try:
+            params = {
+                "from": "onboarding@resend.dev", # No plano grátis, use este remetente padrão
+                "to": [cadastro.email],          # O e-mail do seu cliente
+                "subject": "Código de Confirmação - Camelódromo Virtual",
+                "html": f"""
+                    <h1>Bem-vindo ao Camelódromo Virtual!</h1>
+                    <p>Seu código de confirmação é: <strong>{cadastro.codigo}</strong></p>
+                    <p>Use este código para ativar sua conta.</p>
+                """,
+            }
+
+            resend.Emails.send(params)
+            print("E-mail enviado com sucesso via API!")
+
+        except Exception as e:
+            print(f"Erro ao enviar via Resend: {e}")
 
         # telefone = "+55" + ''.join(filter(str.isdigit, cadastro.telefone))
         # client = Client(config("TWILIO_SID"), config("TWILIO_AUTH_TOKEN"))
