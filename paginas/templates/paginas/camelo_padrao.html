@@ -321,7 +321,7 @@
                     <!-- <li><a class="dropdown-item" href="#">Ação 1</a></li> -->
                     {% for categoria in categorias_navbar %}
                         {% if categoria.camelo.pk == camelo.pk %}
-                            <li><a class="dropdown-item" href="#">{{ categoria.nome }}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'produtos-categoria' camelo.pk %}?categoria={{ categoria.pk }}">{{ categoria.nome }}</a></li>
                         {% endif %}
                     {% endfor %}
 

@@ -68,29 +68,42 @@ class CameloEnderecoForm(forms.ModelForm):
 
 
 class ProdutoInformacaoForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.camelo_id = kwargs.pop('camelo_id', None)
+        super().__init__(*args, **kwargs)
+        if self.camelo_id:
+            self.fields['categoria'].queryset = Categoria.objects.filter(camelo_id=self.camelo_id)
+
     class Meta:
         model = Produto
         fields = ["nome", "marca", "categoria"]
 
 
-    def __init__(self, *args, **kwargs):
-        camelo_id = kwargs.pop('camelo_id', None)
-        super().__init__(*args, **kwargs)
-        if camelo_id:
-            self.fields['categoria'].queryset = Categoria.objects.filter(camelo_id=camelo_id)
-
+    
 
 class ProdutoDetalhesForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.camelo_id = kwargs.pop('camelo_id', None)
+        super().__init__(*args, **kwargs)
+    
     class Meta:
         model = Produto
         fields = ["descricao", "preco", "quantidade"]
 
 class ProdutoImagemForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.camelo_id = kwargs.pop('camelo_id', None)
+        super().__init__(*args, **kwargs)
+    
     class Meta:
         model = Produto
         fields = ["imagem"]
 
 class ProdutoFornecedorForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.camelo_id = kwargs.pop('camelo_id', None)
+        super().__init__(*args, **kwargs)
+    
     class Meta:
         model = Produto
         fields = ["fornecedor"]

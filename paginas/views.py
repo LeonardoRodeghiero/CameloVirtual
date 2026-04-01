@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 
 from cadastros.views import Produto, Carrinho_Produto, Carrinho, Camelo, Pedido_Produto
 
-from cadastros.models import Produto, Avaliacao, Camelo, Camelo_Usuario, Pedido, Pedido_Produto
+from cadastros.models import Produto, Avaliacao, Camelo, Camelo_Usuario, Pedido, Pedido_Produto, Categoria
 from cadastros.forms import AvaliacaoForm
 
 from django.views.generic.list import ListView
@@ -602,3 +602,51 @@ class ConfirmarEndereco(View):
 
         # return redirect("index")
   
+
+class ProdutoCameloCategoriaList(ListView):
+    model = Produto
+    template_name = 'paginas/camelo/produtos-camelo.html'
+    context_object_name = 'produtos'
+
+    def get_queryset(self):
+        # 1. Pegamos os IDs necessários
+        camelo_id = self.kwargs.get("camelo_id")
+        categoria_id = self.request.GET.get('categoria') # Vem do ?categoria=ID
+
+        # 2. Começamos o queryset com o annotate que você já usa
+        queryset = Produto.objects.filter(camelo_id=camelo_id).annotate(
+            qtd_total_avaliacoes=Count('avaliacoes')
+        )
+
+        # 3. Filtramos pela categoria se ela foi passada
+        if categoria_id:
+            queryset = queryset.filter(categoria_id=categoria_id)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Reaproveitando sua lógica exata de processamento de estrelas
+        produtos_filtrados = context['produtos']
+        lista_customizada = []
+
+        for produto in produtos_filtrados:
+            inteira = int(produto.avaliacao_geral)
+            tem_meia = (produto.avaliacao_geral - inteira) >= 0.5
+
+            item = {
+                'produto': produto,
+                'media_avaliacoes': round(produto.avaliacao_geral, 1),
+                'media_inteira': range(inteira),
+                'tem_meia': tem_meia,
+                'qtd_avaliacoes': produto.qtd_total_avaliacoes,
+            }
+            lista_customizada.append(item)
+
+        # Adicionando o objeto Camelo ao contexto
+        camelo_id = self.kwargs.get("camelo_id")
+        context["camelo"] = get_object_or_404(Camelo, pk=camelo_id)
+        context['lista_com_dados'] = lista_customizada
+        
+        return context

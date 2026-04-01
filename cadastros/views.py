@@ -199,12 +199,12 @@ class ProdutoCreateWizard(SessionWizardView):
         return context
 
     
-    # def get_form_kwargs(self, step=None):
-    #     kwargs = super().get_form_kwargs(step)
-    #     camelo_id = self.kwargs.get("pk")
-    #     if camelo_id:
-    #         kwargs['camelo_id'] = camelo_id
-    #     return kwargs
+    def get_form_kwargs(self, step=None):
+        kwargs = super().get_form_kwargs(step)
+        camelo_id = self.kwargs.get("pk")
+        if camelo_id:
+            kwargs['camelo_id'] = camelo_id
+        return kwargs
 
 
     def done(self, form_list, **kwargs):
