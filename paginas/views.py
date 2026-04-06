@@ -659,7 +659,11 @@ class FinalizarPedidoView(View):
         
         camelo_id = objeto.produto.camelo.id
         # Alterando o status
+        objeto.produto.quantidade -= objeto.quantidade
+        objeto.produto.save()
+
         objeto.status = 'finalizado' 
+
         objeto.save()
         
         # Redireciona de volta

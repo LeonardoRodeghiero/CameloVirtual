@@ -498,7 +498,6 @@ class PedidoProdutoDireto(View):
                 usuario=request.user,
                 valor_total=produto.preco * quantidade,
                 data_pedido=timezone.now(),
-                status="em andamento",
                 opcao_pedido=opcao_pedido
 
             )
