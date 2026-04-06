@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import IndexView, AcessoNegadoView, ClienteProdutoList, ProdutoEspecifico, VerCarrinho, alterar_quantidade, CameloView, AcessoNegadoCameloView, ClienteProdutoCameloList, ProdutoCameloEspecifico, ClienteCameloList, InserirFuncionarioView, ConfirmarFuncionarioView, ConfirmarEndereco, VerHistoricoPedidos, ProdutoCameloCategoriaList
+from .views import IndexView, AcessoNegadoView, ClienteProdutoList, ProdutoEspecifico, VerCarrinho, alterar_quantidade, CameloView, AcessoNegadoCameloView, ClienteProdutoCameloList, ProdutoCameloEspecifico, ClienteCameloList, InserirFuncionarioView, ConfirmarFuncionarioView, ConfirmarEndereco, VerHistoricoPedidos, ProdutoCameloCategoriaList, FinalizarPedidoView, CancelarPedidoView
 urlpatterns = [
     path('', IndexView.as_view(), name="index"),
     path('<int:pk>/', CameloView.as_view(), name="camelo"),
@@ -27,6 +27,9 @@ urlpatterns = [
 
     path("<int:camelo_id>/categoria/", ProdutoCameloCategoriaList.as_view() , name="produtos-categoria"),
 
+    path('pedido/finalizar/<int:pk>/', FinalizarPedidoView.as_view(), name='finalizar-pedido'),
+
+    path('pedido/cancelar/<int:pk>/', CancelarPedidoView.as_view(), name='cancelar-pedido'),
 
 
 

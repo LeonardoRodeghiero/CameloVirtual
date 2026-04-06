@@ -49,6 +49,7 @@
             {% endfor %}
             <small class="text-muted ms-2">({{ qtd_avaliacoes }})</small>
           </div>
+          <p class="card-text text-muted">Quantidade em estoque: {{ object.quantidade }}</p>
 
           <p class="card-text text-muted">{{ object.descricao }}</p>
           <p class="card-text text-muted">Camelô: {{ object.camelo.nome_fantasia }}</p>
@@ -59,7 +60,7 @@
                 <button type="button" class="btn btn-outline-secondary" onclick="alterarQuantidade(-1)">
                   <i class="bi bi-dash"></i>
                 </button>
-                <input type="number" name="quantidade" id="quantidade" value="1" min="1" class="form-control text-center fw-bold">
+                <input type="number" name="quantidade" id="quantidade" value="1" min="1" max="{{ object.quantidade }}" class="form-control text-center fw-bold">
                 <button type="button" class="btn btn-outline-secondary" onclick="alterarQuantidade(1)">
                   <i class="bi bi-plus"></i>
                 </button>
@@ -228,9 +229,21 @@
 <script>
 function alterarQuantidade(delta) {
   const input = document.getElementById('quantidade');
-  let valor = parseInt(input.value) || 1;
-  valor = Math.max(1, valor + delta);
-  input.value = valor;
+  const maximo = parseInt(input.max); // Lê o valor que veio do Django
+  let valorAtual = parseInt(input.value) || 1;
+  
+  let novoValor = valorAtual + delta;
+
+  // Regras de limite
+  if (novoValor < 1) {
+    novoValor = 1;
+  } else if (novoValor > maximo) {
+    novoValor = maximo;
+    // Opcional: Alerta simples para o usuário saber por que parou
+    console.log("Limite de estoque atingido");
+  }
+
+  input.value = novoValor;
 }
 
 function copiarQuantidade(form) {

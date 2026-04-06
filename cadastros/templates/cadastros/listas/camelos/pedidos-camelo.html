@@ -13,7 +13,9 @@
 {% endblock %}
 
 {% block editar_proibido %}
-
+{% if object.pedido.opcao_pedido == 'loja' and object.status == 'em andamento'  %}
+    <a href="{% url 'finalizar-pedido' object.pk %}" class="btn btn-success" title="Finalizar Pedido"><i class="bi bi-check"></i></a>
+{% endif %}
 {% endblock %}
 
 
@@ -33,7 +35,7 @@
     <td>{{object.pk}}</td>
     <td>{{object.pedido.usuario}}</td>
     <td>{{object.pedido.data_pedido}}</td>
-    <td>{{object.pedido.status}}</td>
+    <td>{{object.status}}</td>
     <td>
         
             {{object.quantidade}}X {{ object.produto.nome }} {{ object.produto.marca }} (R${{ object.preco_unitario }})
@@ -44,9 +46,16 @@
     <td class="{% if not object.pedido.endereco %}text-muted{% endif %}">{{object.pedido.endereco|default:"&ndash;"|safe}}</td>
 
     <td>R$ {{ object.subtotal|floatformat:2 }}</td>
+{% endblock %}
+
 
 
 {% block excluir_proibido %}
+{% if object.pedido.opcao_pedido == 'loja' and object.status == 'em andamento' %}
+    <a href="{% url 'cancelar-pedido' object.pk %}" class="btn btn-danger" title="Cancelar Pedido"><i class="bi bi-x"></i></a>
+{% endif %}
+{% endblock %}
 
-{% endblock %}
-{% endblock %}
+
+
+

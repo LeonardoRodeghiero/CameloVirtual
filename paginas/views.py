@@ -11,7 +11,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views import View
 
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect, render, reverse
 
 from django.http import JsonResponse
 
@@ -650,3 +650,30 @@ class ProdutoCameloCategoriaList(ListView):
         context['lista_com_dados'] = lista_customizada
         
         return context
+
+
+class FinalizarPedidoView(View):
+    def get(self, request, pk):
+        # Busca o objeto ou retorna 404 se não existir
+        objeto = get_object_or_404(Pedido_Produto, pk=pk)
+        
+        camelo_id = objeto.produto.camelo.id
+        # Alterando o status
+        objeto.status = 'finalizado' 
+        objeto.save()
+        
+        # Redireciona de volta
+        return redirect(reverse('listar-pedidos-camelo', kwargs={'camelo_id': camelo_id}))
+
+
+class CancelarPedidoView(View):
+    def get(self, request, pk):
+        objeto = get_object_or_404(ItemPedido, pk=pk)
+        
+        camelo_id = objeto.produto.camelo.id
+
+        # Alterando o status
+        objeto.status = 'cancelado'
+        objeto.save()
+        
+        return redirect(reverse('listar-pedidos-camelo', kwargs={'camelo_id': camelo_id}))

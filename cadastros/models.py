@@ -178,7 +178,6 @@ class Carrinho(models.Model):
 class Pedido(models.Model):
     valor_total = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='Valor Total')
     data_pedido = models.DateTimeField(auto_now=True, verbose_name='data do pedido')
-    status = models.CharField(max_length=30, null=False, default="em andamento")
     opcao_pedido = models.CharField(max_length=30, choices=[("casa", "Receber em casa"), ("loja", "Buscar na loja")], null=False, default="Receber em casa")
     endereco = models.CharField(max_length=150, null=True, verbose_name="endereço")
 
@@ -211,6 +210,8 @@ class Avaliacao(models.Model):
 class Pedido_Produto(models.Model):
     preco_unitario = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Preço Unitário')
     quantidade = models.IntegerField()
+    status = models.CharField(max_length=30, null=False, default="em andamento")
+
     pedido = models.ForeignKey(Pedido, related_name="produtos", on_delete=models.CASCADE)
     produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
 

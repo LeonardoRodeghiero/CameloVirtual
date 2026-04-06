@@ -507,6 +507,7 @@ class PedidoProdutoDireto(View):
                 pedido=pedido,
                 produto=produto,
                 quantidade=quantidade,
+                status="em andamento",
                 preco_unitario=produto.preco
             )
 

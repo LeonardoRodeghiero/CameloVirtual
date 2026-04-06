@@ -15,7 +15,6 @@
     <th>id</th>
     <th>Usuário</th>
     <th>Data do pedido</th>
-    <th>Status do pedido</th>
     <th>Produtos no Pedido</th>
     <th>Opção do Pedido</th>
     <th>Endereço</th>
@@ -27,7 +26,6 @@
     <td>{{object.pk}}</td>
     <td>{{object.usuario}}</td>
     <td>{{object.data_pedido}}</td>
-    <td>{{object.status}}</td>
     <td>
         <ul>
             {% for item in object.produtos.all %}
