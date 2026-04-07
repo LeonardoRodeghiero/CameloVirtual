@@ -41,6 +41,9 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
+        usuario = self.request.user
+
+
         # 1. Buscamos os produtos usando o Manager que criamos
         melhores_produtos_qs = Produto.objects.melhores_avaliados().annotate(
             qtd_total_avaliacoes=Count('avaliacoes')
@@ -61,9 +64,16 @@ class IndexView(TemplateView):
                 'qtd_avaliacoes': produto.qtd_total_avaliacoes, 
             })
 
+        if self.request.user.is_authenticated:
+            camelos = Camelo_Usuario.objects.filter(usuario=usuario)
+        else:
+            camelos = None
+        print(camelos)
+
         # 3. Enviamos para o contexto
         context['melhores_produtos'] = lista_customizada
         context['camelos'] = Camelo.objects.all()
+        context['camelos_que_faz_parte'] = camelos
         
         return context
 

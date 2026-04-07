@@ -108,7 +108,7 @@ class Camelo_Usuario(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'Usuário {self.usuario.nome_completo} no camelô {self.camelo.nome_fantasia}'
+        return f'Usuário {self.usuario.username} no camelô {self.camelo.nome_fantasia}'
     
     class Meta:
         constraints = [

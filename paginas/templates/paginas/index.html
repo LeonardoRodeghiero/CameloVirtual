@@ -621,12 +621,78 @@
     background: var(--verde);
 }
 </style>
+
+
+
+
+{% if camelos_que_faz_parte is not None %}
+    <div class="container mt-4 position-relative">
+        <h2 class="pt-2">
+
+            <div class="d-flex">
+            <div>Seus Camelôs</div>
+            </div>
+        </h2>
+        <button class="btn-control position-absolute top-50 start-0 translate-middle-y z-3" onclick="scrollVitrine(-1, 'vitrine-camelos')">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+        
+        <div class="vitrine-container" id="vitrine-camelos">
+            
+        {% for objeto in camelos_que_faz_parte %}
+            <div class="vitrine-item">
+                <a href="{% url 'camelo' objeto.camelo.pk %}" class="card shadow-sm h-100 text-decoration-none text-dark">
+                    {% if objeto.camelo.imagem_logo %}
+                        <img src="{{ objeto.camelo.imagem_logo.url }}" class="card-img-top" style="height: 180px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
+                            <i class="bi bi-image text-muted"></i>
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h6 class="card-title text-truncate">{{ objeto.camelo.nome_fantasia }} ({{objeto.camelo.estado}})</h6>
+                        <div class="my-2">
+                            <i class="text-muted">{{ item.media_avaliacoes }}</i>
+
+                            {% for i in "12345" %}
+                                {% with n=i|add:"0" %}
+                                    {% if n <= item.media_inteira|length %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% elif n == item.media_inteira|length|add:"1" and item.tem_meia %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-warning"></i>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endfor %}
+                            <small class="text-muted">({{ item.qtd_avaliacoes }})</small>
+                        </div>
+
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+        </div>
+
+        <button class="btn-control position-absolute top-50 end-0 translate-middle-y z-3" onclick="scrollVitrine(1, 'vitrine-camelos')">
+            <i class="bi bi-chevron-right"></i>
+        </button>
+    </div>
+{% endif %}
+
 <div class="container mt-4 position-relative">
-    <button class="btn-control position-absolute top-50 start-0 translate-middle-y z-3" onclick="scrollVitrine(-1)">
+
+    <h2 class="pt-2">
+
+        <div class="d-flex">
+        <div>Produtos em destaque</div>
+        </div>
+    </h2>
+    <button class="btn-control position-absolute top-50 start-0 translate-middle-y z-3" onclick="scrollVitrine(-1, 'vitrine-produtos')">
         <i class="bi bi-chevron-left"></i>
     </button>
     
-    <div class="vitrine-container" id="vitrine">
+    <div class="vitrine-container" id="vitrine-produtos">
         {% for item in melhores_produtos %}
         <div class="vitrine-item">
             <a href="{% url 'produto' item.produto.pk %}" class="card shadow-sm h-100 text-decoration-none text-dark">
@@ -664,9 +730,10 @@
         {% endfor %}
     </div>
 
-    <button class="btn-control position-absolute top-50 end-0 translate-middle-y z-3" onclick="scrollVitrine(1)">
+    <button class="btn-control position-absolute top-50 end-0 translate-middle-y z-3" onclick="scrollVitrine(1, 'vitrine-produtos')">
         <i class="bi bi-chevron-right"></i>
     </button>
+</div>
 </div>
 
 
@@ -705,20 +772,17 @@
 
     {% block scripts %}
         <script>
-            const vitrine = document.getElementById('vitrine');
-            function scrollVitrine(direction) {
-                const cardWidth = vitrine.querySelector('.vitrine-item').offsetWidth + 15;
-                vitrine.scrollBy({ left: cardWidth * direction, behavior: 'smooth' });
+            function scrollVitrine(direcao, idVitrine) {
+                const container = document.getElementById(idVitrine);
+                // Define a largura de um item para o scroll ser preciso
+                // Se quiser rolar mais, aumente o multiplicador
+                const scrollAmount = container.clientWidth * 0.8; 
+                
+                container.scrollBy({
+                    left: direcao * scrollAmount,
+                    behavior: 'smooth'
+                });
             }
-            // Loop de 10 segundos
-            setInterval(() => {
-                // Se chegar no fim, volta pro começo, senão avança
-                if (vitrine.scrollLeft + vitrine.offsetWidth >= vitrine.scrollWidth) {
-                    vitrine.scrollTo({ left: 0, behavior: 'smooth' });
-                } else {
-                    scrollVitrine(1);
-                }
-            }, 10000);
         </script>
     {% endblock %}
 
