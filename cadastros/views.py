@@ -481,6 +481,9 @@ class PedidoProdutoDireto(View):
         produto = get_object_or_404(Produto, id=kwargs['produto_id'])
         try:
             quantidade = int(request.POST.get('quantidade', 1))
+            produto.quantidade -= quantidade
+            produto.save()
+
         except ValueError:
             quantidade = 1
         opcao_pedido = request.POST.get('entrega')  # pega direto do POST
@@ -1655,6 +1658,8 @@ class VerPedidosCamelo(ListView):
             ("id", "Nº do Pedido"), # Mudamos de 'pedido__id' para 'id'
             ("subtotal", "Valor Subtotal (R$)"), # Adicione esta linha
             ("preco_unitario", "Preço Unitário"),
+            ("status", "Status"),
+
             ("quantidade", "Quantidade"),
         ]
 
@@ -1662,7 +1667,6 @@ class VerPedidosCamelo(ListView):
         # Aqui acessamos o modelo Pedido através da FK 'pedido'
         campos_pedido = [
             ("pedido__usuario__username", "Cliente (Nome)"),
-            ("pedido__status", "Status"),
             ("pedido__data_pedido", "Data do Pedido"),
             ("pedido__endereco", "Endereço de Entrega"),
         ]

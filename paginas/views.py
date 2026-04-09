@@ -409,9 +409,15 @@ class VerHistoricoPedidos(ListView):
 
         context['tem_pedido'] = pedidos.exists()
 
-        pedidos_andamento = Pedido.objects.filter(usuario=self.request.user, status='em andamento')
-        pedidos_finalizado = Pedido.objects.filter(usuario=self.request.user, status='finalizado')
-        pedidos_cancelado = Pedido.objects.filter(usuario=self.request.user, status='cancelado')
+        base_query = Pedido_Produto.objects.select_related('pedido', 'produto').filter(
+            pedido__usuario=self.request.user
+        ).order_by('-pedido__data_pedido')
+
+
+
+        pedidos_andamento = base_query.filter(status='em andamento')
+        pedidos_finalizado = base_query.filter(status='finalizado')
+        pedidos_cancelado = base_query.filter(status='cancelado')
 
         context['pedidos_andamento'] = pedidos_andamento
         context['pedidos_finalizado'] = pedidos_finalizado
@@ -541,7 +547,6 @@ class ConfirmarEndereco(View):
                         usuario=request.user,
                         valor_total=total,
                         data_pedido=timezone.now(),
-                        status="em andamento",
                         opcao_pedido=dados.get('opcao_pedido', 'casa'),
                         endereco=endereco
                     )
@@ -552,6 +557,7 @@ class ConfirmarEndereco(View):
                             pedido=pedido,
                             produto=item.produto,
                             quantidade=item.quantidade,
+                            status="em andamento",
                             preco_unitario=item.produto.preco
                         )
 
@@ -567,7 +573,6 @@ class ConfirmarEndereco(View):
                         usuario=request.user,
                         valor_total=produto.preco * quantidade,
                         data_pedido=timezone.now(),
-                        status="em andamento",
                         opcao_pedido=dados['opcao_pedido'],
                         endereco=endereco
                     )
@@ -576,6 +581,8 @@ class ConfirmarEndereco(View):
                         pedido=pedido,
                         produto=produto,
                         quantidade=quantidade,
+                        status="em andamento",
+
                         preco_unitario=produto.preco
                     )
 
@@ -669,8 +676,6 @@ class FinalizarPedidoView(View):
         
         camelo_id = objeto.produto.camelo.id
         # Alterando o status
-        objeto.produto.quantidade -= objeto.quantidade
-        objeto.produto.save()
 
         objeto.status = 'finalizado' 
 
@@ -682,9 +687,13 @@ class FinalizarPedidoView(View):
 
 class CancelarPedidoView(View):
     def get(self, request, pk):
-        objeto = get_object_or_404(ItemPedido, pk=pk)
+        objeto = get_object_or_404(Pedido_Produto, pk=pk)
         
         camelo_id = objeto.produto.camelo.id
+
+        objeto.produto.quantidade += objeto.quantidade
+        objeto.produto.save()
+
 
         # Alterando o status
         objeto.status = 'cancelado'

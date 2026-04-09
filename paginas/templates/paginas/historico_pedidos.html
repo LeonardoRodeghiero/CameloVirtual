@@ -15,16 +15,16 @@
 {% if tem_pedido %}
 
 <h2>Pedidos em Andamento</h2>
-{% for pedido in pedidos_andamento %}
+{% for objeto in pedidos_andamento %}
 
     <div class="row justify-content-center">
         <div class="col-md-10">
             <div class="card mb-4 shadow-sm">
                 <div class="card-header">
-                    <strong>{{ pedido.data_pedido|date:"d/m/Y" }}</strong> R$ {{ pedido.valor_total }}
+                    <strong>{{ objeto.pedido.data_pedido|date:"d/m/Y" }}</strong> R$ {{ objeto.pedido.valor_total }}
                 </div>
                 <div class="card-body">
-                    {% for item in pedido.produtos.all %}
+                    {% for item in objeto.pedido.produtos.all %}
                     <div class="row mb-3">
                         {% if item.produto.imagem %}
                         <div class="col-md-3">
@@ -61,16 +61,16 @@
 
 
 <h2>Pedidos Finalizados</h2>
-{% for pedido in pedidos_finalizado %}
+{% for objeto in pedidos_finalizado %}
 
     <div class="row justify-content-center">
         <div class="col-md-10">
             <div class="card mb-4 shadow-sm">
                 <div class="card-header">
-                    <strong>{{ pedido.data_pedido|date:"d/m/Y" }}</strong> R$ {{ pedido.valor_total }}
+                    <strong>{{ objeto.pedido.data_pedido|date:"d/m/Y" }}</strong> R$ {{ objeto.pedido.valor_total }}
                 </div>
                 <div class="card-body">
-                    {% for item in pedido.produtos.all %}
+                    {% for item in objeto.pedido.produtos.all %}
                     <div class="row mb-3">
                         {% if item.produto.imagem %}
                         <div class="col-md-3">
@@ -104,16 +104,16 @@
 {% endfor %}
 
 <h2>Pedidos Cancelados</h2>
-{% for pedido in pedidos_cancelado %}
+{% for objeto in pedidos_cancelado %}
 
     <div class="row justify-content-center">
         <div class="col-md-10">
             <div class="card mb-4 shadow-sm">
                 <div class="card-header">
-                    <strong>{{ pedido.data_pedido|date:"d/m/Y" }}</strong> R$ {{ pedido.valor_total }}
+                    <strong>{{ objeto.pedido.data_pedido|date:"d/m/Y" }}</strong> R$ {{ objeto.pedido.valor_total }}
                 </div>
                 <div class="card-body">
-                    {% for item in pedido.produtos.all %}
+                    {% for item in objeto.pedido.produtos.all %}
                     <div class="row mb-3">
                         {% if item.produto.imagem %}
                         <div class="col-md-3">
