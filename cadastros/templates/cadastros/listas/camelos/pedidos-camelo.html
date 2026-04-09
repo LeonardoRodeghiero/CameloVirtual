@@ -32,20 +32,38 @@
 
 
 {% block conteudo_tabela %}
-    <td>{{object.pk}}</td>
-    <td>{{object.pedido.usuario}}</td>
-    <td>{{object.pedido.data_pedido}}</td>
-    <td>{{object.status}}</td>
-    <td>
-        
-            {{object.quantidade}}X {{ object.produto.nome }} {{ object.produto.marca }} (R${{ object.preco_unitario }})
-                
+    {% with status=object.status %}
+        <!-- <td class="{{ object.classe_cor }}">{{object.pk}}</td>
+        <td>{{object.pedido.usuario}}</td>
+        <td>{{object.pedido.data_pedido}}</td>
+        <td>{{object.status}}</td>
+        <td>
             
-    </td>
-    <td>{{object.pedido.opcao_pedido}}</td>
-    <td class="{% if not object.pedido.endereco %}text-muted{% endif %}">{{object.pedido.endereco|default:"&ndash;"|safe}}</td>
+                {{object.quantidade}}X {{ object.produto.nome }} {{ object.produto.marca }} (R${{ object.preco_unitario }})
+                    
+                
+        </td>
+        <td>{{object.pedido.opcao_pedido}}</td>
+        <td class="{% if not object.pedido.endereco %}text-muted{% endif %}">{{object.pedido.endereco|default:"&ndash;"|safe}}</td>
 
-    <td>R$ {{ object.subtotal|floatformat:2 }}</td>
+        <td>R$ {{ object.subtotal|floatformat:2 }}</td> -->
+
+        <td class="{{ object.classe_cor }}">{{object.pk}}</td>
+        <td class="{{ object.classe_cor }}">{{object.pedido.usuario}}</td>
+        <td class="{{ object.classe_cor }}">{{object.pedido.data_pedido}}</td>
+        <td class="{{ object.classe_cor }}">{{object.status}}</td>
+        <td class="{{ object.classe_cor }}">
+            
+                {{object.quantidade}}X {{ object.produto.nome }} {{ object.produto.marca }} (R${{ object.preco_unitario }})
+                    
+                
+        </td>
+        <td class="{{ object.classe_cor }}">{{object.pedido.opcao_pedido}}</td>
+        <td class="{% if not object.pedido.endereco %}text-muted{% endif %} {{ object.classe_cor }}">{{object.pedido.endereco|default:"&ndash;"|safe}}</td>
+
+        <td class="{{ object.classe_cor }}">R$ {{ object.subtotal|floatformat:2 }}</td>
+
+    {% endwith %}
 {% endblock %}
 
 

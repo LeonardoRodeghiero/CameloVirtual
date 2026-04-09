@@ -192,7 +192,8 @@ class ClienteProdutoCameloList(ListView):
 
         if txt_nome:
             queryset = queryset.filter(nome__icontains=txt_nome, camelo_id=camelo_id)
-
+        else:
+            queryset = queryset.filter(camelo_id=camelo_id)
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -240,7 +241,7 @@ class ProdutoEspecifico(DetailView):
 
         ja_avaliou = Avaliacao.objects.filter(produto=produto, usuario=usuario).exists()
 
-        pode_avaliar =  Pedido_Produto.objects.filter(produto=produto, pedido__usuario=usuario, pedido__status="finalizado").exists()  #AQUI VAI TER QUE MUDAR O STATUS PAA APONTAR PARA PEDIDO_PRODUTO
+        pode_avaliar =  Pedido_Produto.objects.filter(produto=produto, pedido__usuario=usuario, status="finalizado").exists()  #AQUI VAI TER QUE MUDAR O STATUS PAA APONTAR PARA PEDIDO_PRODUTO
 
         avaliacoes = Avaliacao.objects.filter(produto=produto)
 

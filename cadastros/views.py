@@ -48,6 +48,9 @@ from django.db.models import Q
 from formtools.wizard.views import SessionWizardView
 from django.core.files.storage import FileSystemStorage
 
+from django.db.models import Case, When, Value, IntegerField
+
+
 file_storage = FileSystemStorage(location='/tmp/wizard')
 
 
@@ -1579,6 +1582,31 @@ class VerPedidosCamelo(ListView):
             )
         ).select_related('pedido', 'produto', 'pedido__usuario')
 
+        # 1 = Pendentes/Em andamento (os que "tem o status")
+        # 2 = Finalizados
+        # 3 = Cancelados
+        qs = qs.annotate(
+            prioridade_status=Case(
+                When(status='em andamento', then=Value(1)), # Troque 'pendente' pelo seu status ativo
+                When(status='finalizado', then=Value(2)),
+                When(status='cancelado', then=Value(3)),
+                default=Value(4),
+                output_field=IntegerField(),
+            )
+        ).order_by('prioridade_status', '-pedido__data_pedido') # Opcional: ordenar por data dentro do mesmo status
+                
+                
+        qs = qs.annotate(
+            classe_cor=Case(
+                When(status='em andamento', then=Value('status-em-andamento')),
+                When(status='finalizado', then=Value('status-finalizado')),
+                When(status='cancelado', then=Value('status-cancelado')),
+                default=Value(''),
+                output_field=CharField(),
+            )
+        )
+
+
         # Se não houver busca, retorna a base
         if not campo_escolhido or not valor:
             return qs
@@ -1641,6 +1669,12 @@ class VerPedidosCamelo(ListView):
         except Exception:
             # Caso o campo_escolhido não exista nos modelos (evita erro de Meta.get_field)
             filtro = {}
+
+
+        
+
+
+
 
         # Se o filtro foi preenchido, aplica. Se ficou {}, retorna o qs original.
         

@@ -122,6 +122,13 @@
 {% endblock %}
 
 {% block scripts %}
+<style>
+    .status-em-andamento { background-color: #fff9e6 !important; } /* Amarelo bem claro */
+    .status-finalizado { background-color: #f0fff4 !important; }    /* Verde bem claro */
+    .status-cancelado { background-color: #fff5f5 !important; }     /* Vermelho bem claro */
+</style>
+
+
 <script src="{% static 'js/jquery.mask.min.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
 <script>
@@ -136,6 +143,9 @@
     switch (valorSelecionado) {
       case 'cpf':
         $('#valor').mask('000.000.000-00');
+        break;
+      case 'quantidade':
+        $('#valor').mask('00000000');
         break;
       case 'telefone':
         $('#valor').mask('(00) 00000-0000');
