@@ -462,6 +462,100 @@
         {% endblock %}
     </div>
     
+    <div class="d-flex justify-content-center align-items-center">
+        <i class="text-muted ms-2">{{ camelo.avaliacao_geral }}</i>
+        {% for i in "12345" %}
+            {% if i|add:"0" <= media_inteira %}
+            <i class="bi bi-star-fill text-warning"></i>
+            {% elif i|add:"0" == media_inteira|add:"1" and media_meia %}
+            <i class="bi bi-star-half text-warning"></i>
+
+            {% else %}
+            <i class="bi bi-star text-warning"></i>
+            {% endif %}
+        {% endfor %}
+        <small class="text-muted ms-2">({{ qtd_avaliacoes }})</small>
+    </div>
+
+
+    <div class='container pt-4 d-flex flex-column align-items-center'>
+        {% if pode_avaliar and not ja_avaliou %}
+        <h5>Deixe sua avaliação:</h5>
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="rating mb-3">
+            {% for i in "54321" %}
+                <input type="radio" id="star{{ i }}" name="nota" value="{{ i }}">
+                <label for="star{{ i }}" title="{{ i }} estrelas">
+                <i class="bi bi-star-fill"></i>
+                </label>
+            {% endfor %}
+            </div>
+
+            {{ form.mensagem }}
+            <button type="submit" class="btn btn-success mt-2">Enviar Avaliação</button>
+        </form>
+        {% endif %}
+
+    <div class="mt-4">
+  <h5>Avaliações:</h5>
+  {% for avaliacao in avaliacoes %}
+  <hr>
+    <div class="d-flex justify-content-between align-items-start mb-2">
+      <div>
+        <strong>{{ avaliacao.usuario.username }}</strong> - 
+        {% for i in "12345" %}
+          {% if i|add:"0" <= avaliacao.nota %}
+            <i class="bi bi-star-fill text-warning"></i>
+          {% else %}
+            <i class="bi bi-star text-warning"></i>
+          {% endif %}
+        {% endfor %}
+        <small class="text-muted ms-2">{{ avaliacao.data_hora_mensagem|date:"d/m/Y" }}</small>
+        <br>
+        <p class="text-break" style="white-space: pre-line;">
+            {{ avaliacao.mensagem|linebreaksbr }}
+        </p>
+      </div>
+
+      {% if request.user == avaliacao.usuario %}
+        <button type="button" class="btn btn-sm btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#confirmModal{{ avaliacao.pk }}" title="Excluir">
+          <i class="bi bi-trash"></i>
+        </button>
+      {% endif %}
+    </div>
+
+    <!-- Modal de confirmação -->
+    <div class="modal fade" id="confirmModal{{ avaliacao.pk }}" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form method="post" action="{% url 'excluir-avaliacao-usuario' avaliacao.pk %}">
+            {% csrf_token %}
+            <div class="modal-header">
+              <h5 class="modal-title">Confirmar exclusão</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              Tem certeza que deseja excluir <strong>Sua Avaliação neste produto</strong>?
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-danger">Excluir</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p>Este camelô ainda não possui avaliações.</p>
+  {% endfor %}
+  </div>
+
+
+
+
+
 </main>
     
 
@@ -493,7 +587,37 @@
     <script src="{% static 'js/datatables.min.js' %}"></script>
 
     {% block scripts %}
-    
+    <style>
+    .rating {
+    display: flex;
+    flex-direction: row-reverse; /* 5 estrelas à direita */
+    justify-content: flex-start;
+    gap: 10px; /* espaçamento entre as estrelas */
+    margin-left: 0; /* garante que não haja recuo */
+    }
+
+    .rating input {
+    display: none; /* esconde os radios */
+    }
+
+
+    .rating label {
+    font-size: 2rem;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s;
+    }
+
+    .rating input:checked ~ label {
+    color: gold;
+    }
+
+    .rating label:hover,
+    .rating label:hover ~ label {
+    color: gold;
+    }
+
+    </style>
     {% endblock %}
 
 

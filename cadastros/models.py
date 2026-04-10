@@ -59,6 +59,8 @@ class Camelo(models.Model):
     complemento = models.CharField(max_length=150, null=True, blank=True)
     cep = models.CharField(max_length=9, null=False, verbose_name="CEP")
 
+    avaliacao_geral = models.DecimalField(max_digits=2, decimal_places=1, default=0, verbose_name="Avaliação Geral")
+
 
     usuarios = models.ManyToManyField( 
         User,
@@ -81,6 +83,8 @@ class Camelo(models.Model):
 #     descricao_loja = models.CharField(max_length=100)
 #     imagem_logo = models.FileField(upload_to='pdf/')
 #     endereco = models.CharField(max_length=150)
+
+#     avaliacao_geral = models.DecimalField(max_digits=2, decimal_places=1, default=0, verbose_name="Avaliação Geral")
 
 
 #     usuarios = models.ManyToManyField( 
@@ -134,8 +138,8 @@ class ProdutoManager(models.Manager):
         """
         return self.annotate(
             # Calculamos a média real baseada nas instâncias de Avaliacao
-            media_calculada=Avg('avaliacoes__nota'),
-            total_votos=Count('avaliacoes')
+            media_calculada=Avg('avaliacoes_produto__nota'),
+            total_votos=Count('avaliacoes_produto')
         ).filter(
             total_votos__gt=0 # Opcional: apenas produtos que já foram avaliados
         ).order_by('-media_calculada', '-quantidade_vendido')[:limite]
@@ -193,8 +197,8 @@ class Avaliacao(models.Model):
     data_hora_mensagem = models.DateTimeField(auto_now=True, verbose_name='data e hora da avaliação')
     mensagem = models.CharField(max_length=255, null=False, verbose_name="mensagem da avalição")
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
-    produto = models.ForeignKey(Produto, on_delete=models.CASCADE, null=True, related_name="avaliacoes")
-    camelo = models.ForeignKey(Camelo, on_delete=models.CASCADE, null=True)
+    produto = models.ForeignKey(Produto, on_delete=models.CASCADE, null=True, related_name="avaliacoes_produto")
+    camelo = models.ForeignKey(Camelo, on_delete=models.CASCADE, null=True, related_name="avaliacoes_camelo")
 
 
     def __str__(self):
@@ -236,3 +240,26 @@ class Carrinho_Produto(models.Model):
         constraints = [
                 models.UniqueConstraint(fields=['carrinho', 'produto'], name='unique_carrinho_produto')
             ]
+
+
+from django.db.models import Avg
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+@receiver(post_save, sender=Avaliacao)
+def atualizar_notas(sender, instance, **kwargs):
+    # Se a avaliação for de um Produto
+    if instance.produto:
+        # Calcula a média de todas as avaliações desse produto
+        media = Avaliacao.objects.filter(produto=instance.produto).aggregate(Avg('nota'))['nota__avg']
+        # Salva no campo avaliacao_geral do Produto
+        instance.produto.avaliacao_geral = media or 0
+        instance.produto.save()
+
+    # Se a avaliação for de um Camelô
+    if instance.camelo:
+        # Calcula a média de todas as avaliações desse camelô
+        media = Avaliacao.objects.filter(camelo=instance.camelo).aggregate(Avg('nota'))['nota__avg']
+        # Salva no campo avaliacao_geral do Camelô (se existir o campo)
+        instance.camelo.avaliacao_geral = media or 0
+        instance.camelo.save()

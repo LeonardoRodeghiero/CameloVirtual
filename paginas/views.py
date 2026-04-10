@@ -46,7 +46,7 @@ class IndexView(TemplateView):
 
         # 1. Buscamos os produtos usando o Manager que criamos
         melhores_produtos_qs = Produto.objects.melhores_avaliados().annotate(
-            qtd_total_avaliacoes=Count('avaliacoes')
+            qtd_total_avaliacoes=Count('avaliacoes_produto')
         )
         # 2. Criamos a lista customizada com a lógica das estrelas
         lista_customizada = []
@@ -60,7 +60,6 @@ class IndexView(TemplateView):
                 'media_avaliacoes': round(produto.avaliacao_geral, 1),
                 'media_inteira': range(inteira),
                 'tem_meia': tem_meia,
-                # Se você não tiver esse campo no model, use o annotate do Manager
                 'qtd_avaliacoes': produto.qtd_total_avaliacoes, 
             })
 
@@ -87,10 +86,59 @@ class CameloView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        camelo_id = self.kwargs.get("pk")
+        camelo = get_object_or_404(Camelo, id=camelo_id)
+        usuario = self.request.user
+
+        ja_avaliou = Avaliacao.objects.filter(camelo=camelo, usuario=usuario).exists()
+
+        pode_avaliar =  Camelo_Usuario.objects.filter(camelo=camelo).exists()
+
+        avaliacoes = Avaliacao.objects.filter(camelo=camelo)
+
+        # Forma para meia estrela
+        inteira = int(camelo.avaliacao_geral)
+        tem_meia = (camelo.avaliacao_geral - inteira) >= 0.5
+        context["media_avaliacoes"] = round(camelo.avaliacao_geral, 1)
+        context["media_inteira"] = inteira
+        context["media_meia"] = tem_meia
+
+
+
+        context['form'] = AvaliacaoForm()
+        context['avaliacoes'] = avaliacoes
+        context['qtd_avaliacoes'] = avaliacoes.count()
+
+        if usuario.is_authenticated:
+            context['ja_avaliou'] = ja_avaliou  
+            context['pode_avaliar'] = pode_avaliar    
+        
+
+
+
+
+
         camelo_id = self.kwargs.get("pk")
         camelo = get_object_or_404(Camelo, pk=camelo_id)
         context["camelo"] = camelo
         return context
+
+    def post(self, request, *args, **kwargs):
+        camelo_id = self.kwargs.get("pk")
+        camelo = get_object_or_404(Camelo, id=camelo_id)
+
+        form = AvaliacaoForm(request.POST)
+
+        
+        if form.is_valid():
+            avaliacao = form.save(commit=False)
+            avaliacao.usuario = request.user
+            avaliacao.camelo = camelo
+            avaliacao.save()
+            return redirect('camelo', pk=camelo.pk)
+        context = self.get_context_data(form=form)
+        return self.render_to_response(context)
 
 
 class AcessoNegadoView(TemplateView):
@@ -118,7 +166,7 @@ class ClienteProdutoList(ListView):
 
     
     def get_queryset(self):
-        queryset = Produto.objects.annotate(qtd_total_avaliacoes=Count('avaliacoes'))
+        queryset = Produto.objects.annotate(qtd_total_avaliacoes=Count('avaliacoes_produto'))
 
         txt_nome = self.request.GET.get('nome')
 
@@ -186,7 +234,7 @@ class ClienteProdutoCameloList(ListView):
     def get_queryset(self):
 
         camelo_id = self.kwargs.get("pk")
-        queryset = Produto.objects.annotate(qtd_total_avaliacoes=Count('avaliacoes'))
+        queryset = Produto.objects.annotate(qtd_total_avaliacoes=Count('avaliacoes_produto'))
 
         txt_nome = self.request.GET.get('nome')
 
@@ -633,7 +681,7 @@ class ProdutoCameloCategoriaList(ListView):
 
         # 2. Começamos o queryset com o annotate que você já usa
         queryset = Produto.objects.filter(camelo_id=camelo_id).annotate(
-            qtd_total_avaliacoes=Count('avaliacoes')
+            qtd_total_avaliacoes=Count('avaliacoes_produto')
         )
 
         # 3. Filtramos pela categoria se ela foi passada
