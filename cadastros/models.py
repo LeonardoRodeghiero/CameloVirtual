@@ -243,23 +243,23 @@ class Carrinho_Produto(models.Model):
 
 
 from django.db.models import Avg
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
-@receiver(post_save, sender=Avaliacao)
+@receiver([post_save, post_delete], sender=Avaliacao)
 def atualizar_notas(sender, instance, **kwargs):
     # Se a avaliação for de um Produto
     if instance.produto:
         # Calcula a média de todas as avaliações desse produto
-        media = Avaliacao.objects.filter(produto=instance.produto).aggregate(Avg('nota'))['nota__avg']
+        media = Avaliacao.objects.filter(produto=instance.produto).aggregate(Avg('nota'))['nota__avg'] or 0
         # Salva no campo avaliacao_geral do Produto
-        instance.produto.avaliacao_geral = media or 0
-        instance.produto.save()
+        instance.produto.__class__.objects.filter(pk=instance.produto.pk).update(avaliacao_geral=media)
 
     # Se a avaliação for de um Camelô
     if instance.camelo:
         # Calcula a média de todas as avaliações desse camelô
-        media = Avaliacao.objects.filter(camelo=instance.camelo).aggregate(Avg('nota'))['nota__avg']
+        media = Avaliacao.objects.filter(camelo=instance.camelo).aggregate(Avg('nota'))['nota__avg'] or 0
         # Salva no campo avaliacao_geral do Camelô (se existir o campo)
-        instance.camelo.avaliacao_geral = media or 0
-        instance.camelo.save()
+        instance.camelo.__class__.objects.filter(pk=instance.camelo.pk).update(avaliacao_geral=media)
+
+        

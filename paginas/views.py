@@ -63,16 +63,34 @@ class IndexView(TemplateView):
                 'qtd_avaliacoes': produto.qtd_total_avaliacoes, 
             })
 
+        lista_customizada_camelos = []
+
         if self.request.user.is_authenticated:
-            camelos = Camelo_Usuario.objects.filter(usuario=usuario)
+            camelos = Camelo_Usuario.objects.filter(usuario=usuario).annotate(
+                qtd_total_avaliacoes_camelo=Count('camelo__avaliacoes_camelo')
+            )
         else:
             camelos = None
-        print(camelos)
+
+        for item in camelos:
+            # Lógica para estrelas (usando o campo avaliacao_geral do seu Model)
+            inteira = int(item.camelo.avaliacao_geral)
+            tem_meia = (item.camelo.avaliacao_geral - inteira) >= 0.5
+            
+            lista_customizada_camelos.append({
+                'camelo': item.camelo,
+                'media_avaliacoes': round(item.camelo.avaliacao_geral, 1),
+                'media_inteira': range(inteira),
+                'tem_meia': tem_meia,
+                'qtd_avaliacoes': item.qtd_total_avaliacoes_camelo, 
+            })
+
+        print(lista_customizada_camelos)
 
         # 3. Enviamos para o contexto
         context['melhores_produtos'] = lista_customizada
         context['camelos'] = Camelo.objects.all()
-        context['camelos_que_faz_parte'] = camelos
+        context['camelos_que_faz_parte'] = lista_customizada_camelos
         
         return context
 
@@ -208,20 +226,45 @@ class ClienteCameloList(ListView):
 
     model = Camelo
     template_name = 'paginas/camelo/camelos.html'
+    context_object_name = 'camelos'
 
     
     def get_queryset(self):
-        self.object_list = Camelo.objects.filter()
-
         txt_nome = self.request.GET.get('nome_fantasia')
+        queryset = Camelo.objects.annotate(qtd_total_avaliacoes=Count('avaliacoes_camelo')).distinct()
 
         if txt_nome:
-            self.object_list = Camelo.objects.filter(nome_fantasia__icontains=txt_nome)
-        else:
-            self.object_list = Camelo.objects.filter()
+            queryset = queryset.filter(nome_fantasia__icontains=txt_nome)
+        
 
-        return self.object_list
+        return queryset
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        camelos_originais = context['camelos']
+
+        lista_customizada = []
+
+        for camelo in camelos_originais:
+            # Forma para meia estrela
+            inteira = int(camelo.avaliacao_geral)
+            tem_meia = (camelo.avaliacao_geral - inteira) >= 0.5
+            
+
+            item = {
+                'camelo': camelo,
+                'media_avaliacoes': round(camelo.avaliacao_geral, 1),
+                'media_inteira': range(inteira),
+                'tem_meia': tem_meia,
+                'qtd_avaliacoes': camelo.qtd_total_avaliacoes,
+            }
+            lista_customizada.append(item)
+
+
+         
+        context['lista_com_dados'] = lista_customizada
+        return context
 
 class ClienteProdutoCameloList(ListView):
 

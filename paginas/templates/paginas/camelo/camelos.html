@@ -16,34 +16,45 @@
     </div>
 </div>
 <div class="container mt-4">
-  {% for object in object_list %}
-    <a href="{% url 'camelo' object.pk %}" style="text-decoration: none;">
+  {% for item in lista_com_dados %}
+    <a href="{% url 'camelo' item.camelo.pk %}" style="text-decoration: none;">
       <div class="row justify-content-center">
         <div class="col-md-8">
           <div class="card mb-3 shadow-sm">
             <div class="row g-0">
-              {% if object.imagem_logo %}
+              {% if item.camelo.imagem_logo %}
               <div class="col-md-4">
-                <img src="{{ object.imagem_logo.url }}" class="img-fluid rounded-start" alt="{{ object.nome_fantasia }}">
+                <img src="{{ item.camelo.imagem_logo.url }}" class="img-fluid rounded-start" alt="{{ item.camelo.nome_fantasia }}">
               </div>
               {% endif %}
               <div class="col-md-8">
                 <div class="card-body">
-                  <h5 class="card-title">{{ object.nome_fantasia }}</h5>
-                  <p class="card-text">{{ object.descricao|truncatewords:25 }}</p>
-               
-                    {% for i in "12345" %}
-                        {% if forloop.counter <= object.avaliacao|floatformat:0 %}
-                            <i class="bi bi-star-fill text-warning"></i>
-                        {% elif forloop.counter == object.avaliacao|floatformat:0|add:"1" and object.avaliacao|floatformat:1|slice:"-1" == "5" %}
-                            <i class="bi bi-star-half text-warning"></i>
-                        {% else %}
-                            <i class="bi bi-star text-warning"></i>
-                        {% endif %}
-                    {% endfor %}
+                  <h5 class="card-title">{{ item.camelo.nome_fantasia }}</h5>
+                  <p class="card-text">{{ item.camelo.descricao|truncatewords:25 }}</p>
+
+                  <div class="my-3">
+                      {# 3. MUDANÇA: Usar os dados calculados no dicionário 'item' #}
+                      <i class="text-muted">{{ item.media_avaliacoes }}</i>
+                      
+                      {% for i in "12345" %}
+                          {% with n=i|add:"0" %}
+                              {# Usamos .length porque media_inteira é um objeto range #}
+                              {% if n <= item.media_inteira|length %}
+                                  <i class="bi bi-star-fill text-warning"></i>
+                              {% elif n == item.media_inteira|length|add:"1" and item.tem_meia %}
+                                  <i class="bi bi-star-half text-warning"></i>
+                              {% else %}
+                                  <i class="bi bi-star text-warning"></i>
+                              {% endif %}
+                          {% endwith %}
+                      {% endfor %}
+                      
+                      {# 4. MUDANÇA: Quantidade vinda do annotate #}
+                      <small class="text-muted ms-2">({{ item.qtd_avaliacoes }})</small>
+                  </div>
                   
-                  <p class="card-text">{{ object.descricao_loja}}</p>
-                  <p class="card-text">{{ object.telefone}}</p>
+                  <p class="card-text">{{ item.camelo.descricao_loja}}</p>
+                  <p class="card-text">{{ item.camelo.telefone}}</p>
 
                 </div>
               </div>

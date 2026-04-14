@@ -31,7 +31,7 @@ from braces.views import GroupRequiredMixin
 
 from django.shortcuts import get_object_or_404
 
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, reverse
 
 from django.db.models import CharField, TextField
 
@@ -739,8 +739,21 @@ class AvaliacaoDeleteUser(LoginRequiredMixin, DeleteView):
     model = Avaliacao
 
     def get_success_url(self):
-        produto = self.object.produto  # pega o produto da avaliação que foi deletada
-        return reverse_lazy('produto', kwargs={'pk': produto.pk})
+        avaliacao = self.object 
+
+        camelo_id = self.kwargs.get('camelo_id')
+
+        if camelo_id and avaliacao.produto:
+            return reverse('produto-camelo', kwargs={'camelo_id': camelo_id, 'produto_id': avaliacao.produto.pk})
+
+        elif avaliacao.produto:
+            return reverse('produto', kwargs={'pk': avaliacao.produto.pk})
+        
+        elif avaliacao.camelo:
+            return reverse('camelo', kwargs={'pk': avaliacao.camelo.pk})
+        
+        # Fallback caso nada seja encontrado
+        return reverse('index')
 
 
 class AvaliacaoDelete(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
