@@ -72,6 +72,8 @@ class IndexView(TemplateView):
         else:
             camelos = None
 
+        
+
         for item in camelos:
             # Lógica para estrelas (usando o campo avaliacao_geral do seu Model)
             inteira = int(item.camelo.avaliacao_geral)
@@ -85,12 +87,12 @@ class IndexView(TemplateView):
                 'qtd_avaliacoes': item.qtd_total_avaliacoes_camelo, 
             })
 
-        print(lista_customizada_camelos)
 
         # 3. Enviamos para o contexto
         context['melhores_produtos'] = lista_customizada
         context['camelos'] = Camelo.objects.all()
         context['camelos_que_faz_parte'] = lista_customizada_camelos
+
         
         return context
 
@@ -108,6 +110,33 @@ class CameloView(TemplateView):
         camelo_id = self.kwargs.get("pk")
         camelo = get_object_or_404(Camelo, id=camelo_id)
         usuario = self.request.user
+
+        lista_customizada_camelo = []
+
+        melhores_produtos_qs_camelo = (
+            Produto.objects.filter(camelo=camelo)
+            .melhores_avaliados_camelo()
+            .annotate(qtd_total_avaliacoes=Count('avaliacoes_produto'))
+        )
+
+        for produto in melhores_produtos_qs_camelo:
+            # Lógica para estrelas (usando o campo avaliacao_geral do seu Model)
+            inteira = int(produto.avaliacao_geral)
+            tem_meia = (produto.avaliacao_geral - inteira) >= 0.5
+            
+            lista_customizada_camelo.append({
+                'produto': produto,
+                'media_avaliacoes': round(produto.avaliacao_geral, 1),
+                'media_inteira': range(inteira),
+                'tem_meia': tem_meia,
+                'qtd_avaliacoes': produto.qtd_total_avaliacoes, 
+            })
+
+        context['melhores_produtos_camelo'] = lista_customizada_camelo
+
+
+
+
 
         ja_avaliou = Avaliacao.objects.filter(camelo=camelo, usuario=usuario).exists()
 

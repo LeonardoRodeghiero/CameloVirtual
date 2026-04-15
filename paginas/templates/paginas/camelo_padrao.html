@@ -459,10 +459,69 @@
                 </div>
             </div>
 
-        {% endblock %}
-    </div>
-    
-    <div class="d-flex justify-content-center align-items-center">
+
+<style>
+    /* Container que segura os itens lado a lado */
+.vitrine-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 15px; /* Espaço entre cards */
+    padding: 15px 5px;
+    -webkit-overflow-scrolling: touch; /* Melhora o scroll no iOS */
+}
+
+/* Esconde a barra de rolagem */
+.vitrine-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* Configuração base para o Card (Mobile Primeiro) */
+.vitrine-item {
+    /* Exibe 2 cards por tela (48% para sobrar um respiro) */
+    flex: 0 0 48%; 
+    min-width: 0; 
+}
+
+/* Tablets: Exibe 3 cards */
+@media (min-width: 576px) {
+    .vitrine-item {
+        flex: 0 0 31%; 
+    }
+}
+
+/* Desktops Médios: Exibe 4 cards */
+@media (min-width: 992px) {
+    .vitrine-item {
+        flex: 0 0 23%; 
+    }
+}
+
+/* Desktops Grandes: Exibe 5 cards */
+@media (min-width: 1200px) {
+    .vitrine-item {
+        flex: 0 0 19%; 
+    }
+}
+
+/* Estilo dos Botões de Controle */
+.btn-control {
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    border: none;
+    transition: background 0.3s;
+}
+
+.btn-control:hover {
+    background: var(--verde);
+}
+</style>
+
+
+            <div class="d-flex justify-content-center align-items-center">
         <i class="text-muted ms-2">{{ camelo.avaliacao_geral }}</i>
         {% for i in "12345" %}
             {% if i|add:"0" <= media_inteira %}
@@ -537,7 +596,7 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-              Tem certeza que deseja excluir <strong>Sua Avaliação neste produto</strong>?
+              Tem certeza que deseja excluir <strong>Sua Avaliação neste camelô</strong>?
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -552,6 +611,65 @@
   {% endfor %}
   </div>
 
+  <div class="container mt-4 position-relative">
+
+    <h2 class="pt-2">
+
+        <div class="d-flex">
+        <div>Produtos em destaque</div>
+        </div>
+    </h2>
+    <button class="btn-control position-absolute top-50 start-0 translate-middle-y z-3" onclick="scrollVitrine(-1, 'vitrine-produtos')">
+        <i class="bi bi-chevron-left"></i>
+    </button>
+    
+    <div class="vitrine-container" id="vitrine-produtos">
+        {% for item in melhores_produtos_camelo %}
+        <div class="vitrine-item">
+            <a href="{% url 'produto' item.produto.pk %}" class="card shadow-sm h-100 text-decoration-none text-dark">
+                {% if item.produto.imagem %}
+                    <img src="{{ item.produto.imagem.url }}" class="card-img-top" style="height: 180px; object-fit: cover;">
+                {% else %}
+                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
+                        <i class="bi bi-image text-muted"></i>
+                    </div>
+                {% endif %}
+                <div class="card-body">
+                    <h6 class="card-title text-truncate">{{ item.produto.nome }} {{item.produto.marca}}</h6>
+                    <p class="fw-bold text-primary mb-0">R$ {{ item.produto.preco }}</p>
+                    <div class="my-2">
+                        <i class="text-muted">{{ item.media_avaliacoes }}</i>
+
+                        {% for i in "12345" %}
+                            {% with n=i|add:"0" %}
+                                {% if n <= item.media_inteira|length %}
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                {% elif n == item.media_inteira|length|add:"1" and item.tem_meia %}
+                                    <i class="bi bi-star-half text-warning"></i>
+                                {% else %}
+                                    <i class="bi bi-star text-warning"></i>
+                                {% endif %}
+                            {% endwith %}
+                        {% endfor %}
+                        <small class="text-muted">({{ item.qtd_avaliacoes }})</small>
+                    </div>
+                    <p class="card-text small"><i class="bi bi-shop"></i> {{ item.produto.camelo.nome_fantasia }} ({{ item.produto.camelo.estado }})</p>
+
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <button class="btn-control position-absolute top-50 end-0 translate-middle-y z-3" onclick="scrollVitrine(1, 'vitrine-produtos')">
+        <i class="bi bi-chevron-right"></i>
+    </button>
+</div>
+</div>  
+        {% endblock %}
+    </div>
+    
+    
 
 
 
@@ -618,6 +736,20 @@
     }
 
     </style>
+
+    <script>
+        function scrollVitrine(direcao, idVitrine) {
+            const container = document.getElementById(idVitrine);
+            // Define a largura de um item para o scroll ser preciso
+            // Se quiser rolar mais, aumente o multiplicador
+            const scrollAmount = container.clientWidth * 0.8; 
+            
+            container.scrollBy({
+                left: direcao * scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+    </script>
     {% endblock %}
 
 

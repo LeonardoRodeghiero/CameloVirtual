@@ -9,6 +9,8 @@ from django.utils import timezone
 from datetime import timedelta
 
 from django.db.models import Avg, Count, F
+
+from django.shortcuts import get_object_or_404
 # Create your models here.
 
 class Camelo(models.Model):
@@ -130,7 +132,7 @@ class Categoria(models.Model):
         return f"{self.nome}"
 
 
-class ProdutoManager(models.Manager):
+class ProdutoManager(models.QuerySet):
     def melhores_avaliados(self, limite=10):
         """
         Retorna os produtos com maior nota média, 
@@ -142,6 +144,19 @@ class ProdutoManager(models.Manager):
             total_votos=Count('avaliacoes_produto')
         ).filter(
             total_votos__gt=0 # Opcional: apenas produtos que já foram avaliados
+        ).order_by('-media_calculada', '-quantidade_vendido')[:limite]
+    
+    def melhores_avaliados_camelo(self, limite=10):
+        """
+        Retorna os produtos com maior nota média, 
+        usando a quantidade de vendas como critério de desempate.
+        """
+        return self.annotate(
+            # Calculamos a média real baseada nas instâncias de Avaliacao
+            media_calculada=Avg('avaliacoes_produto__nota'),
+            total_votos=Count('avaliacoes_produto')
+        ).filter(
+            total_votos__gt=0, # Opcional: apenas produtos que já foram avaliados
         ).order_by('-media_calculada', '-quantidade_vendido')[:limite]
 
 
@@ -160,7 +175,7 @@ class Produto(models.Model):
     camelo = models.ForeignKey(Camelo, on_delete=models.CASCADE)
 
 
-    objects = ProdutoManager()
+    objects = ProdutoManager.as_manager()
 
     def __str__(self):
         return f'{self.nome} - R${self.preco} ({self.camelo.nome_fantasia})'
