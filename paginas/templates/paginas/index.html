@@ -513,7 +513,7 @@
 
 
 
-{% if camelos_que_faz_parte is not None %}
+{% if camelos_que_faz_parte and request.user.is_authenticated %}
     <div class="container mt-4 position-relative">
         <h2 class="pt-2">
 

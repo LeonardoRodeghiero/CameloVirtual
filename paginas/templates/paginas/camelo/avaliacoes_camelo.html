@@ -1,0 +1,116 @@
+{% extends 'paginas/camelo_padrao.html' %}
+
+
+{% block conteudo %}
+<div class="container mt-4 mb-5">
+    <div class="row mb-4">
+        <div class="col-12 border-bottom pb-3">
+            <h3>Avaliações de {{ camelo.nome_fantasia }}</h3>
+            <div class="d-flex align-items-center">
+                <span class="fs-4 fw-bold me-2">{{ camelo.avaliacao_geral }}</span>
+                {% for i in "12345" %}
+                    <i class="bi bi-star{% if i|add:'0' <= media_inteira %}-fill{% endif %} text-warning"></i>
+                {% endfor %}
+                <span class="text-muted ms-2">({{ qtd_avaliacoes }} comentários)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            {% if pode_avaliar and not ja_avaliou %}
+                <div class="card mb-5 border-primary shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Sua opinião é importante!</h5>
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <label class="form-label d-block text-muted small">Sua nota:</label>
+                            <div class="rating mb-3">
+                                {% for i in "54321" %}
+                                    <input type="radio" id="star{{ i }}" name="nota" value="{{ i }}" required>
+                                    <label for="star{{ i }}" title="{{ i }} estrelas">
+                                        <i class="bi bi-star-fill"></i>
+                                    </label>
+                                {% endfor %}
+                            </div>
+
+                            <label class="form-label text-muted small">Seu comentário:</label>
+                            {{ form.mensagem }}
+                            
+                            <div class="d-grid mt-3">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-send me-2"></i>Publicar Avaliação
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <hr class="mb-5">
+            {% endif %}
+            {% for avaliacao in avaliacoes %}
+                <div class="card mb-3 shadow-sm border-0">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong>{{ avaliacao.usuario.username }}</strong>
+                            <small class="text-muted">{{ avaliacao.data_hora_mensagem|date:"d/m/Y" }}</small>
+                        </div>
+                        <div class="mb-2">
+                            {% for i in "12345" %}
+                                <i class="bi bi-star{% if i|add:'0' <= avaliacao.nota %}-fill{% endif %} text-warning small"></i>
+                            {% endfor %}
+                        </div>
+                        <p class="mb-0">{{ avaliacao.mensagem|linebreaksbr }}</p>
+                        
+                        {% if request.user == avaliacao.usuario %}
+                            <div class="text-end mt-2">
+                                <button class="btn btn-sm btn-outline-danger border-0" data-bs-toggle="modal" data-bs-target="#confirmModal{{ avaliacao.pk }}">
+                                    <i class="bi bi-trash"></i> Excluir
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <div class="text-center py-5">
+                    <i class="bi bi-chat-dots text-muted display-1"></i>
+                    <p class="mt-3 text-muted">Ainda não há comentários detalhados para este camelô.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="position-fixed bottom-0 start-0 m-4" style="z-index: 1030;">
+    <a href="{% url 'camelo' camelo.pk %}" class="btn btn-dark btn-lg rounded-circle shadow-lg d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;" title="Voltar para o Início">
+        <i class="bi bi-arrow-left fs-3"></i>
+    </a>
+</div>
+
+{% for avaliacao in avaliacoes %}
+    {% if request.user == avaliacao.usuario %}
+    <div class="modal fade" id="confirmModal{{ avaliacao.pk }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form method="post" action="{% url 'excluir-avaliacao-usuario' avaliacao.pk %}">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmar exclusão</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        Tem certeza que deseja apagar seu comentário? Esta ação não pode ser desfeita.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Excluir Permanentemente</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endfor %}
+
+{% endblock %}
+

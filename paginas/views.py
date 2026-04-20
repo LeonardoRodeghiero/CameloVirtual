@@ -69,24 +69,26 @@ class IndexView(TemplateView):
             camelos = Camelo_Usuario.objects.filter(usuario=usuario).annotate(
                 qtd_total_avaliacoes_camelo=Count('camelo__avaliacoes_camelo')
             )
+
+            for item in camelos:
+            # Lógica para estrelas (usando o campo avaliacao_geral do seu Model)
+                inteira = int(item.camelo.avaliacao_geral)
+                tem_meia = (item.camelo.avaliacao_geral - inteira) >= 0.5
+                
+                lista_customizada_camelos.append({
+                    'camelo': item.camelo,
+                    'media_avaliacoes': round(item.camelo.avaliacao_geral, 1),
+                    'media_inteira': range(inteira),
+                    'tem_meia': tem_meia,
+                    'qtd_avaliacoes': item.qtd_total_avaliacoes_camelo, 
+                })
+
         else:
             camelos = None
 
         
 
-        for item in camelos:
-            # Lógica para estrelas (usando o campo avaliacao_geral do seu Model)
-            inteira = int(item.camelo.avaliacao_geral)
-            tem_meia = (item.camelo.avaliacao_geral - inteira) >= 0.5
-            
-            lista_customizada_camelos.append({
-                'camelo': item.camelo,
-                'media_avaliacoes': round(item.camelo.avaliacao_geral, 1),
-                'media_inteira': range(inteira),
-                'tem_meia': tem_meia,
-                'qtd_avaliacoes': item.qtd_total_avaliacoes_camelo, 
-            })
-
+        
 
         # 3. Enviamos para o contexto
         context['melhores_produtos'] = lista_customizada
@@ -138,8 +140,6 @@ class CameloView(TemplateView):
 
 
 
-        ja_avaliou = Avaliacao.objects.filter(camelo=camelo, usuario=usuario).exists()
-
         pode_avaliar =  Camelo_Usuario.objects.filter(camelo=camelo).exists()
 
         avaliacoes = Avaliacao.objects.filter(camelo=camelo)
@@ -158,6 +158,9 @@ class CameloView(TemplateView):
         context['qtd_avaliacoes'] = avaliacoes.count()
 
         if usuario.is_authenticated:
+            ja_avaliou = Avaliacao.objects.filter(camelo=camelo, usuario=usuario).exists()
+
+
             context['ja_avaliou'] = ja_avaliou  
             context['pode_avaliar'] = pode_avaliar    
         
@@ -821,3 +824,66 @@ class CancelarPedidoView(View):
         objeto.save()
         
         return redirect(reverse('listar-pedidos-camelo', kwargs={'camelo_id': camelo_id}))
+
+
+class AvaliacoesCamelo(TemplateView):
+    template_name = 'paginas/camelo/avaliacoes_camelo.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        camelo_id = self.kwargs.get("pk")
+        camelo = get_object_or_404(Camelo, id=camelo_id)
+        usuario = self.request.user
+
+        
+
+        pode_avaliar =  Camelo_Usuario.objects.filter(camelo=camelo).exists()
+
+        avaliacoes = Avaliacao.objects.filter(camelo=camelo)
+
+        # Forma para meia estrela
+        inteira = int(camelo.avaliacao_geral)
+        tem_meia = (camelo.avaliacao_geral - inteira) >= 0.5
+        context["media_avaliacoes"] = round(camelo.avaliacao_geral, 1)
+        context["media_inteira"] = inteira
+        context["media_meia"] = tem_meia
+
+
+
+        context['form'] = AvaliacaoForm()
+        context['avaliacoes'] = avaliacoes
+        context['qtd_avaliacoes'] = avaliacoes.count()
+
+        if usuario.is_authenticated:
+            ja_avaliou = Avaliacao.objects.filter(camelo=camelo, usuario=usuario).exists()
+
+
+            context['ja_avaliou'] = ja_avaliou  
+            context['pode_avaliar'] = pode_avaliar    
+        
+
+
+
+
+
+        camelo_id = self.kwargs.get("pk")
+        camelo = get_object_or_404(Camelo, pk=camelo_id)
+        context["camelo"] = camelo
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        camelo_id = self.kwargs.get("pk")
+        camelo = get_object_or_404(Camelo, id=camelo_id)
+
+        form = AvaliacaoForm(request.POST)
+
+        
+        if form.is_valid():
+            avaliacao = form.save(commit=False)
+            avaliacao.usuario = request.user
+            avaliacao.camelo = camelo
+            avaliacao.save()
+            return redirect('todas-avaliacoes-camelo', pk=camelo.pk)
+        context = self.get_context_data(form=form)
+        return self.render_to_response(context)
