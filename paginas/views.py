@@ -364,7 +364,7 @@ class ProdutoEspecifico(DetailView):
 
         ja_avaliou = Avaliacao.objects.filter(produto=produto, usuario=usuario).exists()
 
-        pode_avaliar =  Pedido_Produto.objects.filter(produto=produto, pedido__usuario=usuario, status="finalizado").exists()  #AQUI VAI TER QUE MUDAR O STATUS PAA APONTAR PARA PEDIDO_PRODUTO
+        pode_avaliar = Pedido_Produto.objects.filter(produto=produto, pedido__usuario=usuario, status="finalizado").exists()  #AQUI VAI TER QUE MUDAR O STATUS PAA APONTAR PARA PEDIDO_PRODUTO
 
         avaliacoes = Avaliacao.objects.filter(produto=produto)
 
@@ -438,6 +438,7 @@ class ProdutoCameloEspecifico(DetailView):
         usuario = self.request.user
 
         ja_avaliou = Avaliacao.objects.filter(produto=produto, usuario=usuario)
+        pode_avaliar = Pedido_Produto.objects.filter(produto=produto, pedido__usuario=usuario, status="finalizado").exists()  #AQUI VAI TER QUE MUDAR O STATUS PAA APONTAR PARA PEDIDO_PRODUTO
 
 
         avaliacoes = Avaliacao.objects.filter(produto=produto)
@@ -461,7 +462,8 @@ class ProdutoCameloEspecifico(DetailView):
 
         if usuario.is_authenticated:
             context['ja_avaliou'] = ja_avaliou
-        
+            context['pode_avaliar'] = pode_avaliar    
+
         return context
 
     # def post(self, request, *args, **kwargs):
@@ -838,7 +840,7 @@ class AvaliacoesCamelo(TemplateView):
 
         
 
-        pode_avaliar =  Camelo_Usuario.objects.filter(camelo=camelo).exists()
+        pode_avaliar = Pedido_Produto.objects.filter(produto__camelo=camelo, pedido__usuario=usuario, status="finalizado").exists()
 
         avaliacoes = Avaliacao.objects.filter(camelo=camelo)
 

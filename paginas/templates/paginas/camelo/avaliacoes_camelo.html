@@ -25,15 +25,18 @@
                         <form method="post">
                             {% csrf_token %}
                             
-                            <label class="form-label d-block text-muted small">Sua nota:</label>
-                            <div class="rating mb-3">
-                                {% for i in "54321" %}
-                                    <input type="radio" id="star{{ i }}" name="nota" value="{{ i }}" required>
-                                    <label for="star{{ i }}" title="{{ i }} estrelas">
-                                        <i class="bi bi-star-fill"></i>
-                                    </label>
-                                {% endfor %}
+                            <div class="d-flex align-items-center mb-3">
+                                <label class="form-label text-muted small mb-0 me-2">Sua nota:</label>
+                                <div class="rating">
+                                    {% for i in "54321" %}
+                                        <input type="radio" id="star{{ i }}" name="nota" value="{{ i }}" required>
+                                        <label for="star{{ i }}" title="{{ i }} estrelas">
+                                            <i class="bi bi-star-fill"></i>
+                                        </label>
+                                    {% endfor %}
+                                </div>
                             </div>
+                            
 
                             <label class="form-label text-muted small">Seu comentário:</label>
                             {{ form.mensagem }}
@@ -109,7 +112,7 @@
             </div>
         </div>
     </div>
-    {% endif %}
+{% endif %}
 {% endfor %}
 
 {% endblock %}
