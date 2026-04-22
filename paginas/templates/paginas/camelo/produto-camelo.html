@@ -180,7 +180,7 @@
     <div class="modal fade" id="confirmModal{{ avaliacao.pk }}" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <form method="post" action="{% url 'excluir-avaliacao-usuario' avaliacao.pk %}">
+                <form method="post" action="{% url 'excluir-avaliacao-usuario-camelo' camelo.pk avaliacao.pk %}">
                     {% csrf_token %}
                     <div class="modal-header">
                         <h5 class="modal-title">Confirmar exclusão</h5>

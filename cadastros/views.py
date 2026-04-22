@@ -742,9 +742,10 @@ class AvaliacaoDeleteUser(LoginRequiredMixin, DeleteView):
         avaliacao = self.object 
 
         camelo_id = self.kwargs.get('camelo_id')
-
+        print(camelo_id)
         if camelo_id and avaliacao.produto:
             return reverse('produto-camelo', kwargs={'camelo_id': camelo_id, 'produto_id': avaliacao.produto.pk})
+            return redirect('produto-camelo', camelo_id=camelo_id, produto_id=self.object.pk)
 
         elif avaliacao.produto:
             return reverse('produto', kwargs={'pk': avaliacao.produto.pk})

@@ -60,6 +60,8 @@ urlpatterns = [
     path('excluir/camelo/<int:pk>/', CameloDelete.as_view(), name="excluir-camelo"),
     path('excluir/avaliacao/<int:pk>/', AvaliacaoDelete.as_view(), name="excluir-avaliacao"),
     path('excluir/avaliacao/usuario/<int:pk>/', AvaliacaoDeleteUser.as_view(), name="excluir-avaliacao-usuario"),
+    path('<int:camelo_id>/excluir/avaliacao/usuario/<int:pk>/', AvaliacaoDeleteUser.as_view(), name="excluir-avaliacao-usuario-camelo"),
+
     path('excluir/pedido/<int:pk>/', PedidoDelete.as_view(), name="excluir-pedido"),
     path('excluir/pedido/usuario/<int:pk>/', PedidoDeleteUser.as_view(), name="excluir-pedido-usuario"),
 

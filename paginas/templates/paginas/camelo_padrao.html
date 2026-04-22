@@ -572,7 +572,7 @@
     <div class="vitrine-container" id="vitrine-produtos">
         {% for item in melhores_produtos_camelo %}
         <div class="vitrine-item">
-            <a href="{% url 'produto' item.produto.pk %}" class="card shadow-sm h-100 text-decoration-none text-dark">
+            <a href="{% url 'produto-camelo' camelo.pk item.produto.pk %}" class="card shadow-sm h-100 text-decoration-none text-dark">
                 {% if item.produto.imagem %}
                     <img src="{{ item.produto.imagem.url }}" class="card-img-top" style="height: 180px; object-fit: cover;">
                 {% else %}
