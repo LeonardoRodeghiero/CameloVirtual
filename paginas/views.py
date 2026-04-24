@@ -798,11 +798,19 @@ class ProdutoCameloCategoriaList(ListView):
 class FinalizarPedidoView(View):
     def get(self, request, pk):
         # Busca o objeto ou retorna 404 se não existir
+
+
         objeto = get_object_or_404(Pedido_Produto, pk=pk)
+
+        produto = objeto.produto
         
         camelo_id = objeto.produto.camelo.id
-        # Alterando o status
 
+        produto.quantidade_vendido += objeto.quantidade
+
+        produto.save()
+
+        # Alterando o status
         objeto.status = 'finalizado' 
 
         objeto.save()
