@@ -1,17 +1,66 @@
 {% extends 'paginas/camelo_padrao.html' %}
 
 {% block conteudo %}
-<h2>Confirmar adição de funcionário</h2>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            
+            <div class="text-center mb-4">
+                <h2 class="fw-bold">Confirmar Adição</h2>
+                <p class="text-muted">Você está prestes a dar acesso ao seu camelô para este usuário.</p>
+            </div>
 
-<div class="card">
-  <p><strong>Nome:</strong> {{ perfil.usuario.username }}</p>
-  <p><strong>CPF:</strong> {{ perfil.cpf }}</p>
-  <p><strong>Email:</strong> {{ perfil.usuario.email }}</p>
+            <div class="card shadow border-0 overflow-hidden">
+                <div class="bg-success" style="height: 8px;"></div>
+                
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="flex-shrink-0">
+                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                                <i class="bi bi-person-badge fs-1 text-success"></i>
+                            </div>
+                        </div>
+                        <div class="ms-4">
+                            <h4 class="mb-1 text-capitalize">{{ perfil.usuario.get_full_name|default:perfil.usuario.username }}</h4>
+                            <span class="badge bg-light text-dark border">Funcionário</span>
+                        </div>
+                    </div>
+
+                    <hr class="text-muted opacity-25">
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="text-muted small d-block">E-mail</label>
+                            <span class="fw-medium">{{ perfil.usuario.email }}</span>
+                        </div>
+                        <div class="col-12">
+                            <label class="text-muted small d-block">CPF</label>
+                            <span class="fw-medium">{{ perfil.cpf }}</span>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning mt-4 mb-0 border-0 d-flex align-items-center" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <div class="small">
+                            Este usuário terá acesso à gestão de produtos e pedidos de <strong>{{ camelo.nome_fantasia }}</strong>.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-light p-3 d-flex justify-content-between">
+                    <a href="javascript:history.back()" class="btn btn-outline-secondary px-4">
+                        Cancelar
+                    </a>
+                    <form method="post" action="{% url 'confirmar-funcionario' camelo.pk perfil.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success px-5 fw-bold">
+                            <i class="bi bi-person-plus-fill me-2"></i>Adicionar Agora
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>
-
-<form method="post" action="{% url 'confirmar-funcionario' camelo.pk perfil.pk %}">
-  {% csrf_token %}
-  <button type="submit">Adicionar</button>
-</form>
-
 {% endblock %}

@@ -2,17 +2,60 @@
 
 {% block conteudo %}
 <div class="container py-5">
-  <h2>Confirmar Endereço</h2>
-  <form method="post">
-    {% csrf_token %}
-    <div class="mb-3">
-      <label for="endereco" class="form-label">Endereço de entrega</label>
-      <input type="text" name="endereco" id="endereco" class="form-control" value="{{ endereco_padrao }}" required>
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-geo-alt-fill me-2"></i>Confirmar Entrega
+                    </h5>
+                </div>
+                
+                <div class="card-body p-4">
+                    <p class="text-muted small mb-4">
+                        Verifique se o endereço abaixo está correto para evitar problemas na entrega do seu pedido.
+                    </p>
+
+                    <form method="post" class="needs-validation">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                          <label for="endereco" class="form-label fw-bold">Endereço Completo</label>
+                          <div class="input-group">
+                              <span class="input-group-text bg-light align-items-start pt-2">
+                                  <i class="bi bi-geo-alt"></i>
+                              </span>
+                              <textarea 
+                                  name="endereco" 
+                                  id="endereco" 
+                                  class="form-control {% if erro %}is-invalid{% endif %}" 
+                                  rows="3" 
+                                  placeholder="Rua, número, complemento, bairro e cidade..."
+                                  required>{{ endereco_padrao }}</textarea>
+                              
+                              {% if erro %}
+                                  <div class="invalid-feedback">
+                                      {{ erro }}
+                                  </div>
+                              {% endif %}
+                          </div>
+                          <div class="form-text">
+                              Dica: Inclua pontos de referência para facilitar a entrega.
+                          </div>
+                      </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle me-2"></i>Finalizar Pedido
+                            </button>
+                            <a href="{% url 'ver-carrinho' %}" class="btn btn-link btn-sm text-decoration-none text-muted">
+                                Voltar ao carrinho
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-    <button type="submit" class="btn btn-success">Finalizar Pedido</button>
-  </form>
-  {% if erro %}
-    <p class="text-danger mt-2">{{ erro }}</p>
-  {% endif %}
 </div>
 {% endblock %}
