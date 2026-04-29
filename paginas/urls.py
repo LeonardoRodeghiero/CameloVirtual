@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import IndexView, AcessoNegadoView, ClienteProdutoList, ProdutoEspecifico, VerCarrinho, alterar_quantidade, CameloView, AcessoNegadoCameloView, ClienteProdutoCameloList, ProdutoCameloEspecifico, ClienteCameloList, InserirFuncionarioView, ConfirmarFuncionarioView, ConfirmarEndereco, VerHistoricoPedidos, ProdutoCameloCategoriaList, FinalizarPedidoView, CancelarPedidoView, AvaliacoesCamelo
+from .views import IndexView, AcessoNegadoView, ClienteProdutoList, ProdutoEspecifico, VerCarrinho, alterar_quantidade, CameloView, AcessoNegadoCameloView, ClienteProdutoCameloList, ProdutoCameloEspecifico, ClienteCameloList, InserirFuncionarioView, ConfirmarFuncionarioView, ConfirmarEndereco, VerHistoricoPedidos, ProdutoCameloCategoriaList, FinalizarPedidoView, CancelarPedidoView, AvaliacoesCamelo, CameloPerfilList
 urlpatterns = [
     path('', IndexView.as_view(), name="index"),
     path('<int:pk>/', CameloView.as_view(), name="camelo"),
@@ -31,8 +31,9 @@ urlpatterns = [
 
     path('pedido/cancelar/<int:pk>/', CancelarPedidoView.as_view(), name='cancelar-pedido'),
 
-    path('<int:pk>/avaliacoes', AvaliacoesCamelo.as_view(), name='todas-avaliacoes-camelo'),
+    path('<int:pk>/avaliacoes/', AvaliacoesCamelo.as_view(), name='todas-avaliacoes-camelo'),
 
+    path('<int:camelo_id>/usuarios/', CameloPerfilList.as_view(), name='listar-usuarios-camelo'),
 
 
 

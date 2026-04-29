@@ -9,6 +9,12 @@ def rota_objeto(acao, objeto):
     
     nome_modelo = objeto.__class__.__name__.lower()
     nome_rota = f"{acao}-{nome_modelo}"
+
+    # Verificação: se o objeto for o vínculo, precisamos de dois IDs
+    if hasattr(objeto, 'camelo_id'):
+        # Passa o ID do camelo e o ID do usuário (pk)
+        return reverse(nome_rota, args=[objeto.camelo_id, objeto.pk])
+
     return reverse(nome_rota, args=[objeto.pk])
 
 @register.simple_tag

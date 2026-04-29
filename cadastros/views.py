@@ -800,6 +800,15 @@ class PedidoDeleteUser(LoginRequiredMixin, DeleteView):
     model = Pedido
     success_url = reverse_lazy('index')
 
+class Camelo_usuarioDelete(LoginRequiredMixin, DeleteView):
+
+    login_url = reverse_lazy('login')
+
+    model = Camelo_Usuario
+
+    def get_success_url(self):
+        return reverse_lazy('listar-usuarios-camelo', kwargs={'camelo_id': self.kwargs.get("camelo_id")})
+
 # List
 class CategoriaList(GroupRequiredMixin, LoginRequiredMixin, ListView):
 

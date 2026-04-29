@@ -4,7 +4,7 @@ from .views import CategoriaCreate, ProdutoCreate, CarrinhoCreate, CarrinhoProdu
 
 from .views import CategoriaUpdate, ProdutoUpdate
 
-from .views import CategoriaDelete, ProdutoDelete, CarrinhoDelete, CarrinhoDeleteUser, CameloDelete, AvaliacaoDelete, AvaliacaoDeleteUser, PedidoDelete, PedidoDeleteUser
+from .views import CategoriaDelete, ProdutoDelete, CarrinhoDelete, CarrinhoDeleteUser, CameloDelete, AvaliacaoDelete, AvaliacaoDeleteUser, PedidoDelete, PedidoDeleteUser, Camelo_usuarioDelete
 
 from .views import CategoriaList, PerfilList, ProdutoList, CarrinhoList, CameloList, CategoriaCameloList, ProdutoCameloList, AvaliacaoList, PedidoList, VerPedidosCamelo
 
@@ -64,6 +64,9 @@ urlpatterns = [
 
     path('excluir/pedido/<int:pk>/', PedidoDelete.as_view(), name="excluir-pedido"),
     path('excluir/pedido/usuario/<int:pk>/', PedidoDeleteUser.as_view(), name="excluir-pedido-usuario"),
+
+    path('<int:camelo_id>/excluir/usuario/<int:pk>/', Camelo_usuarioDelete.as_view(), name="excluir-camelo_usuario"),
+
 
 
     path('listar/categorias/', CategoriaList.as_view(), name="listar-categorias"),

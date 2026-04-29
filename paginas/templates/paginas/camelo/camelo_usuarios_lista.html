@@ -1,0 +1,48 @@
+{% extends 'paginas/camelo/lista/camelo_template.html' %}
+{% load static %}
+
+
+{% block titulo_botao %}
+Usuários
+{% endblock %}
+
+
+{% block cabecalho %}
+    <th>id</th>
+    <th>nome</th>
+    <th style="min-width: 130px;">CPF</th>
+
+    <th>e-mail</th>
+    <th style="min-width: 140px;">telefone</th>
+
+    <th>cep</th>
+    <th>estado</th>
+    <th>cidade</th>
+    <th>bairro</th>
+    <th>logradouro</th>
+    <th>número</th>
+    <th>complemento</th>
+{% endblock %}
+
+{% block editar_proibido %}
+
+{% endblock %}
+
+
+
+{% block conteudo_tabela %}
+    <td>{{object.usuario.pk}}</td>
+    <td>{{object.usuario.perfil.nome_completo}}</td>
+    <td>{{object.usuario.perfil.cpf}}</td>
+
+    <td>{{object.usuario.email}}</td>
+    <td>{{object.usuario.perfil.telefone}}</td>
+
+    <td class="{% if not object.usuario.perfil.cep %}text-muted{% endif %}" style="min-width: 95px;">{{object.usuario.perfil.cep|default:"&ndash;"|safe}}</td>
+    <td>{{object.usuario.perfil.estado}}</td>
+    <td>{{object.usuario.perfil.cidade}}</td>
+    <td class="{% if not object.usuario.perfil.bairro %}text-muted{% endif %}">{{object.usuario.perfil.bairro|default:"&ndash;"|safe}}</td>
+    <td class="{% if not object.usuario.perfil.logradouro %}text-muted{% endif %}">{{object.usuario.perfil.logradouro|default:"&ndash;"|safe}}</td>
+    <td class="{% if not object.usuario.perfil.numero %}text-muted{% endif %}">{{object.usuario.perfil.numero|default:"&ndash;"|safe}}</td>
+    <td class="{% if not object.usuario.perfil.complemento %}text-muted{% endif %}">{{object.usuario.perfil.complemento|default:"&ndash;"|safe}}</td>
+{% endblock %}

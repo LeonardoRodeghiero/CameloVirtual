@@ -32,6 +32,9 @@ from django.utils import timezone
 from datetime import datetime
 
 from django.db import transaction
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 # Create your views here.
 
 
@@ -897,3 +900,61 @@ class AvaliacoesCamelo(TemplateView):
             return redirect('todas-avaliacoes-camelo', pk=camelo.pk)
         context = self.get_context_data(form=form)
         return self.render_to_response(context)
+
+
+
+class CameloPerfilList(LoginRequiredMixin, ListView):
+
+
+    model = Camelo_Usuario
+    template_name = 'paginas/camelo/camelo_usuarios_lista.html'
+    paginate_by = 10
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')  # ou sua URL personalizada de login
+        # if not request.user.groups.filter(name='administrador').exists():
+        #     return redirect('acesso-negado')  # ou 'acesso-negado'
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_queryset(self):
+        campo_escolhido = self.request.GET.get('campo')
+        valor = self.request.GET.get(campo_escolhido)  # valor digitado no input
+
+        camelo_id = self.kwargs.get("camelo_id")
+        camelo = get_object_or_404(Camelo, id=camelo_id)
+
+        perfis = Camelo_Usuario.objects.filter(camelo=camelo)
+
+        if valor is None:
+            perfis = Camelo_Usuario.objects.filter(camelo=camelo)
+        else:
+            filtro = {f"{campo_escolhido}__icontains": valor}
+            perfis = Perfil.objects.filter(**filtro)
+
+        
+        return perfis
+    
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+        campos = [
+            (field.name, field.verbose_name.title() if field.verbose_name else field.name.title())
+            for field in self.model._meta.fields
+            if field.name != 'usuario'
+        ]
+
+        campos.append(('usuario__email', 'Email do Usuário'))
+
+        camelo_id = self.kwargs.get("camelo_id")
+        camelo = get_object_or_404(Camelo, id=camelo_id)
+
+
+
+        campo_escolhido = self.request.GET.get('campo')
+        
+        context['campo_escolhido'] = campo_escolhido
+        context['campos'] = campos
+        context['nome_modelo_lista'] = 'usuarios'
+        context['camelo'] = camelo
+        return context

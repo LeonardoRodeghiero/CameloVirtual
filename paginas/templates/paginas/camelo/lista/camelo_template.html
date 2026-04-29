@@ -1,0 +1,232 @@
+{% extends 'paginas/camelo_padrao.html' %}
+{% load rotas %}
+{% load custom_filters %}
+{% load static %}
+
+{% block conteudo %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-12">
+
+      <h2 class="pt-2">
+        {% block titulo_botao %}{% endblock %}
+      </h2>
+      <hr class="p-1">
+
+      <!-- Formulário de busca -->
+      <form method="get" class="p-3 border rounded bg-light shadow-sm">
+        <div class="d-flex align-items-center mb-3 gap-4">
+          <label for="campo" class="form-label">Buscar Por:</label>
+          <select name="campo" id="campo" class="form-select" style="width: 200px;" onchange="atualizarCampo()">
+            {% for campo, label in campos %}
+              <option value="{{ campo }}" {% if campo == campo_escolhido %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <input type="text" id="valor" name="{{ campo_escolhido }}" value="{{ request.GET|dict_get:campo_escolhido }}" class="form-control" autocomplete="off" placeholder="Pesquise por...">
+        </div>
+        {{ object }}
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">Buscar <i class="bi bi-search"></i></button>
+          {% block limpar %}
+            <a href="{% rota_objeto_listas nome_modelo_lista %}" class="btn btn-outline-secondary">Limpar <i class="bi bi-arrow-clockwise"></i></a>
+          {% endblock %}
+
+        </div>
+      </form>
+
+      <!-- Tabela responsiva -->
+      <div class="table-responsive pt-2">
+        <table class="table table-hover table-bordered align-middle text-center shadow-sm" id="tabela">
+          <thead>
+            <tr>
+              {% block cabecalho %}{% endblock %}
+              <th style="position: sticky; right: 0; background-color: #d3d3d3; z-index: 2; min-width: 120px; text-align: center; border-left: none; box-shadow: -1px 0 0 #dee2e6;">
+                Opções
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for object in object_list %}
+              <tr>
+                {% block conteudo_tabela %}
+                
+                {% endblock %}
+                
+                <td style="position: sticky; right: 0; background-color: #f8f9fa; z-index: 2; min-width: 120px; text-align: center; border-left: none; box-shadow: -1px 0 0 #dee2e6;">
+                  {% block editar_proibido %}
+                    <a href="{% rota_objeto 'atualizar' object %}?next={{ request.path }}" class="btn btn-warning" title="Editar"><i class="bi bi-pencil-square"></i></a>
+                  {% endblock %}
+                  <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal{{ object.pk }}" title="Excluir"><i class="bi bi-trash"></i></button>
+                  
+                </td>
+                
+              </tr>
+
+              <!-- Modal de confirmação -->
+              <div class="modal fade" id="confirmModal{{ object.pk }}" tabindex="-1" aria-labelledby="confirmModalLabel{{ object.pk }}" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <form method="post" action="{% rota_objeto 'excluir' object %}?next={{ request.path }}">
+                      {% csrf_token %}
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="confirmModalLabel{{ object.pk }}">Confirmar exclusão</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                      </div>
+                      <div class="modal-body">
+                        Tem certeza que deseja excluir <strong>{{ object }}</strong>?
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Excluir</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            {% empty %}
+              <tr>
+                <td colspan="100%" class="text-center text-muted fs-5 py-4">Nenhum campo encontrado</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginação -->
+      <div class="d-flex justify-content-center mt-4">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="{% querystring request page=page_obj.previous_page_number %}">Anterior</a>
+            </li>
+          {% endif %}
+          <li class="page-item active">
+            <span class="page-link">{{ page_obj.number }}</span>
+          </li>
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="{% querystring request page=page_obj.next_page_number %}">Próxima</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/jquery.mask.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
+<script>
+  var cleaveInstance = null;
+  var submitBoundForNumeric = false;
+
+  function destruirCleave() {
+    if (cleaveInstance) {
+      cleaveInstance.destroy();
+      cleaveInstance = null;
+    }
+  }
+
+  function limparSubmitNumerico() {
+    if (submitBoundForNumeric) {
+      $('form').off('submit.numeric');
+      submitBoundForNumeric = false;
+    }
+  }
+
+  function bindSubmitNumerico() {
+    limparSubmitNumerico();
+    $('form').on('submit.numeric', function (e) {
+      // não impede envio; só normaliza vírgula -> ponto
+      const $input = $('#valor');
+      const original = $input.val();
+      $input.val(original.replace(',', '.'));
+    });
+    submitBoundForNumeric = true;
+  }
+
+  function atualizarCampo() {
+    var select = document.getElementById('campo');
+    var input = document.getElementById('valor');
+    var valorSelecionado = select.value;
+
+    // nome do parâmetro enviado
+    input.name = valorSelecionado;
+
+    // limpa qualquer resquício anterior
+    $('#valor').unmask();
+    destruirCleave();
+    limparSubmitNumerico();
+
+    // garante que o input volte a aceitar texto livre
+    input.type = 'text';
+    input.removeAttribute('inputmode');
+    input.removeAttribute('pattern');
+
+    switch (valorSelecionado) {
+      case 'cpf':
+        $('#valor').mask('000.000.000-00');
+        break;
+
+      case 'telefone':
+        $('#valor').mask('(00) 00000-0000');
+        break;
+
+      case 'cep':
+        $('#valor').mask('00000-000');
+        break;
+
+      case 'preco':
+        cleaveInstance = new Cleave('#valor', {
+          numeral: true,
+          numeralThousandsGroupStyle: 'none',
+          numeralDecimalMark: '.',
+          delimiter: '',
+          numeralDecimalScale: 2
+        });
+        bindSubmitNumerico();
+        break;
+
+      case 'valorTotal':
+        cleaveInstance = new Cleave('#valor', {
+          numeral: true,
+          numeralThousandsGroupStyle: 'none',
+          numeralDecimalMark: '.',
+          delimiter: '',
+          numeralDecimalScale: 2
+        });
+        bindSubmitNumerico();
+        break;
+
+      case 'criado_em':
+        $('#valor').mask('00/00/0000');
+        break;
+      case 'atualizado_em':
+        $('#valor').mask('00/00/0000');
+        break;
+
+      default:
+        // sem máscara → aceita letras normalmente
+        // (se quiser reforçar, pode setar inputmode/text)
+        input.setAttribute('inputmode', 'text');
+        break;
+    }
+  }
+
+  $(document).ready(function () {
+    // inicializa conforme o campo atual
+    atualizarCampo();
+
+    // reconfigura ao trocar o select
+    $('#campo').on('change', atualizarCampo);
+  });
+</script>
+
+{% endblock %}
