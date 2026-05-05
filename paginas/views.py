@@ -912,9 +912,19 @@ class CameloPerfilList(LoginRequiredMixin, ListView):
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
-            return redirect('login')  # ou sua URL personalizada de login
-        # if not request.user.groups.filter(name='administrador').exists():
-        #     return redirect('acesso-negado')  # ou 'acesso-negado'
+            return redirect('login')  # ou a URL personalizada de login
+
+        camelo_id = self.kwargs.get("camelo_id")
+        camelo = get_object_or_404(Camelo, id=camelo_id)
+
+        usuario = self.request.user
+
+        valido = Camelo_Usuario.objects.filter(camelo=camelo, usuario=usuario).exists()
+
+        print(valido)
+        
+        if not valido:
+             return redirect('acesso-negado')  # ou 'acesso-negado'
         return super().dispatch(request, *args, **kwargs)
     
     def get_queryset(self):
