@@ -153,7 +153,19 @@
             }
         }
 
+        .navbar-brand {
+            padding-top: 0;
+            padding-bottom: 0;
+            display: flex;
+            align-items: center;
+            height: 100%; /* Faz o link ocupar a altura total da barra */
+        }
 
+        .navbar-brand img {
+            max-height: 100%; /* Garante que a imagem nunca seja maior que o link/navbar */
+            width: auto;
+            object-fit: contain;
+        }
 
 
         /* Menu colapsado sobreposto */
@@ -201,8 +213,10 @@
         <div class="container position-relative">
 
             <!-- Logo à esquerda -->
-            <a class="navbar-brand d-flex align-items-center" href="{% url 'index' %}">
-                <img src="../../../static/img/logo_camelodromo_virtual6.png" alt="Logo" class="d-inline-block align-top mr-2" style="height: 90px; width: auto;">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'index' %}" style="height: 100%;">
+                <img src="../../../static/img/logo_camelodromo_virtual6.png" 
+                    alt="Logo" 
+                    style="height: 80px; width: auto;"> 
             </a>
             <!-- Título centralizado e fixo -->
             <!-- <div class="navbar-center-title">

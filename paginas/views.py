@@ -921,8 +921,6 @@ class CameloPerfilList(LoginRequiredMixin, ListView):
 
         valido = Camelo_Usuario.objects.filter(camelo=camelo, usuario=usuario).exists()
 
-        print(valido)
-        
         if not valido:
              return redirect('acesso-negado')  # ou 'acesso-negado'
         return super().dispatch(request, *args, **kwargs)

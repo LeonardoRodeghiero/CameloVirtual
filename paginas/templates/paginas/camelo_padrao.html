@@ -147,6 +147,48 @@
         }
 
     
+        .navbar-brand {
+            padding-top: 0;
+            padding-bottom: 0;
+            display: flex;
+            align-items: center;
+            height: 100%; /* Faz o link ocupar a altura total da barra */
+        }
+
+        .navbar-brand img {
+            max-height: 100%; /* Garante que a imagem nunca seja maior que o link/navbar */
+            width: auto;
+            object-fit: contain;
+        }
+
+
+        /* O título no centro só vai aparecer em telas Grandes */
+        .navbar-center-title {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            white-space: nowrap;
+            display: none; /* Escondido por padrão */
+        }
+
+        @media (min-width: 992px) {
+            .navbar-center-title {
+                display: block; /* Aparece apenas no desktop */
+            }
+        }
+
+        /* Animação suave para o pop-up aparecer */
+        .fixed-bottom {
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
 
 
         /* Menu colapsado sobreposto */
@@ -189,12 +231,29 @@
 
 </head>
 <body class="d-flex flex-column min-vh-100">
+
+    <!-- Este alerta só aparece em telas menores que 992px (d-lg-none) -->
+    <div class="d-lg-none fixed-bottom p-3" style="z-index: 1050;">
+        <div class="alert shadow-lg border-0 d-flex align-items-center mb-0" 
+            style="background-color: var(--verde); color: white; border-radius: 15px;">
+            <i class="bi bi-shop me-2"></i> <!-- Se usar Bootstrap Icons -->
+            <div class="flex-grow-1">
+                <small class="d-block" style="opacity: 0.9;">Você está no:</small>
+                <strong>{{ camelo.nome_fantasia }}</strong>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+
     <nav class="navbar navbar-expand-lg navbar-light verde position-relative">
         <div class="container position-relative">
 
             <!-- Logo à esquerda -->
-            <a class="navbar-brand d-flex align-items-center" href="{% url 'index' %}">
-                <img src="../../../static/img/logo_camelodromo_virtual6.png" alt="Logo" class="d-inline-block align-top mr-2" style="height: 90px; width: auto;">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'index' %}" style="height: 100%;">
+                <img src="../../../static/img/logo_camelodromo_virtual6.png" 
+                    alt="Logo" 
+                    style="height: 80px; width: auto;"> 
+                <!-- Diminuí para 80px para dar um respiro visual de 10px em cima/baixo nos 100px da navbar -->
             </a>
             <!-- Título centralizado e fixo -->
             <div class="navbar-center-title">
@@ -265,7 +324,7 @@
 
             <!-- Menu -->
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-        <ul class="navbar-nav ms-auto flex-column flex-lg-row w-100 justify-content-lg-end">
+        <ul class="navbar-nav ms-auto flex-column flex-lg-row justify-content-lg-end">
             <!-- Menu para desktop (telas grandes) -->
             {% if request.user.is_authenticated %}
 
@@ -684,6 +743,16 @@
     color: gold;
     }
 
+    .navbar-collapse {
+        /* Isso ajuda o script a ver onde os links realmente terminam */
+        display: flex !important; 
+        justify-content: flex-end; 
+    }
+
+    .navbar-center-title {
+        transition: opacity 0.3s ease, visibility 0.3s;
+    }
+
     </style>
 
     <script>
@@ -698,6 +767,47 @@
                 behavior: 'smooth'
             });
         }
+        function verificarSobreposicao() {
+            const titulo = document.querySelector('.navbar-center-title');
+            const brand = document.querySelector('.navbar-brand');
+            
+            // Se a tela for menor que 992px, usamos o pop-up e escondemos o título da navbar
+            if (window.innerWidth < 992) {
+                if (titulo) titulo.style.opacity = "0";
+                return;
+            }
+
+            // No Desktop, pegamos o primeiro item da lista de links à direita para saber onde o menu começa
+            const primeiroItemMenu = document.querySelector('.navbar-nav .nav-item:not(.d-none)');
+            
+            if (!titulo || !brand || !primeiroItemMenu) return;
+
+            const rectTitulo = titulo.getBoundingClientRect();
+            const rectBrand = brand.getBoundingClientRect();
+            const rectMenu = primeiroItemMenu.getBoundingClientRect();
+
+            const margem = 40; // Espaço de segurança em pixels
+
+            // COLISÃO:
+            // rectBrand.right: fim da logo
+            // rectMenu.left: começo do primeiro botão (Perfil ou Categorias)
+            const colidiuEsquerda = rectTitulo.left < (rectBrand.right + margem);
+            const colidiuDireita = rectTitulo.right > (rectMenu.left - margem);
+
+            if (colidiuEsquerda || colidiuDireita) {
+                titulo.style.opacity = "0";
+                titulo.style.visibility = "hidden";
+            } else {
+                titulo.style.opacity = "1";
+                titulo.style.visibility = "visible";
+            }
+        }
+
+        // Eventos
+        window.addEventListener('resize', verificarSobreposicao);
+        window.addEventListener('load', verificarSobreposicao);
+        // Executa após um micro-delay para o Django processar o texto
+        setTimeout(verificarSobreposicao, 100);
     </script>
     {% endblock %}
 
