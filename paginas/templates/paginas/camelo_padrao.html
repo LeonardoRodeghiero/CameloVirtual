@@ -690,13 +690,13 @@
         <div class="container d-flex flex-column align-items-center">
 
             <div class="mb-2 mb-lg-0">
-            <a href="#" class="text-decoration-none text-light mx-2" >Sobre</a>
-            <a href="#" class="text-decoration-none text-light mx-2">Contato</a>
-            <a href="#" class="text-decoration-none text-light mx-2">Política de Privacidade</a>
-            <a href="#" class="text-decoration-none text-light mx-2">Ajuda</a>
+            <a href="{% url 'sobre' %}" class="text-decoration-none text-light mx-2" >Sobre</a>
+            <a href="{% url 'contato' %}" class="text-decoration-none text-light mx-2">Contato</a>
+            <a href="{% url 'privacidade' %}" class="text-decoration-none text-light mx-2">Política de Privacidade</a>
+            <a href="{% url 'ajuda' %}" class="text-decoration-none text-light mx-2">Ajuda</a>
             </div>
             <div class="small mt-2" style="color: var(--off-white);">
-            &copy; 2025 Camelô Virtual
+            &copy; 2026 Camelô Virtual
             </div>
         </div>
     </footer>
@@ -758,8 +758,8 @@
     <script>
         function scrollVitrine(direcao, idVitrine) {
             const container = document.getElementById(idVitrine);
-            // Define a largura de um item para o scroll ser preciso
-            // Se quiser rolar mais, aumente o multiplicador
+            // Definindo a largura de um item para o scroll ser preciso
+            // pra rolar mais, aumentar o multiplicador
             const scrollAmount = container.clientWidth * 0.8; 
             
             container.scrollBy({

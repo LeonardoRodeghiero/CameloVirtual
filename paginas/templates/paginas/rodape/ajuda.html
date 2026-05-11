@@ -1,0 +1,57 @@
+{% extends 'paginas/index.html' %}
+
+{% block conteudo %}
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page { size: A4; margin: 15mm; background-color: #f8f9fa; }
+        body { font-family: sans-serif; color: #333; line-height: 1.6; margin: 0; }
+        .container { width: 100%; }
+        .breadcrumb { font-size: 0.9rem; margin-bottom: 1rem; color: #6c757d; }
+        .breadcrumb a { color: #0d6efd; text-decoration: none; }
+        h1 { font-size: 28pt; margin-bottom: 10pt; color: #212529; }
+        hr { border: 0; border-top: 1px solid #dee2e6; margin: 20pt 0; }
+        .lead { font-size: 14pt; color: #495057; }
+        .card { background: #fff; border-radius: 8px; border: 1px solid #dee2e6; padding: 15pt; margin-bottom: 15pt; }
+        .bg-light { background-color: #f8f9fa !important; }
+        .text-primary { color: #0d6efd !important; }
+        .mb-3 { margin-bottom: 1rem; }
+        .form-label { display: block; margin-bottom: .5rem; font-weight: bold; }
+        .form-control, .form-select { width: 100%; padding: .375rem .75rem; border: 1px solid #ced4da; border-radius: .25rem; box-sizing: border-box; }
+        .btn { display: inline-block; padding: .375rem .75rem; border-radius: .25rem; text-decoration: none; font-weight: 400; text-align: center; cursor: pointer; }
+        .btn-primary { color: #fff; background-color: #0d6efd; border-color: #0d6efd; }
+        .row { display: flex; flex-wrap: wrap; margin-right: -15px; margin-left: -15px; }
+        .col-md-6 { flex: 0 0 50%; max-width: 50%; padding: 0 15px; box-sizing: border-box; }
+        .list-group-item { border: 1px solid #dee2e6; margin-bottom: -1px; background-color: #fff; }
+        .page-break { page-break-after: always; }
+    </style>
+    </head>
+    <body>
+        <div class="container my-5">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Central de Ajuda</li>
+                    </ol>
+                </nav>
+                <h1 class="display-4 mb-4">Central de Ajuda</h1>
+                <hr class="mb-5">
+                
+        <div class="list-group">
+            <div class="list-group-item p-4">
+                <h6 class="mb-2 fw-bold">Como faço para confirmar meu endereço?</h6>
+                <p class="mb-0 text-muted">Ao realizar um pedido, o sistema solicitará automaticamente que você confirme o endereço de entrega antes da finalização.</p>
+            </div>
+            <div class="list-group-item p-4">
+                <h6 class="mb-2 fw-bold">Posso retirar o produto pessoalmente?</h6>
+                <p class="mb-0 text-muted">Sim! Muitos de nossos vendedores oferecem a opção de retirada no local. Verifique a disponibilidade na página do produto.</p>
+            </div>
+            <div class="list-group-item p-4">
+                <h6 class="mb-2 fw-bold">O que significam as cores nos meus pedidos?</h6>
+                <p class="mb-0 text-muted">Os status são divididos por cores para facilitar a visualização: Amarelo (Em andamento), Verde (Finalizado) e Vermelho (Cancelado).</p>
+            </div>
+        </div>
+    </body>
+{% endblock %}

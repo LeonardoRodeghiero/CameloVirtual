@@ -1,0 +1,61 @@
+{% extends 'paginas/index.html' %}
+
+{% block conteudo %}
+    <head>
+    <meta charset="UTF-8">
+    <style>
+        @page { size: A4; margin: 15mm; background-color: #f8f9fa; }
+        body { font-family: sans-serif; color: #333; line-height: 1.6; margin: 0; }
+        .container { width: 100%; }
+        .breadcrumb { font-size: 0.9rem; margin-bottom: 1rem; color: #6c757d; }
+        .breadcrumb a { color: #0d6efd; text-decoration: none; }
+        h1 { font-size: 28pt; margin-bottom: 10pt; color: #212529; }
+        hr { border: 0; border-top: 1px solid #dee2e6; margin: 20pt 0; }
+        .lead { font-size: 14pt; color: #495057; }
+        .card { background: #fff; border-radius: 8px; border: 1px solid #dee2e6; padding: 15pt; margin-bottom: 15pt; }
+        .bg-light { background-color: #f8f9fa !important; }
+        .text-primary { color: #0d6efd !important; }
+        .mb-3 { margin-bottom: 1rem; }
+        .form-label { display: block; margin-bottom: .5rem; font-weight: bold; }
+        .form-control, .form-select { width: 100%; padding: .375rem .75rem; border: 1px solid #ced4da; border-radius: .25rem; box-sizing: border-box; }
+        .btn { display: inline-block; padding: .375rem .75rem; border-radius: .25rem; text-decoration: none; font-weight: 400; text-align: center; cursor: pointer; }
+        .btn-primary { color: #fff; background-color: #0d6efd; border-color: #0d6efd; }
+        .row { display: flex; flex-wrap: wrap; margin-right: -15px; margin-left: -15px; }
+        .col-md-6 { flex: 0 0 50%; max-width: 50%; padding: 0 15px; box-sizing: border-box; }
+        .list-group-item { border: 1px solid #dee2e6; margin-bottom: -1px; background-color: #fff; }
+        .page-break { page-break-after: always; }
+    </style>
+</head>
+<body>
+    
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Sobre o Camelódromo</li>
+                    </ol>
+                </nav>
+                <h1 class="display-4 mb-4">Sobre o Camelódromo</h1>
+                <hr class="mb-5">
+                
+    <p class="lead">O <strong>Camelódromo Virtual</strong> é uma plataforma dedicada a digitalizar o comércio popular, conectando camelôs e microempreendedores diretamente aos seus clientes.</p>
+    <p>Nossa missão é fortalecer a economia local, oferecendo aos vendedores de rua ferramentas modernas para gerenciar pedidos e ampliar seu alcance. Aqui, a tradição das bancas encontra a praticidade do e-commerce.</p>
+    <div class="card bg-light border-0 p-4 my-4">
+        <h5 style="color: #0d6efd;">Como funciona?</h5>
+        <ul class="mb-0">
+            <li>O cliente escolhe os produtos de seus vendedores favoritos.</li>
+            <li>A escolha é sua: receba em casa com segurança ou retire diretamente na banca do vendedor.</li>
+            <li>O vendedor gerencia tudo com agilidade através do nosso sistema.</li>
+        </ul>
+    </div>
+
+            </div>
+        </div>
+    </div>
+    
+    
+    
+</body>
+{% endblock %}

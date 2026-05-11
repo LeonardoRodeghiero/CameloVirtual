@@ -246,7 +246,7 @@ class UsuarioCreateWizard(SessionWizardView):
 
         try:
             params = {
-                "from": "onboarding@resend.dev", # No plano grátis, use este remetente padrão
+                "from": "onboarding@resend.dev", # No plano grátis, usar este remetente padrão
                 "to": [cadastro.email],          # O e-mail do seu cliente
                 "subject": "Código de Confirmação - Camelódromo Virtual",
                 "html": f"""

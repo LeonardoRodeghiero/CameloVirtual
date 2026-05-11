@@ -339,17 +339,7 @@
             {% endif %}
 
 
-            <li class="nav-item dropdown d-none d-lg-block">
-                <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Sobre a loja
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                    <li><span class="dropdown-item-text">Informações adicionais</span></li>
-                    <li><a class="dropdown-item" href="#">Quem somos</a></li>
-                    <li><a class="dropdown-item" href="#">Localização e Atendimento</a></li>
-
-                </ul>
-            </li>
+            
 
             {% if request.user.is_authenticated and user|in_group:"administrador" %}
                 <li class="nav-item dropdown d-none d-lg-block">
@@ -379,22 +369,7 @@
         <div class="accordion" id="mobileMenuAccordion">
 
 
-            <!-- Sobre a loja -->
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="headingSobrealoja">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSobrealoja" aria-expanded="false" aria-controls="collapseSobrealoja">
-                        Sobre a loja
-                    </button>
-                </h2>
-                <div id="collapseSobrealoja" class="accordion-collapse collapse" aria-labelledby="headingSobrealoja" data-bs-parent="#mobileMenuAccordion">
-                    <div class="accordion-body">
-                        <span class="dropdown-item-text">Informações Adicionais</span>
-                        <a href="#" class="dropdown-item">Quem Somos</a>
-                        <a href="#" class="dropdown-item">Localização e Atendimento</a>
-
-                    </div>
-                </div>
-            </div>
+            
             {% if request.user.is_authenticated and user|in_group:"administrador" %}
                 <!-- Administração -->
                 <div class="accordion-item">
@@ -656,13 +631,13 @@
         <div class="container d-flex flex-column align-items-center">
 
             <div class="mb-2 mb-lg-0">
-            <a href="#" class="text-decoration-none text-light mx-2" >Sobre</a>
-            <a href="#" class="text-decoration-none text-light mx-2">Contato</a>
-            <a href="#" class="text-decoration-none text-light mx-2">Política de Privacidade</a>
-            <a href="#" class="text-decoration-none text-light mx-2">Ajuda</a>
+            <a href="{% url 'sobre' %}" class="text-decoration-none text-light mx-2" >Sobre</a>
+            <a href="{% url 'contato' %}" class="text-decoration-none text-light mx-2">Contato</a>
+            <a href="{% url 'privacidade' %}" class="text-decoration-none text-light mx-2">Política de Privacidade</a>
+            <a href="{% url 'ajuda' %}" class="text-decoration-none text-light mx-2">Ajuda</a>
             </div>
             <div class="small mt-2" style="color: var(--off-white);">
-            &copy; 2025 Camelô Virtual
+            &copy; 2026 Camelô Virtual
             </div>
         </div>
     </footer>

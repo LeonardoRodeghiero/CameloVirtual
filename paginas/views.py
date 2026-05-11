@@ -35,6 +35,9 @@ from django.db import transaction
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+import resend
+
+
 # Create your views here.
 
 
@@ -966,3 +969,37 @@ class CameloPerfilList(LoginRequiredMixin, ListView):
         context['nome_modelo_lista'] = 'usuarios'
         context['camelo'] = camelo
         return context
+
+
+
+class SobreView(TemplateView):
+    template_name = "paginas/rodape/sobre.html"
+
+
+class ContatoView(TemplateView):
+    template_name = "paginas/rodape/contato.html"
+
+    try:
+        params = {
+            "from": "onboarding@resend.dev", # No plano grátis, usar este remetente padrão
+            "to": [cadastro.email],          # O e-mail do seu cliente
+            "subject": "Código de Confirmação - Camelódromo Virtual",
+            "html": f"""
+                <h1>Bem-vindo ao Camelódromo Virtual!</h1>
+                <p>Seu código de confirmação é: <strong>{cadastro.codigo}</strong></p>
+                <p>Use este código para ativar sua conta.</p>
+            """,
+        }
+
+        resend.Emails.send(params)
+        print("E-mail enviado com sucesso via API!")
+
+    except Exception as e:
+        print(f"Erro ao enviar via Resend: {e}")
+
+
+class PrivacidadeView(TemplateView):
+    template_name = "paginas/rodape/privacidade.html"
+
+class AjudaView(TemplateView):
+    template_name = "paginas/rodape/ajuda.html"

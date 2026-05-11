@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import IndexView, AcessoNegadoView, ClienteProdutoList, ProdutoEspecifico, VerCarrinho, alterar_quantidade, CameloView, AcessoNegadoCameloView, ClienteProdutoCameloList, ProdutoCameloEspecifico, ClienteCameloList, InserirFuncionarioView, ConfirmarFuncionarioView, ConfirmarEndereco, VerHistoricoPedidos, ProdutoCameloCategoriaList, FinalizarPedidoView, CancelarPedidoView, AvaliacoesCamelo, CameloPerfilList
+from .views import IndexView, AcessoNegadoView, ClienteProdutoList, ProdutoEspecifico, VerCarrinho, alterar_quantidade, CameloView, AcessoNegadoCameloView, ClienteProdutoCameloList, ProdutoCameloEspecifico, ClienteCameloList, InserirFuncionarioView, ConfirmarFuncionarioView, ConfirmarEndereco, VerHistoricoPedidos, ProdutoCameloCategoriaList, FinalizarPedidoView, CancelarPedidoView, AvaliacoesCamelo, CameloPerfilList, SobreView, ContatoView, PrivacidadeView, AjudaView
 urlpatterns = [
     path('', IndexView.as_view(), name="index"),
     path('<int:pk>/', CameloView.as_view(), name="camelo"),
@@ -34,6 +34,14 @@ urlpatterns = [
     path('<int:pk>/avaliacoes/', AvaliacoesCamelo.as_view(), name='todas-avaliacoes-camelo'),
 
     path('<int:camelo_id>/usuarios/', CameloPerfilList.as_view(), name='listar-usuarios-camelo'),
+
+    path('sobre/', SobreView.as_view(), name='sobre'),
+
+    path('contato/', ContatoView.as_view(), name='contato'),
+
+    path('privacidade/', PrivacidadeView.as_view(), name='privacidade'),
+
+    path('ajuda/', AjudaView.as_view(), name='ajuda'),
 
 
 
