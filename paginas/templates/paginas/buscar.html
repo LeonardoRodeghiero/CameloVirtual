@@ -1,0 +1,205 @@
+{% extends 'paginas/index.html' %}
+
+{% block conteudo %}
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+            <form class="mb-4" action="{% url 'buscar' %}" method="get">
+                <div class="input-group">
+                <input type="text" name="nome" id="nome" class="form-control" placeholder="Procure por um produto ou um camelô..." value="{{ request.GET.nome }}" autocomplete="off">
+                <button class="btn" type="submit" style="background-color: var(--preto); color: white;">
+                    <i class="bi bi-search"></i> Buscar
+                </button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Navegação das Abas -->
+    <div class="tabs-container">
+        <button class="tab-btn active" onclick="abrirAba(event, 'aba-produtos')">
+            Produtos ({{ produtos_custom|length }})
+        </button>
+        <button class="tab-btn" onclick="abrirAba(event, 'aba-camelos')">
+            Camelôs ({{ camelos_custom|length }})
+        </button>
+    </div>
+
+    <hr>
+
+    <!-- Conteúdo das Abas -->
+    <div id="aba-produtos" class="tab-content">
+        <div class="grid">
+            {% for item in produtos_custom %}
+                <a href="{% url 'produto' item.produto.pk %}" style="text-decoration: none;">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                    <div class="card mb-3 shadow-sm">
+                        <div class="row g-0">
+                        {% if item.produto.imagem %}
+                        <div class="col-md-4">
+                            <img src="{{ item.produto.imagem.url }}" class="img-fluid rounded-start" alt="{{ item.produto.nome }}">
+                        </div>
+                        {% endif %}
+                        <div class="col-md-8">
+                            <div class="card-body">
+                            <h5 class="card-title">{{ item.produto.nome }} {{ item.produto.marca }}</h5>
+                            <p class="card-text">{{ item.produto.descricao|truncatewords:25 }}</p>
+                            <p class="card-text">R$ {{ item.produto.preco }}</p>   
+                            <p class="card-text">Camelô: {{ item.produto.camelo.nome_fantasia }}</p>                  
+                        
+                            <div class="my-3">
+                                    {# 3. MUDANÇA: Usar os dados calculados no dicionário 'item' #}
+                                    <i class="text-muted">{{ item.media_avaliacoes }}</i>
+                                    
+                                    {% for i in "12345" %}
+                                        {% with n=i|add:"0" %}
+                                            {# Usamos .length porque media_inteira é um objeto range #}
+                                            {% if n <= item.media_inteira|length %}
+                                                <i class="bi bi-star-fill text-warning"></i>
+                                            {% elif n == item.media_inteira|length|add:"1" and item.tem_meia %}
+                                                <i class="bi bi-star-half text-warning"></i>
+                                            {% else %}
+                                                <i class="bi bi-star text-warning"></i>
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% endfor %}
+                                    
+                                    {# 4. MUDANÇA: Quantidade vinda do annotate #}
+                                    <small class="text-muted ms-2">({{ item.qtd_avaliacoes }})</small>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                </a>
+                {% empty %}
+
+                <div class="container my-5">
+                <div class="alert alert-warning text-center" role="alert">
+                    <i class="bi bi-box-seam" style="font-size: 2rem;"></i><br>
+                    <strong>Nenhum produto encontrado.</strong><br>
+                    Tente ajustar os filtros ou realizar uma nova busca.
+                </div>
+                </div>
+
+            {% endfor %}
+            
+        </div>
+    </div>
+
+
+    <div id="aba-camelos" class="tab-content" style="display:none;">
+        <div class="grid border-0 p-0 m-0">
+            {% for item in camelos_custom %}
+                <a href="{% url 'camelo' item.camelo.pk %}" style="text-decoration: none;">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                    <div class="card mb-3 shadow-sm">
+                        <div class="row g-0">
+                        {% if item.camelo.imagem_logo %}
+                        <div class="col-md-4">
+                            <img src="{{ item.camelo.imagem_logo.url }}" class="img-fluid rounded-start" alt="{{ item.camelo.nome_fantasia }}">
+                        </div>
+                        {% endif %}
+                        <div class="col-md-8">
+                            <div class="card-body">
+                            <h5 class="card-title">{{ item.camelo.nome_fantasia }}</h5>
+                            <p class="card-text">{{ item.camelo.descricao|truncatewords:25 }}</p>
+
+                            <div class="my-3">
+                                {# 3. MUDANÇA: Usar os dados calculados no dicionário 'item' #}
+                                <i class="text-muted">{{ item.media_avaliacoes }}</i>
+                                
+                                {% for i in "12345" %}
+                                    {% with n=i|add:"0" %}
+                                        {# Usamos .length porque media_inteira é um objeto range #}
+                                        {% if n <= item.media_inteira|length %}
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                        {% elif n == item.media_inteira|length|add:"1" and item.tem_meia %}
+                                            <i class="bi bi-star-half text-warning"></i>
+                                        {% else %}
+                                            <i class="bi bi-star text-warning"></i>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endfor %}
+                                
+                                {# 4. MUDANÇA: Quantidade vinda do annotate #}
+                                <small class="text-muted ms-2">({{ item.qtd_avaliacoes }})</small>
+                            </div>
+                            
+                            <p class="card-text">{{ item.camelo.descricao_loja}}</p>
+                            <p class="card-text">{{ item.camelo.telefone}}</p>
+
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                </a>
+                {% empty %}
+
+                <div class="container my-5">
+                <div class="alert alert-warning text-center" role="alert">
+                    <i class="bi bi-box-seam" style="font-size: 2rem;"></i><br>
+                    <strong>Nenhum camelô encontrado.</strong><br>
+                    Tente ajustar os filtros ou realizar uma nova busca.
+                </div>
+                </div>
+
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block scripts %}
+
+<style>
+    .tab-btn {
+    padding: 10px 20px;
+    cursor: pointer;
+    background: #f1f1f1;
+}
+
+.tab-btn.active {
+    background: #fff;
+    border-bottom: none;
+    font-weight: bold;
+}
+
+.tab-content {
+    padding: 20px;
+    margin-top: -1px; /* Para grudar no botão */
+}
+
+</style>
+<script>
+    function abrirAba(evt, nomeAba) {
+        // Esconde todos os conteúdos das abas
+        var conteúdos = document.getElementsByClassName("tab-content");
+        for (var i = 0; i < conteúdos.length; i++) {
+            conteúdos[i].style.display = "none";
+        }
+
+        // Remove a classe "active" de todos os botões
+        var botões = document.getElementsByClassName("tab-btn");
+        for (var i = 0; i < botões.length; i++) {
+            botões[i].classList.remove("active");
+        }
+
+        // Mostra a aba atual e adiciona a classe active ao botão
+        document.getElementById(nomeAba).style.display = "block";
+        evt.currentTarget.classList.add("active");
+    }
+</script>
+{% endblock %}

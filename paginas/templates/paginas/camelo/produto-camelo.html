@@ -74,7 +74,7 @@
 
 
             <input type="hidden" name="quantidade">
-            <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">
+            <button type="submit" class="btn btn-lg w-100 mt-3 btn-carrinho">
               <i class="bi bi-cart-plus me-2"></i>Adicionar ao Carrinho
             </button>
           </form>
@@ -96,8 +96,8 @@
               </div>
           </div>
             <input type="hidden" name="quantidade">
-            <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">
-              <i class="bi bi-cart-check me-2"></i>Realizar Pedido
+            <button type="submit" class="btn btn-primary btn-lg w-100 mt-3 btn-hover-efeito">
+              Comprar agora
             </button>
           </form>
         </div>
@@ -234,6 +234,40 @@
 .rating label:hover,
 .rating label:hover ~ label {
   color: gold;
+}
+
+
+.btn-carrinho {
+    background-color: #D9E7FA;
+    color: #3483FA;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-carrinho:hover {
+    background-color: #c0d9f7;
+    color: #2a69ca;          
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-carrinho:active {
+    transform: translateY(0);
+}
+
+/* Classe extra para aplicar o efeito aos botoes */
+.btn-hover-efeito {
+    transition: all 0.3s ease;
+}
+
+.btn-hover-efeito:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-hover-efeito:active {
+    transform: translateY(0);
 }
 
 </style>

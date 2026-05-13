@@ -37,6 +37,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 import resend
 
+from django.db.models import Q
+
 
 # Create your views here.
 
@@ -303,6 +305,70 @@ class ClienteCameloList(ListView):
          
         context['lista_com_dados'] = lista_customizada
         return context
+
+class ClienteBuscarList(ListView):
+    model = Produto
+    template_name = "paginas/buscar.html"
+    context_object_name = 'produtos' # O modelo principal da ListView será Produto
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        if query:
+            # Filtra produtos pelo nome ou descrição
+            return Produto.objects.filter(
+                Q(nome__icontains=query) | Q(descricao__icontains=query)
+            )
+        return Produto.objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Pegamos o termo de busca (usando 'nome' como padrão unificado)
+        termo = self.request.GET.get('nome')
+
+        # --- LÓGICA PARA PRODUTOS ---
+        produtos_qs = Produto.objects.annotate(
+            qtd_total_avaliacoes=Count('avaliacoes_produto')
+        )
+        if termo:
+            produtos_qs = produtos_qs.filter(nome__icontains=termo)
+        
+        lista_produtos = []
+        for p in produtos_qs:
+            inteira = int(p.avaliacao_geral)
+            lista_produtos.append({
+                'produto': p,
+                'media_avaliacoes': round(p.avaliacao_geral, 1),
+                'media_inteira': range(inteira),
+                'tem_meia': (p.avaliacao_geral - inteira) >= 0.5,
+                'qtd_avaliacoes': p.qtd_total_avaliacoes,
+            })
+
+        # --- LÓGICA PARA CAMELÔS ---
+        camelos_qs = Camelo.objects.annotate(
+            qtd_total_avaliacoes=Count('avaliacoes_camelo')
+        ).distinct()
+        if termo:
+            # Aqui adaptamos: o usuário digita no campo 'nome', 
+            # mas filtramos por 'nome_fantasia' no Camelo
+            camelos_qs = camelos_qs.filter(nome_fantasia__icontains=termo)
+
+        lista_camelos = []
+        for c in camelos_qs:
+            inteira = int(c.avaliacao_geral)
+            lista_camelos.append({
+                'camelo': c,
+                'media_avaliacoes': round(c.avaliacao_geral, 1),
+                'media_inteira': range(inteira),
+                'tem_meia': (c.avaliacao_geral - inteira) >= 0.5,
+                'qtd_avaliacoes': c.qtd_total_avaliacoes,
+            })
+
+        # --- ADICIONANDO TUDO AO CONTEXTO ---
+        context['produtos_custom'] = lista_produtos
+        context['camelos_custom'] = lista_camelos
+        context['termo_busca'] = termo
+        return context
+    
 
 class ClienteProdutoCameloList(ListView):
 
