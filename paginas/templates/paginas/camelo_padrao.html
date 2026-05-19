@@ -246,262 +246,227 @@
     </div>
 
     <nav class="navbar navbar-expand-lg navbar-light verde position-relative">
-        <div class="container position-relative">
+    <div class="container position-relative">
 
-            <!-- Logo à esquerda -->
-            <a class="navbar-brand d-flex align-items-center" href="{% url 'index' %}" style="height: 100%;">
-                <img src="../../../static/img/logo_camelodromo_virtual6.png" 
-                    alt="Logo" 
-                    style="height: 80px; width: auto;"> 
-                <!-- Diminuí para 80px para dar um respiro visual de 10px em cima/baixo nos 100px da navbar -->
-            </a>
-            <!-- Título centralizado e fixo -->
-            <div class="navbar-center-title">
-                <span class="navbar-text h4 mb-0">{{ camelo.nome_fantasia }}</span>
-            </div>
+        <!-- Logo à esquerda -->
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'index' %}" style="height: 100%;">
+            <img src="../../../static/img/logo_camelodromo_virtual6.png" alt="Logo" style="height: 80px; width: auto;"> 
+        </a>
+        
 
-
-            <div class="d-lg-none d-flex align-items-center ms-auto">
+        <!-- Bloco de Controles Mobile (Alinhado à direita antes do menu colapsar) -->
+        <div class="d-flex align-items-center ms-auto d-lg-none">
+            
+            <!-- Botão de perfil (Apenas Mobile) -->
             {% if request.user.is_authenticated %}
-
-                <!-- Botão de perfil fora do menu hamburguer -->
-                <div class="d-lg-none">
                 <div class="dropdown me-2">
                     <a class="btn btn-light btn-sm dropdown-toggle d-flex align-items-center" href="#" id="mobileProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 4px 6px; height: 40px;">
-                    <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
+                        <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileProfileDropdown">
-
-                    {% if request.user.is_superuser%}
-                        <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
-                        <li><a class="dropdown-item" href="#">Histórico de Pedidos</a></li>
-                        <li><a class="dropdown-item" href="#">Meu Carrinho</a></li>
-                    {% else %}
-                        <li><a class="dropdown-item" href="{% url 'atualizar-perfil' request.user.perfil.pk %}">Meu Perfil</a></li>
-                        <li><a class="dropdown-item" href="{% url 'historico-pedidos' %}">Histórico de Pedidos</a></li>
-                        <li><a class="dropdown-item" href="{% url 'ver-carrinho' %}">Meu Carrinho</a></li>
-                    {% endif %}
-
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="dropdown-item" style="width: 100%; text-align: left;">Sair</button>
-                        </form>
-                    </li>
+                        {% if request.user.is_superuser %}
+                            <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
+                            <li><a class="dropdown-item" href="#">Histórico de Pedidos</a></li>
+                            <li><a class="dropdown-item" href="#">Meu Carrinho</a></li>
+                        {% else %}
+                            <li><a class="dropdown-item" href="{% url 'atualizar-perfil' request.user.perfil.pk %}">Meu Perfil</a></li>
+                            <li><a class="dropdown-item" href="{% url 'historico-pedidos' %}">Histórico de Pedidos</a></li>
+                            <li><a class="dropdown-item" href="{% url 'ver-carrinho' %}">Meu Carrinho</a></li>
+                        {% endif %}
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item" style="width: 100%; text-align: left;">Sair</button>
+                            </form>
+                        </li>
                     </ul>
-                </div>
                 </div>
             {% else %}
-                <!-- Botão de perfil fora do menu hamburguer -->
-                <div class="d-lg-none">
                 <div class="dropdown me-2">
                     <a class="btn btn-light btn-sm dropdown-toggle d-flex align-items-center" href="#" id="mobileProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 4px 6px; height: 40px;">
-                    <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
+                        <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileProfileDropdown">
-                    <li><a class="dropdown-item" href="{% url 'login' %}">Entrar</a></li>
-                    <li><a class="dropdown-item" href="{% url 'registrar' %}">Crie Sua Conta</a></li>
-
-                    
+                        <li><a class="dropdown-item" href="{% url 'login' %}">Entrar</a></li>
+                        <li><a class="dropdown-item" href="{% url 'registrar' %}">Crie Sua Conta</a></li>
                     </ul>
-                </div>
                 </div>
             {% endif %}
 
-            <!-- Botão hamburguer à direita -->
-            <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            <!-- Botão hambúrguer -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            </div>
+        </div>
 
-            
-
-
-
-            
-
-            <!-- Menu -->
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-        <ul class="navbar-nav ms-auto flex-column flex-lg-row justify-content-lg-end">
-            <!-- Menu para desktop (telas grandes) -->
-            {% if request.user.is_authenticated %}
-
-            <li class="nav-item dropdown d-none d-lg-block"  style="margin-top: -4px;">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
-                <span class="ms-2 d-none d-lg-inline">{{request.user}}</span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                {% if request.user.is_superuser %}
-                    <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
-                    <li><a class="dropdown-item" href="#">Histórico de Pedidos</a></li>
-                    <li><a class="dropdown-item" href="#">Meu Carrinho</a></li>
+        <!-- Menu Colapsável -->
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center flex-column flex-lg-row justify-content-lg-end">
+                
+                <!-- Perfil (Apenas Desktop) -->
+                {% if request.user.is_authenticated %}
+                    <li class="nav-item dropdown d-none d-lg-block" style="margin-top: -4px;">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
+                            <span class="ms-2 d-none d-lg-inline">{{request.user}}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            {% if request.user.is_superuser %}
+                                <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
+                                <li><a class="dropdown-item" href="#">Histórico de Pedidos</a></li>
+                                <li><a class="dropdown-item" href="#">Meu Carrinho</a></li>
+                            {% else %}
+                                <li><a class="dropdown-item" href="{% url 'atualizar-perfil' request.user.perfil.pk %}">Meu Perfil</a></li>
+                                <li><a class="dropdown-item" href="{% url 'historico-pedidos' %}">Histórico de Pedidos</a></li>
+                                <li><a class="dropdown-item" href="{% url 'ver-carrinho' %}">Meu Carrinho</a></li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item" style="width: 100%; text-align: left;">Sair</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
                 {% else %}
-                    <li><a class="dropdown-item" href="{% url 'atualizar-perfil' request.user.perfil.pk %}">Meu Perfil</a></li>
-                    <li><a class="dropdown-item" href="{% url 'historico-pedidos' %}">Histórico de Pedidos</a></li>
-                    <li><a class="dropdown-item" href="{% url 'ver-carrinho' %}">Meu Carrinho</a></li>
+                    <li class="nav-item dropdown d-none d-lg-block" style="margin-top: -4px;">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
+                            <span class="ms-2 d-none d-lg-inline">Anônimo</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="{% url 'login' %}">Entrar</a></li>
+                            <li><a class="dropdown-item" href="{% url 'registrar' %}">Crie Sua Conta</a></li>
+                        </ul>
+                    </li>
                 {% endif %}
 
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                    <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="dropdown-item" style="width: 100%; text-align: left;">Sair</button>
-                    </form>
-                </li>
-
-            </ul>
-            </li>
-            {% else %}
-            <li class="nav-item dropdown d-none d-lg-block"  style="margin-top: -4px;">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="../../../static/img/perfil_icon.png" alt="Perfil" class="rounded-circle" width="32" height="32">
-                <span class="ms-2 d-none d-lg-inline">Anônimo</span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                <li><a class="dropdown-item" href="{% url 'login' %}">Entrar</a></li>
-                <li><a class="dropdown-item" href="{% url 'registrar' %}">Crie Sua Conta</a></li>
-
-            
-
-            </ul>
-            </li>
-
-            {% endif %}
-            <li class="nav-item dropdown d-none d-lg-block">
-                <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Categorias
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                    <li><span class="dropdown-item-text">Filtre por categorias</span></li>
-                    <!-- Colocar aqui as categorias vinculada ao banco de dados -->
-                    <!-- <li><a class="dropdown-item" href="#">Ação 1</a></li> -->
-                    {% for categoria in categorias_navbar %}
-                        {% if categoria.camelo.pk == camelo.pk %}
-                            <li><a class="dropdown-item" href="{% url 'produtos-categoria' camelo.pk %}?categoria={{ categoria.pk }}">{{ categoria.nome }}</a></li>
-                        {% endif %}
-                    {% endfor %}
-
-                </ul>
-            </li>
-
-            <li class="nav-item dropdown d-none d-lg-block">
-                <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Sobre a loja
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                    <li><span class="dropdown-item-text">Informações adicionais</span></li>
-                    <li><a class="dropdown-item" href="#">Quem somos</a></li>
-                    <li><a class="dropdown-item" href="#">Localização e Atendimento</a></li>
-
-                </ul>
-            </li>
-
-            {% if request.user.is_authenticated and request.user in camelo.usuarios.all %}
+                <!-- Categorias (Apenas Desktop) -->
                 <li class="nav-item dropdown d-none d-lg-block">
-                    <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Administração
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                        <li><span class="dropdown-item-text">Gerencie os dados</span></li>
-                        <li><a class="dropdown-item" href="{% url 'listar-produtos-camelo' camelo.pk %}">Produtos</a></li>
-                        <li><a class="dropdown-item" href="{% url 'listar-categorias-camelo' camelo.pk %}">Categorias</a></li>
-                        
-                        <li><span class="dropdown-item-text">Funcionários</span></li>
-                        <li><a href="{% url 'listar-usuarios-camelo' camelo.pk %}" class="dropdown-item">Ver Funcionários</a></li>
-                        <li><a href="{% url 'inserir-funcionario' camelo.pk %}" class="dropdown-item">Cadastre Funcionários</a></li>
-
-                        <li><span class="dropdown-item-text">Gerencie Seus Pedidos</span></li>
-                        <li><a href="{% url 'listar-pedidos-camelo' camelo.pk %}" class="dropdown-item">Pedidos</a></li>
-
-
-
-                    </ul>
-                </li>
-            {% endif %}
-            <!-- colocar aqui os outros botões do menu -->
-
-
-
-
-
-            <!-- Layout Mobile (telas pequenas) -->
-            <div class="d-lg-none w-100">
-        <div class="accordion" id="mobileMenuAccordion">
-            
-            <!-- Categorias -->
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="headingCategorias">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCategorias" aria-expanded="false" aria-controls="collapseCategorias">
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Categorias
-                    </button>
-                </h2>
-                <div id="collapseCategorias" class="accordion-collapse collapse" aria-labelledby="headingCategorias" data-bs-parent="#mobileMenuAccordion">
-                    <div class="accordion-body">
-                        <span class="dropdown-item-text">Filtre por Categorias</span>
-                        <!-- Colocar aqui as categorias vinculada ao banco de dados -->
-                        <!-- <a href="#" class="dropdown-item">Ação 1</a> -->
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li><span class="dropdown-item-text">Filtre por categorias</span></li>
                         {% for categoria in categorias_navbar %}
                             {% if categoria.camelo.pk == camelo.pk %}
-                                <a href="#" class="dropdown-item">{{categoria.nome}}</a>
+                                <li><a class="dropdown-item" href="{% url 'produtos-categoria' camelo.pk %}?categoria={{ categoria.pk }}">{{ categoria.nome }}</a></li>
                             {% endif %}
                         {% endfor %}
-                    </div>
-                </div>
-            </div>
-            <!-- Sobre a loja -->
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="headingSobrealoja">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSobrealoja" aria-expanded="false" aria-controls="collapseSobrealoja">
+                    </ul>
+                </li>
+
+                <!-- Sobre a loja (Apenas Desktop) -->
+                <li class="nav-item dropdown d-none d-lg-block">
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuLoja" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Sobre a loja
-                    </button>
-                </h2>
-                <div id="collapseSobrealoja" class="accordion-collapse collapse" aria-labelledby="headingSobrealoja" data-bs-parent="#mobileMenuAccordion">
-                    <div class="accordion-body">
-                        <span class="dropdown-item-text">Informações Adicionais</span>
-                        <a href="#" class="dropdown-item">Quem Somos</a>
-                        <a href="#" class="dropdown-item">Localização e Atendimento</a>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLoja">
+                        <li><span class="dropdown-item-text">Informações adicionais</span></li>
+                        <li><a class="dropdown-item" href="#">Quem somos</a></li>
+                        <li><a class="dropdown-item" href="#">Localização e Atendimento</a></li>
+                    </ul>
+                </li>
 
-                    </div>
-                </div>
-            </div>
-            {% if request.user.is_authenticated and request.user in camelo.usuarios.all %}
-                <!-- Administração -->
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingAdmin">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAdmin" aria-expanded="false" aria-controls="collapseAdmin">
+                <!-- Administração (Apenas Desktop) -->
+                {% if request.user.is_authenticated and request.user in camelo.usuarios.all %}
+                    <li class="nav-item dropdown d-none d-lg-block">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Administração
-                        </button>
-                    </h2>
-                    <div id="collapseAdmin" class="accordion-collapse collapse" aria-labelledby="headingAdmin" data-bs-parent="#mobileMenuAccordion">
-                        <div class="accordion-body">
-                            <span class="dropdown-item-text">Gerencie os dados</span>
-                            <a href="{% url 'listar-produtos-camelo' camelo.pk %}" class="dropdown-item">Produtos</a>
-                            <a href="{% url 'listar-categorias-camelo' camelo.pk %}" class="dropdown-item">Categorias</a>
-                            <span class="dropdown-item-text">Funcionários</span>
-                            <a href="{% url 'inserir-funcionario' camelo.pk%}" class="dropdown-item">Cadastre Funcionários</a>
-                            <span class="dropdown-item-text">Gerencie Seus Pedidos</span>
-                            <a href="{% url 'listar-pedidos-camelo' camelo.pk %}" class="dropdown-item">Pedidos</a>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                            <li><span class="dropdown-item-text">Gerencie os dados</span></li>
+                            <li><a class="dropdown-item" href="{% url 'listar-produtos-camelo' camelo.pk %}">Produtos</a></li>
+                            <li><a class="dropdown-item" href="{% url 'listar-categorias-camelo' camelo.pk %}">Categorias</a></li>
+                            <li><span class="dropdown-item-text">Funcionários</span></li>
+                            <li><a href="{% url 'listar-usuarios-camelo' camelo.pk %}" class="dropdown-item">Ver Funcionários</a></li>
+                            <li><a href="{% url 'inserir-funcionario' camelo.pk %}" class="dropdown-item">Cadastre Funcionários</a></li>
+                            <li><span class="dropdown-item-text">Gerencie Seus Pedidos</span></li>
+                            <li><a href="{% url 'listar-pedidos-camelo' camelo.pk %}" class="dropdown-item">Pedidos</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
 
-
+                <!-- Layout Mobile Interno (Dentro do Hamburguer) -->
+                <div class="d-lg-none w-100 mt-2">
+                    <div class="accordion" id="mobileMenuAccordion">
+                        
+                        <!-- Categorias Mobile -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingCategorias">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCategorias" aria-expanded="false" aria-controls="collapseCategorias">
+                                    Categorias
+                                </button>
+                            </h2>
+                            <div id="collapseCategorias" class="accordion-collapse collapse" aria-labelledby="headingCategorias" data-bs-parent="#mobileMenuAccordion">
+                                <div class="accordion-body">
+                                    <span class="dropdown-item-text">Filtre por Categorias</span>
+                                    {% for categoria in categorias_navbar %}
+                                        {% if categoria.camelo.pk == camelo.pk %}
+                                            <a href="{% url 'produtos-categoria' camelo.pk %}?categoria={{ categoria.pk }}" class="dropdown-item">{{categoria.nome}}</a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- Sobre a loja Mobile -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingSobrealoja">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSobrealoja" aria-expanded="false" aria-controls="collapseSobrealoja">
+                                    Sobre a loja
+                                </button>
+                            </h2>
+                            <div id="collapseSobrealoja" class="accordion-collapse collapse" aria-labelledby="headingSobrealoja" data-bs-parent="#mobileMenuAccordion">
+                                <div class="accordion-body">
+                                    <span class="dropdown-item-text">Informações Adicionais</span>
+                                    <a href="#" class="dropdown-item">Quem Somos</a>
+                                    <a href="#" class="dropdown-item">Localização e Atendimento</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Administração Mobile -->
+                        {% if request.user.is_authenticated and request.user in camelo.usuarios.all %}
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingAdmin">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAdmin" aria-expanded="false" aria-controls="collapseAdmin">
+                                        Administração
+                                    </button>
+                                </h2>
+                                <div id="collapseAdmin" class="accordion-collapse collapse" aria-labelledby="headingAdmin" data-bs-parent="#mobileMenuAccordion">
+                                    <div class="accordion-body">
+                                        <span class="dropdown-item-text">Gerencie os dados</span>
+                                        <a href="{% url 'listar-produtos-camelo' camelo.pk %}" class="dropdown-item">Produtos</a>
+                                        <a href="{% url 'listar-categorias-camelo' camelo.pk %}" class="dropdown-item">Categorias</a>
+                                        <span class="dropdown-item-text">Funcionários</span>
+                                        <a href="{% url 'listar-usuarios-camelo' camelo.pk %}" class="dropdown-item">Ver Funcionários</a>
+                                        <a href="{% url 'inserir-funcionario' camelo.pk %}" class="dropdown-item">Cadastre Funcionários</a>
+                                        <span class="dropdown-item-text">Gerencie Seus Pedidos</span>
+                                        <a href="{% url 'listar-pedidos-camelo' camelo.pk %}" class="dropdown-item">Pedidos</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
                     </div>
-                </div>
-            {% endif %}
+                </div> <!-- Fim Layout Mobile Interno -->
 
-            <!-- Colocar aqui os outros botoes para o menu hambúrguer -->
+            </ul>
+        </div> <!-- Fim do #navbarNav -->
 
-
-
+        <!-- BOTÃO DO CARRINHO (Sempre fixo na extrema direita em todas as telas) -->
+        <div class="d-flex align-items-center ms-2">
+            <a class="nav-link p-2 text-dark fs-4 d-flex align-items-center" href="{% url 'ver-carrinho' %}" title="Carrinho de Compras" style="height: 40px;">
+                <i class="bi bi-cart me-2"></i>
+            </a>
         </div>
-    </div>
 
-        </ul>
     </div>
-        </div>
-    </nav>
+</nav>
 <main class="flex-grow-1">
 
     <div class="container pt-4 d-flex flex-column align-items-center">
@@ -592,7 +557,9 @@
     <a href="{% url 'todas-avaliacoes-camelo' camelo.pk %}" class="text-decoration-none text-dark">
         <div class="card shadow-sm border-0 hover-shadow" style="transition: 0.3s;">
             <div class="card-body text-center">
-                <h6 class="text-muted text-uppercase small fw-bold">Avaliações do Camelô</h6>
+                <h6 class="text-muted text-uppercase small fw-bold">{{camelo.nome_fantasia}}</h6>
+
+                <h6 class="text-muted text-uppercase small fw-bold">Avaliações</h6>
                 
                 <h2 class="display-5 fw-bold text-primary mb-0">{{ camelo.avaliacao_geral }}</h2>
                 
@@ -767,47 +734,7 @@
                 behavior: 'smooth'
             });
         }
-        function verificarSobreposicao() {
-            const titulo = document.querySelector('.navbar-center-title');
-            const brand = document.querySelector('.navbar-brand');
-            
-            // Se a tela for menor que 992px, usamos o pop-up e escondemos o título da navbar
-            if (window.innerWidth < 992) {
-                if (titulo) titulo.style.opacity = "0";
-                return;
-            }
-
-            // No Desktop, pegamos o primeiro item da lista de links à direita para saber onde o menu começa
-            const primeiroItemMenu = document.querySelector('.navbar-nav .nav-item:not(.d-none)');
-            
-            if (!titulo || !brand || !primeiroItemMenu) return;
-
-            const rectTitulo = titulo.getBoundingClientRect();
-            const rectBrand = brand.getBoundingClientRect();
-            const rectMenu = primeiroItemMenu.getBoundingClientRect();
-
-            const margem = 40; // Espaço de segurança em pixels
-
-            // COLISÃO:
-            // rectBrand.right: fim da logo
-            // rectMenu.left: começo do primeiro botão (Perfil ou Categorias)
-            const colidiuEsquerda = rectTitulo.left < (rectBrand.right + margem);
-            const colidiuDireita = rectTitulo.right > (rectMenu.left - margem);
-
-            if (colidiuEsquerda || colidiuDireita) {
-                titulo.style.opacity = "0";
-                titulo.style.visibility = "hidden";
-            } else {
-                titulo.style.opacity = "1";
-                titulo.style.visibility = "visible";
-            }
-        }
-
-        // Eventos
-        window.addEventListener('resize', verificarSobreposicao);
-        window.addEventListener('load', verificarSobreposicao);
-        // Executa após um micro-delay para o Django processar o texto
-        setTimeout(verificarSobreposicao, 100);
+        
     </script>
     {% endblock %}
 

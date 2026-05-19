@@ -78,23 +78,9 @@
               <i class="bi bi-cart-plus me-2"></i>Adicionar ao Carrinho
             </button>
           </form>
-          <form action="{% url 'realizar-pedido-direto' produto.id %}" method="post" class="mt-4" onsubmit="copiarQuantidade(this)">
+          <form action="{% url 'realizar-pedido-direto' produto.id %}" method="get" class="mt-4" onsubmit="copiarQuantidade(this)">
             {% csrf_token %}
-            <div class="mb-3">
-              <label class="fw-semibold">Opção de Pedido:</label><br>
-              <div class="form-check">
-                  <input class="form-check-input" type="radio" name="entrega" id="entregaCasa" value="casa" checked>
-                  <label class="form-check-label" for="entregaCasa">
-                      Receber em casa
-                  </label>
-              </div>
-              <div class="form-check">
-                  <input class="form-check-input" type="radio" name="entrega" id="entregaLoja" value="loja">
-                  <label class="form-check-label" for="entregaLoja">
-                      Buscar na loja
-                  </label>
-              </div>
-          </div>
+            
             <input type="hidden" name="quantidade">
             <button type="submit" class="btn btn-primary btn-lg w-100 mt-3 btn-hover-efeito">
               Comprar agora

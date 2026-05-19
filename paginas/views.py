@@ -751,6 +751,15 @@ class ConfirmarEndereco(View):
 
                     # 3. Loop nos itens do carrinho criando Pedido_Produto para cada um
                     for item in carrinho.produtos.all():
+
+                        # Validação de segurança: Verifica estoque item por item
+                        if item.produto.quantidade < item.quantidade:
+                            raise Exception(f"O produto '{item.produto.nome}' não possui estoque suficiente. Disponível: {item.produto.quantidade}")
+
+                        # --- BAIXA DO ESTOQUE (CARRINHO) ---
+                        item.produto.quantidade -= item.quantidade
+                        item.produto.save()
+
                         Pedido_Produto.objects.create(
                             pedido=pedido,
                             produto=item.produto,
@@ -767,6 +776,15 @@ class ConfirmarEndereco(View):
                     produto = get_object_or_404(Produto, id=dados['produto_id'])
                     quantidade = dados['quantidade']
 
+                    # Validação de segurança: Verifica estoque da compra direta
+                    if produto.quantidade < quantidade:
+                        raise Exception(f"O produto '{produto.nome}' não possui estoque suficiente. Disponível: {produto.quantidade}")
+
+                    # --- BAIXA DO ESTOQUE (PRODUTO DIRETO) ---
+                    produto.quantidade -= quantidade
+                    produto.save()
+
+                    
                     pedido = Pedido.objects.create(
                         usuario=request.user,
                         valor_total=produto.preco * quantidade,

@@ -1,4 +1,6 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.detail import DetailView
+
 from django.views.generic.list import ListView
 from django.views import View
 
@@ -473,39 +475,71 @@ class PedidoCarrinho(LoginRequiredMixin, View):
         return redirect("confirmar-endereco")
 
         
-class PedidoProdutoDireto(View):
-    def get(self, request, *args, **kwargs):
-        form = PedidoForm()
-        produto = get_object_or_404(Produto, id=kwargs['produto_id'])
-        return render(request, "paginas/produto.html", {"produto": produto, "form": form})
 
+class ConfirmarPedido(DetailView):
+    model = Produto
+    template_name = 'paginas/confirmar_pedido.html'
+    context_object_name = 'produto'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        
+        quantidade_selecionada = self.request.GET.get('quantidade', 1)
+        
+        # Enviamos essa quantidade para o template para alimentar o <input type="hidden">
+        context['quantidade'] = quantidade_selecionada
+        return context
+
+
+class PedidoProdutoDireto(View):
     
+    # 1. ESTE GET AGORA ABRE A TELA INTERMEDIÁRIA DE OPÇÃO DE ENTREGA
+    def get(self, request, *args, **kwargs):
+        # Captura o produto pelo ID vindo da URL (usando kwargs['produto_id'])
+        produto = get_object_or_404(Produto, id=kwargs['produto_id'])
+        
+        # Pega a quantidade que veio via GET da tela do produto (padrão 1 se não achar)
+        quantidade = request.GET.get('quantidade', 1)
+        
+        # Abre a tela exclusiva de escolha de entrega, passando o produto e a quantidade
+        return render(request, "paginas/confirmar_pedido.html", {
+            "produto": produto, 
+            "quantidade": quantidade
+        })
+
+    # 2. ESTE POST RECEBE A ESCOLHA DA TELA INTERMEDIÁRIA
     def post(self, request, *args, **kwargs):
         produto = get_object_or_404(Produto, id=kwargs['produto_id'])
+        
         try:
             quantidade = int(request.POST.get('quantidade', 1))
-            produto.quantidade -= quantidade
-            produto.save()
-
         except ValueError:
             quantidade = 1
-        opcao_pedido = request.POST.get('entrega')  # pega direto do POST
+            
+        opcao_pedido = request.POST.get('entrega')  # Pega o radio selecionado ('casa' ou 'loja')
         
         if opcao_pedido == "casa":
-            # redireciona para página de endereço, passando dados via sessão
+            # SE FOR EM CASA: NÃO alteramos o estoque ainda! 
+            # Apenas guardamos tudo na sessão e mandamos para o endereço.
+            # Você dará baixa no estoque na View final do "confirmar-endereco".
             request.session['pedido_temp'] = {
                 'produto_id': produto.id,
                 'quantidade': quantidade,
                 'opcao_pedido': opcao_pedido
             }
             return redirect("confirmar-endereco")
+            
         else:
+            # SE FOR RETIRAR NA LOJA: O pedido morre aqui, então damos baixa no estoque agora!
+            produto.quantidade -= quantidade
+            produto.save()
+            
             pedido = Pedido.objects.create(
                 usuario=request.user,
                 valor_total=produto.preco * quantidade,
                 data_pedido=timezone.now(),
                 opcao_pedido=opcao_pedido
-
             )
 
             Pedido_Produto.objects.create(
@@ -517,7 +551,6 @@ class PedidoProdutoDireto(View):
             )
 
             return redirect('index')
-
 
 # class AvaliacaoCreate(LoginRequiredMixin, View):
 #     def get(self, request, produto_id):
