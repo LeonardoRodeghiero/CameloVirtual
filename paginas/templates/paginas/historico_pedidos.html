@@ -21,7 +21,7 @@
         <div class="col-md-10">
             <div class="card mb-4 shadow-sm">
                 <div class="card-header">
-                    <strong>{{ objeto.pedido.data_pedido|date:"d/m/Y" }}</strong> R$ {{ objeto.pedido.valor_total }}
+                    <strong>{{ objeto.pedido.data_pedido|date:"d/m/Y" }}</strong> R$ {{ objeto.pedido.valor_total }} <button class="btn btn-danger" title="Cancelar Compra" href="{% url 'cancelar-pedido'  %}"><i class="bi bi-trash" ></i></button>
                 </div>
                 <div class="card-body">
                     {% for item in objeto.pedido.produtos.all %}

@@ -484,11 +484,16 @@ class ConfirmarPedido(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        
+        produto_id = self.kwargs.get("produto_id")
+
+        produto = Produto.objects.filter(produto=produto_id)
+
+
         quantidade_selecionada = self.request.GET.get('quantidade', 1)
         
         # Enviamos essa quantidade para o template para alimentar o <input type="hidden">
         context['quantidade'] = quantidade_selecionada
+        context['produto'] = produto
         return context
 
 
