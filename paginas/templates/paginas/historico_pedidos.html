@@ -1,163 +1,188 @@
 {% extends 'paginas/index.html' %}
 
-
 {% block conteudo %}
-    <div class="container mt-4">
-        {% if object_list %}
-        <div class="container d-flex align-items-center">
-            <h1>Seus Pedidos <i class="bi bi-clipboard2-check-fill me-2" style="font-size: 1.5rem;"></i></h1>
-        {% endif %}
-    </div>
 
+    <div class="container my-4">
+        <h2 class="text-center mb-4">Meu Histórico de Pedidos</h2>
+
+        <div class="tabs-container d-flex justify-content-center">
+            <button class="tab-btn active" onclick="abrirAba(event, 'aba-andamento')">
+                Em Andamento ({{ pedidos_andamento|length }})
+            </button>
+            <button class="tab-btn" onclick="abrirAba(event, 'aba-finalizado')">
+                Finalizados ({{ pedidos_finalizado|length }})
+            </button>
+            <button class="tab-btn" onclick="abrirAba(event, 'aba-cancelado')">
+                Cancelados ({{ pedidos_cancelado|length }})
+            </button>
+        </div>
 
         <hr>
 
-{% if tem_pedido %}
+        <div id="aba-andamento" class="tab-content">
+            {% for item in pedidos_andamento %}
+                <div class="row justify-content-center">
+                    <div class="col-md-10">
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ item.pedido.data_pedido|date:"d/m/Y" }}</strong> - 
+                                    <span>R$ {{ item.pedido.valor_total }}</span>
+                                </div>
+                                
+                                <a class="btn btn-danger btn-sm" title="Cancelar Compra" href="" data-bs-toggle="modal" data-bs-target="#cancelModal{{ item.pk }}">
+                                    <i class="bi bi-trash"></i> Cancelar
+                                </a>
+                            </div>
+                            
+                            <div class="card-body">
+                                <div class="row g-0 align-items-center">
+                                    {% if item.produto.imagem %}
+                                    <div class="col-md-3 text-center mb-3 mb-md-0">
+                                        <img src="{{ item.produto.imagem.url }}" class="img-fluid rounded" alt="{{ item.produto.nome }}" style="max-height: 100px; object-fit: cover;">
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="{% if item.produto.imagem %}col-md-9 ps-md-3{% else %}col-12{% endif %}">
+                                        <h5 class="card-title">{{ item.produto.nome }}</h5>
+                                        <p class="card-text mb-1">Quantidade: {{ item.quantidade }} | Preço Unitário: R$ {{ item.preco_unitario }}</p>
 
-<h2>Pedidos em Andamento</h2>
-{% for objeto in pedidos_andamento %}
+                                        {% if item.pedido.opcao_pedido == 'casa' %}
+                                            <p class="card-text mb-1">Receberá no endereço: {{ item.pedido.endereco }}</p>
+                                        {% endif %}
+                                        {% if item.pedido.opcao_pedido == 'loja' %}
+                                            <p class="card-text mb-1">Buscará no endereço: {{ item.camelo.logradouro }}, {{ item.camelo.numero }} {{ item.camelo.complemento }} {{ item.camelo.bairro }} {{ item.camelo.cep }} {{ item.camelo.cidade }} ({{ item.camelo.estado }})</p>
+                                        {% endif %}
 
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header">
-                    <strong>{{ objeto.pedido.data_pedido|date:"d/m/Y" }}</strong> R$ {{ objeto.pedido.valor_total }} <button class="btn btn-danger" title="Cancelar Compra" href="{% url 'cancelar-pedido'  %}"><i class="bi bi-trash" ></i></button>
-                </div>
-                <div class="card-body">
-                    {% for item in objeto.pedido.produtos.all %}
-                    <div class="row mb-3">
-                        {% if item.produto.imagem %}
-                        <div class="col-md-3">
-                            <img src="{{ item.produto.imagem.url }}" class="img-fluid rounded-start" alt="{{ item.produto.nome }}">
-                        </div>
-                        {% endif %}
-                        <div class="col-md-9">
-                            <h5>{{ item.produto.nome }} {{ item.produto.marca }}</h5>
-                            <p>{{ item.produto.descricao|truncatewords:25 }}</p>
-                            <p>Quantidade: {{ item.quantidade }}</p>
-                            <p>Preço: R$ {{ item.produto.preco }}</p>
-                        </div>
-                    </div>
-                    {% empty %}
-                    <p>Este pedido não possui itens.</p>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-{% empty %}
-<div class="alert alert-info d-flex align-items-center justify-content-between" role="alert">
-    <div>
-        <i class="bi bi-cart-x-fill me-2" style="font-size: 1.5rem;"></i>
-        <strong>Você não tem nenhum pedido em andamento.</strong>
-    </div>
-</div>
-<div class="text-center">
-    <a href="{% url 'index' %}" class="btn btn-primary">Procure Por Produtos Na Tela Inicial!</a>
-</div>
-
-{% endfor %}
-
-
-<h2>Pedidos Finalizados</h2>
-{% for objeto in pedidos_finalizado %}
-
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header">
-                    <strong>{{ objeto.pedido.data_pedido|date:"d/m/Y" }}</strong> R$ {{ objeto.pedido.valor_total }}
-                </div>
-                <div class="card-body">
-                    {% for item in objeto.pedido.produtos.all %}
-                    <div class="row mb-3">
-                        {% if item.produto.imagem %}
-                        <div class="col-md-3">
-                            <img src="{{ item.produto.imagem.url }}" class="img-fluid rounded-start" alt="{{ item.produto.nome }}">
-                        </div>
-                        {% endif %}
-                        <div class="col-md-9">
-                            <h5>{{ item.produto.nome }} {{ item.produto.marca }}</h5>
-                            <p>{{ item.produto.descricao|truncatewords:25 }}</p>
-                            <p>Quantidade: {{ item.quantidade }}</p>
-                            <p>Preço: R$ {{ item.produto.preco }}</p>
+                                        <span class="badge bg-warning text-dark">Status: {{ item.status }}</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    {% empty %}
-                    <p>Este pedido não possui itens.</p>
-                    {% endfor %}
                 </div>
-            </div>
+
+                <div class="modal fade" id="cancelModal{{ item.pk }}" tabindex="-1" ...>
+                    </div>
+            {% empty %}
+                <div class="alert alert-info text-center">Nenhum pedido em andamento no momento.</div>
+            {% endfor %}        
         </div>
-    </div>
 
-
-{% empty %}
-<div class="alert alert-info d-flex align-items-center justify-content-between" role="alert">
-    <div>
-        <i class="bi bi-cart-x-fill me-2" style="font-size: 1.5rem;"></i>
-        <strong>Você não tem nenhum pedido finalizado.</strong>
-    </div>
-</div>
-
-{% endfor %}
-
-<h2>Pedidos Cancelados</h2>
-{% for objeto in pedidos_cancelado %}
-
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header">
-                    <strong>{{ objeto.pedido.data_pedido|date:"d/m/Y" }}</strong> R$ {{ objeto.pedido.valor_total }}
-                </div>
-                <div class="card-body">
-                    {% for item in objeto.pedido.produtos.all %}
-                    <div class="row mb-3">
-                        {% if item.produto.imagem %}
-                        <div class="col-md-3">
-                            <img src="{{ item.produto.imagem.url }}" class="img-fluid rounded-start" alt="{{ item.produto.nome }}">
-                        </div>
-                        {% endif %}
-                        <div class="col-md-9">
-                            <h5>{{ item.produto.nome }} {{ item.produto.marca }}</h5>
-                            <p>{{ item.produto.descricao|truncatewords:25 }}</p>
-                            <p>Quantidade: {{ item.quantidade }}</p>
-                            <p>Preço: R$ {{ item.produto.preco }}</p>
+        <div id="aba-finalizado" class="tab-content" style="display:none;">
+            {% for item in pedidos_finalizado %}
+                <div class="row justify-content-center">
+                    <div class="col-md-10">
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-header">
+                                <strong>{{ item.pedido.data_pedido|date:"d/m/Y" }}</strong> - R$ {{ item.pedido.valor_total }}
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-0 align-items-center">
+                                    {% if item.produto.imagem %}
+                                    <div class="col-md-3 text-center mb-3 mb-md-0">
+                                        <img src="{{ item.produto.imagem.url }}" class="img-fluid rounded" alt="{{ item.produto.nome }}" style="max-height: 100px; object-fit: cover;">
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="{% if item.produto.imagem %}col-md-9 ps-md-3{% else %}col-12{% endif %}">
+                                        <h5 class="card-title">{{ item.produto.nome }}</h5>
+                                        <p class="card-text mb-1">Quantidade: {{ item.quantidade }} | Preço Unitário: R$ {{ item.preco_unitario }}</p>
+                                        <span class="badge bg-success">Status: {{ item.status }}</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    {% empty %}
-                    <p>Este pedido não possui itens.</p>
-                    {% endfor %}
                 </div>
-            </div>
+            {% empty %}
+                <div class="alert alert-info text-center">Você ainda não tem pedidos finalizados.</div>
+            {% endfor %}
         </div>
+
+        <div id="aba-cancelado" class="tab-content" style="display:none;">
+            {% for item in pedidos_cancelado %}
+                <div class="row justify-content-center">
+                    <div class="col-md-10">
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-header bg-light text-muted">
+                                <strong>{{ item.pedido.data_pedido|date:"d/m/Y" }}</strong> - R$ {{ item.pedido.valor_total }}
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-0 align-items-center">
+                                    {% if item.produto.imagem %}
+                                    <div class="col-md-3 text-center mb-3 mb-md-0">
+                                        <img src="{{ item.produto.imagem.url }}" class="img-fluid rounded" alt="{{ item.produto.nome }}" style="max-height: 100px; object-fit: cover; opacity: 0.6;">
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="{% if item.produto.imagem %}col-md-9 ps-md-3{% else %}col-12{% endif %}">
+                                        <h5 class="card-title text-muted" style="text-decoration: line-through;">{{ item.produto.nome }}</h5>
+                                        <p class="card-text mb-1 text-muted">Quantidade: {{ item.quantidade }} | Preço Unitário: R$ {{ item.preco_unitario }}</p>
+                                        <span class="badge bg-danger">Status: {{ item.status }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="alert alert-info text-center">Nenhum pedido cancelado.</div>
+            {% endfor %}
+        </div>
+
     </div>
 
+{% endblock %}
 
-{% empty %}
-<div class="alert alert-info d-flex align-items-center justify-content-between" role="alert">
-    <div>
-        <i class="bi bi-cart-x-fill me-2" style="font-size: 1.5rem;"></i>
-        <strong>Você não tem nenhum pedido cancelado.</strong>
-    </div>
-</div>
+{% block scripts %}
+<style>
+    .tab-btn {
+        padding: 10px 20px;
+        cursor: pointer;
+        background: #f1f1f1;
+        border: 1px solid #ccc;
+        border-bottom: none;
+        margin-right: 5px;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        transition: 0.2s;
+    }
 
-{% endfor %}
+    .tab-btn:hover {
+        background: #e2e2e2;
+    }
 
+    .tab-btn.active {
+        background: #fff;
+        border-bottom: 1px solid #fff;
+        font-weight: bold;
+        position: relative;
+        z-index: 2;
+    }
 
-{% else %}
-<div class="alert alert-info d-flex align-items-center justify-content-between" role="alert">
-    <div>
-        <i class="bi bi-cart-x-fill me-2" style="font-size: 1.5rem;"></i>
-        <strong>Você ainda não fez nenhum pedido.</strong> Faça sua primeira compra!
-    </div>
-</div>
-<div class="text-center">
-    <a href="{% url 'index' %}" class="btn btn-primary">Procure Por Produtos Na Tela Inicial!</a>
-</div>
+    .tab-content {
+        padding: 20px 0;
+    }
+</style>
 
-{% endif %}
+<script>
+    function abrirAba(evt, nomeAba) {
+        // Esconde todos os conteúdos das abas
+        var conteudos = document.getElementsByClassName("tab-content");
+        for (var i = 0; i < conteudos.length; i++) {
+            conteudos[i].style.display = "none";
+        }
 
+        // Remove a classe "active" de todos os botões
+        var botoes = document.getElementsByClassName("tab-btn");
+        for (var i = 0; i < botoes.length; i++) {
+            botoes[i].classList.remove("active");
+        }
+
+        // Mostra a aba atual e adiciona a classe active ao botão
+        document.getElementById(nomeAba).style.display = "block";
+        evt.currentTarget.classList.add("active");
+    }
+</script>
 {% endblock %}

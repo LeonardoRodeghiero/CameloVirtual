@@ -359,17 +359,7 @@
                     </ul>
                 </li>
 
-                <!-- Sobre a loja (Apenas Desktop) -->
-                <li class="nav-item dropdown d-none d-lg-block">
-                    <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuLoja" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Sobre a loja
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLoja">
-                        <li><span class="dropdown-item-text">Informações adicionais</span></li>
-                        <li><a class="dropdown-item" href="#">Quem somos</a></li>
-                        <li><a class="dropdown-item" href="#">Localização e Atendimento</a></li>
-                    </ul>
-                </li>
+                
 
                 <!-- Administração (Apenas Desktop) -->
                 {% if request.user.is_authenticated and request.user in camelo.usuarios.all %}
@@ -413,21 +403,7 @@
                             </div>
                         </div>
 
-                        <!-- Sobre a loja Mobile -->
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingSobrealoja">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSobrealoja" aria-expanded="false" aria-controls="collapseSobrealoja">
-                                    Sobre a loja
-                                </button>
-                            </h2>
-                            <div id="collapseSobrealoja" class="accordion-collapse collapse" aria-labelledby="headingSobrealoja" data-bs-parent="#mobileMenuAccordion">
-                                <div class="accordion-body">
-                                    <span class="dropdown-item-text">Informações Adicionais</span>
-                                    <a href="#" class="dropdown-item">Quem Somos</a>
-                                    <a href="#" class="dropdown-item">Localização e Atendimento</a>
-                                </div>
-                            </div>
-                        </div>
+                        
 
                         <!-- Administração Mobile -->
                         {% if request.user.is_authenticated and request.user in camelo.usuarios.all %}

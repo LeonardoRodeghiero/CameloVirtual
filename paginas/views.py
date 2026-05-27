@@ -594,34 +594,24 @@ class VerHistoricoPedidos(ListView):
     context_object_name = 'itens'
 
     def get_queryset(self):
-        pedidos = Pedido.objects.filter(usuario=self.request.user)
-
-        if pedidos.exists():
-            return Pedido_Produto.objects.filter(pedido__in=pedidos)
-        else:
-            return Pedido_Produto.objects.none()
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs) 
-        pedidos = Pedido.objects.filter(usuario=self.request.user)
-
-        context['tem_pedido'] = pedidos.exists()
-
-        base_query = Pedido_Produto.objects.select_related('pedido', 'produto').filter(
+        # Retorna todos os itens de produto comprados pelo usuário logado, ordenados pelo pedido mais recente
+        return Pedido_Produto.objects.select_related('pedido', 'produto').filter(
             pedido__usuario=self.request.user
         ).order_by('-pedido__data_pedido')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) 
+        
+        # Usamos o queryset base que já filtramos acima para evitar repetir código
+        base_query = self.get_queryset()
 
+        # Verifica se o usuário possui qualquer item cadastrado
+        context['tem_pedido'] = base_query.exists()
 
-        pedidos_andamento = base_query.filter(status='em andamento')
-        pedidos_finalizado = base_query.filter(status='finalizado')
-        pedidos_cancelado = base_query.filter(status='cancelado')
-
-        context['pedidos_andamento'] = pedidos_andamento
-        context['pedidos_finalizado'] = pedidos_finalizado
-        context['pedidos_cancelado'] = pedidos_cancelado
-
-
+        # Separa os itens individuais pelos seus respectivos status
+        context['pedidos_andamento'] = base_query.filter(status='em andamento')
+        context['pedidos_finalizado'] = base_query.filter(status='finalizado')
+        context['pedidos_cancelado'] = base_query.filter(status='cancelado')
         
         return context
 # class AlterarQuantidadeView(View):
@@ -910,7 +900,7 @@ class FinalizarPedidoView(View):
 
 
 class CancelarPedidoView(View):
-    def get(self, request, pk):
+    def post(self, request, pk):
         objeto = get_object_or_404(Pedido_Produto, pk=pk)
         
         camelo_id = objeto.produto.camelo.id
@@ -924,6 +914,22 @@ class CancelarPedidoView(View):
         objeto.save()
         
         return redirect(reverse('listar-pedidos-camelo', kwargs={'camelo_id': camelo_id}))
+
+class UsuarioCancelarPedidoView(View):
+    def get(self, request, pk):
+        # O get_object_or_404 aqui garante que o item pertence ao usuário logado
+        objeto = get_object_or_404(Pedido_Produto, pk=pk, pedido__usuario=request.user)
+        
+        # Devolve a quantidade do item de volta ao estoque do produto
+        objeto.produto.quantidade += objeto.quantidade
+        objeto.produto.save()
+
+        # Altera o status do item para cancelado
+        objeto.status = 'cancelado'
+        objeto.save()
+        
+        # Redireciona o usuário de volta para a view de histórico dele
+        return redirect(reverse('historico-pedidos'))
 
 
 class AvaliacoesCamelo(TemplateView):
