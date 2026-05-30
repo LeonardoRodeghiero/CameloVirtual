@@ -564,12 +564,13 @@ class ProdutoCameloEspecifico(DetailView):
                             produto_id=self.object.pk)
         
         return self.render_to_response(self.get_context_data(form=form))
-class VerCarrinho(ListView):
+class VerCarrinho(LoginRequiredMixin, ListView):
     model = Carrinho_Produto
     template_name = 'paginas/ver_carrinho.html'
     context_object_name = 'itens'
 
     def get_queryset(self):
+        
         carrinho = Carrinho.objects.filter(usuario=self.request.user)
 
         if carrinho.exists():
@@ -588,10 +589,11 @@ class VerCarrinho(ListView):
     
 
 
-class VerHistoricoPedidos(ListView):
+class VerHistoricoPedidos(LoginRequiredMixin, ListView):
     model = Pedido_Produto
     template_name = 'paginas/historico_pedidos.html'
     context_object_name = 'itens'
+    
 
     def get_queryset(self):
         # Retorna todos os itens de produto comprados pelo usuário logado, ordenados pelo pedido mais recente

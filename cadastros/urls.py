@@ -65,7 +65,7 @@ urlpatterns = [
     path('excluir/pedido/<int:pk>/', PedidoDelete.as_view(), name="excluir-pedido"),
     path('excluir/pedido/usuario/<int:pk>/', PedidoDeleteUser.as_view(), name="excluir-pedido-usuario"),
 
-    path('<int:camelo_id>/excluir/usuario/<int:pk>/', Camelo_usuarioDelete.as_view(), name="excluir-camelo_usuario"),
+    path('excluir/usuario/<int:pk>/', Camelo_usuarioDelete.as_view(), name="excluir-camelo_usuario"),
 
 
 
