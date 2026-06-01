@@ -845,7 +845,8 @@ class Camelo_usuarioDelete(LoginRequiredMixin, DeleteView):
     model = Camelo_Usuario
 
     def get_success_url(self):
-        return reverse_lazy('listar-usuarios-camelo', kwargs={'camelo_id': self.kwargs.get("camelo_id")})
+        camelo_id = self.object.camelo_id
+        return reverse_lazy('listar-usuarios-camelo', kwargs={'camelo_id': camelo_id})
 
 # List
 class CategoriaList(GroupRequiredMixin, LoginRequiredMixin, ListView):

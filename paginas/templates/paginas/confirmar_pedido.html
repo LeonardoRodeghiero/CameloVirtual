@@ -28,7 +28,10 @@
                     <div class="form-check p-3 border rounded bg-white d-flex align-items-center">
                         <input class="form-check-input ms-1" type="radio" name="entrega" id="entregaLoja" value="loja">
                         <label class="form-check-label ms-3" for="entregaLoja">
-                            <span class="d-block fw-bold"><i class="bi bi-shop me-2"></i>Retirar na loja - {{ produto.camelo.logradouro }}, {{ produto.camelo.numero }} {{ produto.camelo.complemento }} {{ produto.camelo.bairro }} {{ produto.camelo.cep }} {{ produto.camelo.cidade }} ({{ produto.camelo.estado }})</span>
+                            <span class="d-block fw-bold"><i class="bi bi-shop me-2"></i>Retirar na loja - {{ produto.camelo.logradouro }}, {{ produto.camelo.numero }} {% if produto.camelo.complemento %}
+                            {{ produto.camelo.complemento }}
+                            {% endif %} 
+                            {{ produto.camelo.bairro }} {{ produto.camelo.cep }} {{ produto.camelo.cidade }} ({{ produto.camelo.estado }})</span>
                             <small class="text-muted"> Pegue diretamente no balcão da loja física.</small>
                         </label>
                     </div>

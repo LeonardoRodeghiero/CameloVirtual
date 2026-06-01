@@ -50,7 +50,7 @@
                             <h5 class="card-title">{{ item.produto.nome }} {{ item.produto.marca }}</h5>
                             <p class="card-text">{{ item.produto.descricao|truncatewords:25 }}</p>
                             <p class="card-text">R$ {{ item.produto.preco }}</p>   
-                            <p class="card-text">Camelô: {{ item.produto.camelo.nome_fantasia }}</p>                  
+                            <p class="card-text">Camelô: {{ item.produto.camelo.nome_fantasia }} ({{ item.produto.camelo.estado}})</p>                  
                         
                             <div class="my-3">
                                     {# 3. MUDANÇA: Usar os dados calculados no dicionário 'item' #}
@@ -110,7 +110,7 @@
                         {% endif %}
                         <div class="col-md-8">
                             <div class="card-body">
-                            <h5 class="card-title">{{ item.camelo.nome_fantasia }}</h5>
+                            <h5 class="card-title">{{ item.camelo.nome_fantasia }} ({{ item.camelo.estado }})</h5>
                             <p class="card-text">{{ item.camelo.descricao|truncatewords:25 }}</p>
 
                             <div class="my-3">

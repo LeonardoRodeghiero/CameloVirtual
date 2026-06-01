@@ -1019,7 +1019,7 @@ class CameloPerfilList(LoginRequiredMixin, ListView):
         if not valido:
              return redirect('acesso-negado')  # ou 'acesso-negado'
         return super().dispatch(request, *args, **kwargs)
-    
+
     def get_queryset(self):
         campo_escolhido = self.request.GET.get('campo')
         valor = self.request.GET.get(campo_escolhido)  # valor digitado no input
@@ -1027,24 +1027,30 @@ class CameloPerfilList(LoginRequiredMixin, ListView):
         camelo_id = self.kwargs.get("camelo_id")
         camelo = get_object_or_404(Camelo, id=camelo_id)
 
-        perfis = Camelo_Usuario.objects.filter(camelo=camelo)
+        queryset = Camelo_Usuario.objects.filter(camelo=camelo)
 
-        if valor is None:
-            perfis = Camelo_Usuario.objects.filter(camelo=camelo)
-        else:
-            filtro = {f"{campo_escolhido}__icontains": valor}
-            perfis = Perfil.objects.filter(**filtro)
+        if valor:
+            
+            if campo_escolhido in ['nome_completo', 'cpf', 'telefone', 'tipo', 'cidade', 'estado', 'bairro', 'logradouro', 'complemento', 'numero', 'cep']:
+                filtro = {f"usuario__perfil__{campo_escolhido}__icontains": valor}
+            elif campo_escolhido == 'usuario__email':
+                filtro = {"usuario__email__icontains": valor}
+            else:
+                filtro = {f"{campo_escolhido}__icontains": valor}
+                
+            queryset = queryset.filter(**filtro)
 
-        
-        return perfis
-    
+        return queryset
+
+
     def get_context_data(self, **kwargs):
 
         context = super().get_context_data(**kwargs)
         campos = [
             (field.name, field.verbose_name.title() if field.verbose_name else field.name.title())
-            for field in self.model._meta.fields
-            if field.name != 'usuario'
+            for field in Perfil._meta.fields
+            # Removemos campos que não fazem sentido para o usuário buscar textualmente
+            if field.name not in ['id', 'usuario', 'tipo']
         ]
 
         campos.append(('usuario__email', 'Email do Usuário'))

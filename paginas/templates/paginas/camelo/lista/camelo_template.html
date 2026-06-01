@@ -14,7 +14,7 @@
       <hr class="p-1">
 
       <!-- Formulário de busca -->
-      <form method="get" class="p-3 border rounded bg-light shadow-sm">
+      <form method="get" action="{{ request.path }}" class="p-3 border rounded bg-light shadow-sm">
         <div class="d-flex align-items-center mb-3 gap-4">
           <label for="campo" class="form-label">Buscar Por:</label>
           <select name="campo" id="campo" class="form-select" style="width: 200px;" onchange="atualizarCampo()">
@@ -32,7 +32,7 @@
         <div class="d-flex gap-2">
           <button type="submit" class="btn btn-primary">Buscar <i class="bi bi-search"></i></button>
           {% block limpar %}
-            <a href="{% rota_objeto_listas nome_modelo_lista %}" class="btn btn-outline-secondary">Limpar <i class="bi bi-arrow-clockwise"></i></a>
+            <a href="{% rota_objeto_listas_camelo nome_modelo_lista camelo.id %}" class="btn btn-outline-secondary">Limpar <i class="bi bi-arrow-clockwise"></i></a>
           {% endblock %}
 
         </div>
